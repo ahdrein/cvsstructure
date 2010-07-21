@@ -891,17 +891,19 @@ public class CVSStructure {
         strOutScripts.append(quebraLinha);
         strOutScripts.append("@\".\\processa_grants_sistema.sql\"" + quebraLinha);
         strOutScripts.append(quebraLinha);
-        strOutScripts.append("conn &INOUT_USER/&INOUT_PASS@&TNS" + quebraLinha);
+        //strOutScripts.append("conn &INOUT_USER/&INOUT_PASS@&TNS" + quebraLinha);
+        strOutScripts.append("connect_io.sql" + quebraLinha);
         strOutScripts.append("@\".\\compila_invalidos.sql\"" + quebraLinha);
         strOutScripts.append(quebraLinha);
-        strOutScripts.append("conn &&INTEGRACAO_USER/&&INTEGRACAO_PASS@&&TNS" + quebraLinha);
+        //strOutScripts.append("conn &&INTEGRACAO_USER/&&INTEGRACAO_PASS@&&TNS" + quebraLinha);
+        strOutScripts.append("connect_it.sql" + quebraLinha);
         strOutScripts.append("@\".\\compila_invalidos.sql\"" + quebraLinha);
 
         strOutScripts.append(quebraLinha);
-        strOutScripts.append("@define.sql" + quebraLinha);
-        strOutScripts.append("-- Conectar na base do INOUT para obter a data de fim do processamento" + quebraLinha);
-        strOutScripts.append("-- utilizar a mesma base utilizada no inicio do processamento" + quebraLinha);
-        strOutScripts.append("conn &INOUT_USER/&INOUT_PASS@&TNS" + quebraLinha);
+        //strOutScripts.append("@define.sql" + quebraLinha);
+        //strOutScripts.append("-- Conectar na base do INOUT para obter a data de fim do processamento" + quebraLinha);
+        //strOutScripts.append("-- utilizar a mesma base utilizada no inicio do processamento" + quebraLinha);
+        //strOutScripts.append("conn &INOUT_USER/&INOUT_PASS@&TNS" + quebraLinha);
         strOutScripts.append("prompt" + quebraLinha);
         strOutScripts.append("prompt =======================" + quebraLinha);
         strOutScripts.append("SELECT 'Finalizado em: '||TO_CHAR(SYSDATE,'DD/MM/YYYY HH24:MI:SS') AS \"DATA FIM\" FROM DUAL;" + quebraLinha);
@@ -923,9 +925,9 @@ public class CVSStructure {
         valid.copy(new File(".\\definicoes\\instala_linux.sh"), new File(path + "\\"+userNameSys+"\\Scripts\\" + "instala_linux.sh" ));
         valid.copy(new File(".\\definicoes\\Instala_win.bat"), new File(path + "\\"+userNameSys+"\\Scripts\\" + "Instala_win.bat" ));
         valid.copy(new File(".\\definicoes\\dispara_script_instalacao.sql"), new File(path + "\\"+userNameSys+"\\Scripts\\" + "dispara_script_instalacao.sql" ));
-        valid.copy(new File(".\\definicoes\\connect_io.sql"), new File(path + "\\"+userNameSys+ "\\" + "connect_io.sql" ));
-        valid.copy(new File(".\\definicoes\\connect_it.sql"), new File(path + "\\"+userNameSys+ "\\" + "connect_it.sql" ));
-        valid.copy(new File(".\\definicoes\\processa_grants_sistema.sql"), new File(path + "\\"+userNameSys+ "\\" + "\\" + "processa_grants_sistema.sql" ));
+        valid.copy(new File(".\\definicoes\\connect_io.sql"), new File(path + "\\"+userNameSys+ "\\Scripts\\" + "connect_io.sql" ));
+        valid.copy(new File(".\\definicoes\\connect_it.sql"), new File(path + "\\"+userNameSys+ "\\Scripts\\" + "connect_it.sql" ));
+        valid.copy(new File(".\\definicoes\\processa_grants_sistema.sql"), new File(path + "\\"+userNameSys+ "\\Scripts\\" + "processa_grants_sistema.sql" ));
 
         File fileScripts = new File(path + "\\"+userNameSys+"\\Scripts\\ordem_instalacao.sql");
         if(!fileScripts.exists())
