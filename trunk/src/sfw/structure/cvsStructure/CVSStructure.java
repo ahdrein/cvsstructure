@@ -1158,7 +1158,7 @@ public class CVSStructure {
                             int maxLin = 0;
                             while ((auxScripts=brScripts.readLine())!=null){
 
-                                auxScripts = auxScripts.replaceAll("'",  "' || chr(27) || '");
+                                auxScripts = auxScripts.replaceAll("'",  "' || chr(39) || '");
                                 auxScripts = auxScripts.replaceAll("@",  "' || chr(64) || '");
                                 auxScripts = auxScripts.replaceAll("\t",  "' '");
                                 //auxScripts = auxScripts.replaceAll(sQuebraLinha,  "' || chr(13) || '");
