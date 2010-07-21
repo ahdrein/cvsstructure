@@ -431,17 +431,19 @@ public class SfwValidaScripts extends javax.swing.JFrame {
                 strOut2.append(sQuebraLinha);
                 strOut2.append("@\".\\processa_grants_sistema.sql\"" + sQuebraLinha);
                 strOut2.append(sQuebraLinha);
-                strOut2.append("conn &INOUT_USER/&INOUT_PASS@&TNS" + sQuebraLinha);
+                //strOut2.append("conn &INOUT_USER/&INOUT_PASS@&TNS" + sQuebraLinha);
+                strOut2.append("connect_io.sql" + sQuebraLinha);
                 strOut2.append("@\".\\compila_invalidos.sql\"" + sQuebraLinha);
                 strOut2.append(sQuebraLinha);
-                strOut2.append("conn &&INTEGRACAO_USER/&&INTEGRACAO_PASS@&&TNS" + sQuebraLinha);
+                //strOut2.append("conn &&INTEGRACAO_USER/&&INTEGRACAO_PASS@&&TNS" + sQuebraLinha);
+                strOut2.append("connect_it.sql" + sQuebraLinha);
                 strOut2.append("@\".\\compila_invalidos.sql\"" + sQuebraLinha);
                 
                 strOut2.append(sQuebraLinha);
-                strOut2.append("@define.sql" + sQuebraLinha);
-                strOut2.append("-- Conectar na base do INOUT para obter a data de fim do processamento" + sQuebraLinha);
-                strOut2.append("-- utilizar a mesma base utilizada no inicio do processamento" + sQuebraLinha);
-                strOut2.append("conn &INOUT_USER/&INOUT_PASS@&TNS" + sQuebraLinha);
+                //strOut2.append("@define.sql" + sQuebraLinha);
+                //strOut2.append("-- Conectar na base do INOUT para obter a data de fim do processamento" + sQuebraLinha);
+                //strOut2.append("-- utilizar a mesma base utilizada no inicio do processamento" + sQuebraLinha);
+                //strOut2.append("conn &INOUT_USER/&INOUT_PASS@&TNS" + sQuebraLinha);
                 strOut2.append("prompt" + sQuebraLinha);
                 strOut2.append("prompt =======================" + sQuebraLinha);
                 strOut2.append("SELECT 'Finalizado em: '||TO_CHAR(SYSDATE,'DD/MM/YYYY HH24:MI:SS') AS \"DATA FIM\" FROM DUAL;" + sQuebraLinha);
