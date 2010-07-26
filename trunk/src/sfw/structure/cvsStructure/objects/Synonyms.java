@@ -38,7 +38,7 @@ public class Synonyms {
         private ResultSet rsBatInterface = null;
         private ResultSet rsDadosInterface = null;
 
-	public Synonyms(String system){
+	public Synonyms(String system, CVSStructure cvsStructure){
 
         // Informações InOut
         String executavel = "";
@@ -168,80 +168,83 @@ public class Synonyms {
 
                     try{
                         fileScripts = new File(fileNameScripts);
-                        if(!fileScripts.exists())
+                        if(!fileScripts.exists()){
                             fileScripts.createNewFile();
 
-                        CVSStructure.logMessage("Creating or appending to file " + fileNameScripts);
+                            CVSStructure.logMessage("Creating or appending to file " + fileNameScripts);
 
-                        strOutScripts = new StringBuffer();
+                            strOutScripts = new StringBuffer();
 
-                        /******************************************
-                        * Gerando arquivos na pasta de Scripts
-                        ******************************************/
+                            /******************************************
+                            * Gerando arquivos na pasta de Scripts
+                            ******************************************/
 
-                        if(CVSStructure.chConexaoPorArquivos.equals("S")){
-                            if(system.equals("INOUT")){
-                                strOutScripts.append("conn &&INOUT_USER/&&INOUT_PASS@&&TNS" + CVSStructure.quebraLinha + CVSStructure.quebraLinha);
+                            if(CVSStructure.chConexaoPorArquivos.equals("S")){
+                                if(system.equals("INOUT")){
+                                    strOutScripts.append("conn &&INOUT_USER/&&INOUT_PASS@&&TNS" + CVSStructure.quebraLinha + CVSStructure.quebraLinha);
+                                }else{
+                                    strOutScripts.append("conn &&INTEGRACAO_USER/&&INTEGRACAO_PASS@&&TNS" + CVSStructure.quebraLinha + CVSStructure.quebraLinha);
+                                }
+                            }
+
+                            strOutScripts.append("-- Create the synonym" + CVSStructure.quebraLinha);
+                            strOutScripts.append("create or replace synonym " + rsSynonyms.getString("SYNONYM_NAME") + CVSStructure.quebraLinha);
+
+                            String tableOwner = "";
+                            if(rsSynonyms.getString("TABLE_OWNER") == null && rsSynonyms.getString("DB_LINK") == null){
+                                tableOwner = "";
+                            }else if(rsSynonyms.getString("TABLE_OWNER") == null && rsSynonyms.getString("DB_LINK") != null){
+                                tableOwner = "";
+                            }else if(cvsStructure.getIoUser().getUser().toUpperCase().equals(rsSynonyms.getString("TABLE_OWNER").toUpperCase()) || rsSynonyms.getString("TABLE_OWNER").toUpperCase().contains("IO")){
+                                tableOwner = Define.INOUT_USER;
+                            }else if(cvsStructure.getCeUser().getUser().toUpperCase().equals(rsSynonyms.getString("TABLE_OWNER").toUpperCase()) || rsSynonyms.getString("TABLE_OWNER").toUpperCase().contains("CE")){
+                                tableOwner = Define.CAMBIO_EXP_USER;
+                            }else if(cvsStructure.getCiUser().getUser().toUpperCase().equals(rsSynonyms.getString("TABLE_OWNER").toUpperCase()) || rsSynonyms.getString("TABLE_OWNER").toUpperCase().contains("CI")){
+                                tableOwner = Define.CAMBIO_IMP_USER;
+                            }else if(cvsStructure.getIsUser().getUser().toUpperCase().equals(rsSynonyms.getString("TABLE_OWNER").toUpperCase()) || rsSynonyms.getString("TABLE_OWNER").toUpperCase().contains("IS")){
+                                tableOwner = Define.IMPORT_USER;
+                            }else if(cvsStructure.getExUser().getUser().toUpperCase().equals(rsSynonyms.getString("TABLE_OWNER").toUpperCase()) || rsSynonyms.getString("TABLE_OWNER").toUpperCase().contains("EX")){
+                                tableOwner = Define.EXPORT_USER;
+                            }else if(cvsStructure.getDbUser().getUser().toUpperCase().equals(rsSynonyms.getString("TABLE_OWNER").toUpperCase()) || rsSynonyms.getString("TABLE_OWNER").toUpperCase().contains("DB")){
+                                tableOwner = Define.DRAWBACK_USER;
+                            }else if(cvsStructure.getBsUser().getUser().toUpperCase().equals(rsSynonyms.getString("TABLE_OWNER").toUpperCase()) || rsSynonyms.getString("TABLE_OWNER").toUpperCase().contains("BS")){
+                                tableOwner = Define.BROKER_USER;
+                            }else if(cvsStructure.getItUser().getUser().toUpperCase().equals(rsSynonyms.getString("TABLE_OWNER").toUpperCase()) || rsSynonyms.getString("TABLE_OWNER").toUpperCase().contains("IT")){
+                                tableOwner = Define.INTEGRACAO_USER;
+                            }else if(rsSynonyms.getString("TABLE_OWNER").toUpperCase().contains("APPS")){
+                                tableOwner = Define.APPS_USER;
+                            }else if(rsSynonyms.getString("TABLE_OWNER").toUpperCase().contains("CAI")){
+                                tableOwner = Define.CAI_USER;
                             }else{
-                                strOutScripts.append("conn &&INTEGRACAO_USER/&&INTEGRACAO_PASS@&&TNS" + CVSStructure.quebraLinha + CVSStructure.quebraLinha);
+                                tableOwner = "";
                             }
-                        }
 
-                        strOutScripts.append("-- Create the synonym" + CVSStructure.quebraLinha);
-                        strOutScripts.append("create or replace synonym " + rsSynonyms.getString("SYNONYM_NAME") + CVSStructure.quebraLinha);
-
-                        String tableOwner = "";
-                        if(rsSynonyms.getString("TABLE_OWNER") == null && rsSynonyms.getString("DB_LINK") == null){
-                            tableOwner = Define.SOFT_USER;
-                        }else if(rsSynonyms.getString("TABLE_OWNER") == null && rsSynonyms.getString("DB_LINK") != null){
-                            tableOwner = "";
-                        }else if(rsSynonyms.getString("TABLE_OWNER").toUpperCase().contains("IO")){
-                            tableOwner = Define.INOUT_USER;
-                        }else if(rsSynonyms.getString("TABLE_OWNER").toUpperCase().contains("CE")){
-                            tableOwner = Define.CAMBIO_EXP_USER;
-                        }else if(rsSynonyms.getString("TABLE_OWNER").toUpperCase().contains("CI")){
-                            tableOwner = Define.CAMBIO_IMP_USER;
-                        }else if(rsSynonyms.getString("TABLE_OWNER").toUpperCase().contains("IS")){
-                            tableOwner = Define.IMPORT_USER;
-                        }else if(rsSynonyms.getString("TABLE_OWNER").toUpperCase().contains("EX")){
-                            tableOwner = Define.EXPORT_USER;
-                        }else if(rsSynonyms.getString("TABLE_OWNER").toUpperCase().contains("DB")){
-                            tableOwner = Define.DRAWBACK_USER;
-                        }else if(rsSynonyms.getString("TABLE_OWNER").toUpperCase().contains("BS")){
-                            tableOwner = Define.BROKER_USER;
-                        }else if(rsSynonyms.getString("TABLE_OWNER").toUpperCase().contains("IT")){
-                            tableOwner = Define.INTEGRACAO_USER;
-                        }else if(rsSynonyms.getString("TABLE_OWNER").toUpperCase().contains("APPS")){
-                            tableOwner = Define.APPS_USER;
-                        }else if(rsSynonyms.getString("TABLE_OWNER").toUpperCase().contains("CAI")){
-                            tableOwner = Define.CAI_USER;
-                        }else{
-                            tableOwner = Define.SOFT_USER;
-                        }
-
-                        //strOutScripts.append("  for &&" + rsSynonyms.getString("TABLE_OWNER") );
-                        strOutScripts.append("  for "  );
-                        if(rsSynonyms.getString("DB_LINK") == null || !tableOwner.equals("")){
-                            strOutScripts.append("&&" + tableOwner + "..");
-                        }
-                        
-                        strOutScripts.append( rsSynonyms.getString("TABLE_NAME") );
-                        
-                        if(rsSynonyms.getString("DB_LINK") != null){
-                            if(rsSynonyms.getString("DB_LINK").toUpperCase().contains("CAI")){
-                                strOutScripts.append("@&&" + Define.DBLINK_CAI );
-                            }else if(rsSynonyms.getString("DB_LINK").toUpperCase().contains("APPS")){
-                                strOutScripts.append("@&&" + Define.DBLINK_APPS );
+                            //strOutScripts.append("  for &&" + rsSynonyms.getString("TABLE_OWNER") );
+                            strOutScripts.append("  for "  );
+                            if(!tableOwner.equals("")){
+                                strOutScripts.append("&&" + tableOwner + "..");
                             }
-                            
-                        }
-                        //strOutScripts.append(rsSynonyms.getString("DB_LINK") != null ? "@" + rsSynonyms.getString("DB_LINK") + CVSStructure.quebraLinha : "");
-                        strOutScripts.append(";" + CVSStructure.quebraLinha);
 
-                        fwScripts = new FileWriter(fileScripts, false);
-                        fwScripts.write(strOutScripts.toString(),0,strOutScripts.length());
-                        fwScripts.close();
-                        CVSStructure.logMessage("File " + fileNameScripts + " was succesfull generated.");
+                            strOutScripts.append( rsSynonyms.getString("TABLE_NAME") );
+
+                            if(rsSynonyms.getString("DB_LINK") != null){
+                                if(rsSynonyms.getString("DB_LINK").toUpperCase().contains("CAI")){
+                                    strOutScripts.append("@&&" + Define.DBLINK_CAI );
+                                }else if(rsSynonyms.getString("DB_LINK").toUpperCase().contains("APPS")){
+                                    strOutScripts.append("@&&" + Define.DBLINK_APPS );
+                                }
+
+                            }
+                            //strOutScripts.append(rsSynonyms.getString("DB_LINK") != null ? "@" + rsSynonyms.getString("DB_LINK") + CVSStructure.quebraLinha : "");
+                            strOutScripts.append(";" + CVSStructure.quebraLinha);
+
+                            fwScripts = new FileWriter(fileScripts, false);
+                            fwScripts.write(strOutScripts.toString(),0,strOutScripts.length());
+                            fwScripts.close();
+
+                            CVSStructure.nTotalSynonyms++;
+                            CVSStructure.logMessage("File " + fileNameScripts + " was succesfull generated.");
+                        }
                     }catch(IOException ioex){
                         CVSStructure.logMessage("File " + fileNameScripts + " was error generated.");
                         SfwLogger.saveLog(ioex.getClass().toString(), ioex.getStackTrace());

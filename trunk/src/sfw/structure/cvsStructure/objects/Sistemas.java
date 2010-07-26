@@ -21,7 +21,7 @@ import sfw.structure.log.SfwLogger;
  */
 public class Sistemas {
 
-    public Sistemas() throws SQLException{
+    public Sistemas(CVSStructure cvsStructure) throws SQLException{
         String fileNameScripts = "";
         String fileName = "";
 
@@ -38,51 +38,49 @@ public class Sistemas {
                     fileName = "sistema.sql";
                     oracleOwnerUser = "SOFT_USER";
                     oracleOwnerPass = "SOFT_PASS";
-                }else if(rsSistemas.getString("USER_ORACLE").toUpperCase().contains("IO")){
+                }else if(cvsStructure.getIoUser().getUser().toUpperCase().equals(rsSistemas.getString("USER_ORACLE").toUpperCase()) || rsSistemas.getString("USER_ORACLE").toUpperCase().contains("IO")){
                     fileName = "inout.sql";
                     oracleOwnerUser = "INOUT_USER";
                     oracleOwnerPass = "INOUT_PASS";
-                }else if(rsSistemas.getString("USER_ORACLE").toUpperCase().contains("CE")){
+                }else if(cvsStructure.getCeUser().getUser().toUpperCase().equals(rsSistemas.getString("USER_ORACLE").toUpperCase()) || rsSistemas.getString("USER_ORACLE").toUpperCase().contains("CE")){
                     fileName = "cambio_exportacao.sql";
                     oracleOwnerUser = "CAMBIO_EXP_USER";
                     oracleOwnerPass = "CAMBIO_EXP_PASS";
-                }else if(rsSistemas.getString("USER_ORACLE").toUpperCase().contains("CI")){
+                }else if(cvsStructure.getCiUser().getUser().toUpperCase().equals(rsSistemas.getString("USER_ORACLE").toUpperCase()) || rsSistemas.getString("USER_ORACLE").toUpperCase().contains("CI")){
                     fileName = "cambio_importacao.sql";
                     oracleOwnerUser = "CAMBIO_IMP_USER";
                     oracleOwnerPass = "CAMBIO_IMP_PASS";
-                }else if(rsSistemas.getString("USER_ORACLE").toUpperCase().contains("IS")){
+                }else if(cvsStructure.getIsUser().getUser().toUpperCase().equals(rsSistemas.getString("USER_ORACLE").toUpperCase()) || rsSistemas.getString("USER_ORACLE").toUpperCase().contains("IS")){
                     fileName = "import.sql";
                     oracleOwnerUser = "IMPORT_USER";
                     oracleOwnerPass = "IMPORT_PASS";
-                }else if(rsSistemas.getString("USER_ORACLE").toUpperCase().contains("EX")){
+                }else if(cvsStructure.getExUser().getUser().toUpperCase().equals(rsSistemas.getString("USER_ORACLE").toUpperCase()) || rsSistemas.getString("USER_ORACLE").toUpperCase().contains("EX")){
                     fileName = "export.sql";
                     oracleOwnerUser = "EXPORT_USER";
                     oracleOwnerPass = "EXPORT_PASS";
-                }else if(rsSistemas.getString("USER_ORACLE").toUpperCase().contains("DB")){
+                }else if(cvsStructure.getDbUser().getUser().toUpperCase().equals(rsSistemas.getString("USER_ORACLE").toUpperCase()) || rsSistemas.getString("USER_ORACLE").toUpperCase().contains("DB")){
                     fileName = "drawback.sql";
                     oracleOwnerUser = "DRAWBACK_USER";
                     oracleOwnerPass = "DRAWBACK_PASS";
-                }else if(rsSistemas.getString("USER_ORACLE").toUpperCase().contains("BS")){
+                }else if(cvsStructure.getBsUser().getUser().toUpperCase().equals(rsSistemas.getString("USER_ORACLE").toUpperCase()) || rsSistemas.getString("USER_ORACLE").toUpperCase().contains("BS")){
                     fileName = "broker.sql";
                     oracleOwnerUser = "BROKER_USER";
                     oracleOwnerPass = "BROKER_PASS";
-                }else if(rsSistemas.getString("USER_ORACLE").toUpperCase().contains("IT")){
+                }else if(cvsStructure.getItUser().getUser().toUpperCase().equals(rsSistemas.getString("USER_ORACLE").toUpperCase()) || rsSistemas.getString("USER_ORACLE").toUpperCase().contains("IT")){
                     fileName = "integracao.sql";
                     oracleOwnerUser = "INTEGRACAO_USER";
                     oracleOwnerPass = "INTEGRACAO_PASS";
                 }else{
                     fileName = "base_generica.sql";
                     oracleOwnerUser = "SOFT_USER";
-                    oracleOwnerPass = "SOFT_USER";
+                    oracleOwnerPass = "SOFT_PASS";
                 }
                 
                 fileNameScripts = CVSStructure.path + "\\"+CVSStructure.userNameSys+"\\Scripts\\comum\\INOUT\\Sistemas\\" + fileName;
 
                 File fileScripts = new File(fileNameScripts);
                 if(!fileScripts.exists()){
-                    fileScripts.createNewFile();
 
-                    FileWriter fwScripts = new FileWriter(fileScripts, false);
 
                     StringBuffer strOut = new StringBuffer();
                     CVSStructure.logMessage("Creating or appending to file " + fileNameScripts);
@@ -128,10 +126,16 @@ public class Sistemas {
                     strOut.append("-- //////  Fim do script do sistema Broker Sys" + CVSStructure.quebraLinha);
                     strOut.append("-- //////" + CVSStructure.quebraLinha);
 
-                    fwScripts.write(strOut.toString(),0,strOut.length());
-                    fwScripts.close();
+                    if(strOut != null && !strOut.toString().equals("")){
+                        fileScripts.createNewFile();
 
-                    CVSStructure.logMessage("File " + fileNameScripts + " was succesfull generated.");
+                        FileWriter fwScripts = new FileWriter(fileScripts, false);
+                        fwScripts.write(strOut.toString(),0,strOut.length());
+                        fwScripts.close();
+
+                        CVSStructure.nTotalSistemas++;
+                        CVSStructure.logMessage("File " + fileNameScripts + " was succesfull generated.");
+                    }
                 }
             }
         }catch(IOException ioex){

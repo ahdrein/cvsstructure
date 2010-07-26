@@ -56,23 +56,22 @@ public class ReferenciasObjetos {
             rsGerarReferenciasObjetos = psGerarReferenciasObjetos.executeQuery();
             while(rsGerarReferenciasObjetos.next()){
  
-                    if (rsGerarReferenciasObjetos.getString("REFERENCED_TYPE").toLowerCase().equals("function")){
-                        fileName = rsGerarReferenciasObjetos.getString("REFERENCED_NAME").toLowerCase() + ".sql";
-                        fileNameScripts = CVSStructure.path + "\\"+CVSStructure.userNameSys+"\\Scripts\\comum\\INTEGRACAO\\Function\\" + fileName;
-                    }else if (rsGerarReferenciasObjetos.getString("REFERENCED_TYPE").toLowerCase().equals("procedure")){
-                        fileName = rsGerarReferenciasObjetos.getString("REFERENCED_NAME").toLowerCase() + ".sql";
-                        fileNameScripts = CVSStructure.path + "\\"+CVSStructure.userNameSys+"\\Scripts\\comum\\INTEGRACAO\\Procedure\\" + fileName;
-                    }else if (rsGerarReferenciasObjetos.getString("REFERENCED_TYPE").toLowerCase().equals("package")){
-                        fileName = rsGerarReferenciasObjetos.getString("REFERENCED_NAME").toLowerCase() + ".sql";
-                        fileNameScripts = CVSStructure.path + "\\"+CVSStructure.userNameSys+"\\Scripts\\comum\\INTEGRACAO\\Package\\" + fileName;
-                    }else if (rsGerarReferenciasObjetos.getString("REFERENCED_TYPE").toLowerCase().equals("table")){
-                        fileName = rsGerarReferenciasObjetos.getString("REFERENCED_NAME").toLowerCase() + ".sql";
-                        fileNameScripts = CVSStructure.path + "\\"+CVSStructure.userNameSys+"\\Scripts\\comum\\INTEGRACAO\\Table\\" + fileName;
-                    }
-
+                if (rsGerarReferenciasObjetos.getString("REFERENCED_TYPE").toLowerCase().equals("function")){
+                    fileName = rsGerarReferenciasObjetos.getString("REFERENCED_NAME").toLowerCase() + ".sql";
+                    fileNameScripts = CVSStructure.path + "\\"+CVSStructure.userNameSys+"\\Scripts\\comum\\INTEGRACAO\\Function\\" + fileName;
+                }else if (rsGerarReferenciasObjetos.getString("REFERENCED_TYPE").toLowerCase().equals("procedure")){
+                    fileName = rsGerarReferenciasObjetos.getString("REFERENCED_NAME").toLowerCase() + ".sql";
+                    fileNameScripts = CVSStructure.path + "\\"+CVSStructure.userNameSys+"\\Scripts\\comum\\INTEGRACAO\\Procedure\\" + fileName;
+                }else if (rsGerarReferenciasObjetos.getString("REFERENCED_TYPE").toLowerCase().equals("package")){
+                    fileName = rsGerarReferenciasObjetos.getString("REFERENCED_NAME").toLowerCase() + ".sql";
+                    fileNameScripts = CVSStructure.path + "\\"+CVSStructure.userNameSys+"\\Scripts\\comum\\INTEGRACAO\\Package\\" + fileName;
+                }else if (rsGerarReferenciasObjetos.getString("REFERENCED_TYPE").toLowerCase().equals("table")){
+                    fileName = rsGerarReferenciasObjetos.getString("REFERENCED_NAME").toLowerCase() + ".sql";
+                    fileNameScripts = CVSStructure.path + "\\"+CVSStructure.userNameSys+"\\Scripts\\comum\\INTEGRACAO\\Table\\" + fileName;
+                }
 
                 CVSStructure.logMessage("Creating or appending to file " + fileNameScripts);
-           
+
                 if (rsGerarReferenciasObjetos.getString("REFERENCED_TYPE").toLowerCase().equals("function") ||
                         rsGerarReferenciasObjetos.getString("REFERENCED_TYPE").toLowerCase().equals("procedure")){
 

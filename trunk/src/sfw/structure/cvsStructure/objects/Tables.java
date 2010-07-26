@@ -51,9 +51,7 @@ public class Tables {
 
             fileScripts = new File(fileNameScripts);
             if(!fileScripts.exists()){
-                fileScripts.createNewFile();
 
-                fwScripts = new FileWriter(fileScripts, false);
                 strOutScripts = new StringBuffer();
 
                 if(system.equals("INOUT")){
@@ -136,12 +134,13 @@ public class Tables {
                     }
                 }
 
-                if(strOutScripts != null ){
+                if(strOutScripts != null && !strOutScripts.toString().equals("")){
+                    fileScripts.createNewFile();
+                    fwScripts = new FileWriter(fileScripts, false);
                     fwScripts.write(strOutScripts.toString(),0,strOutScripts.length());
+                    fwScripts.close();
+                    CVSStructure.logMessage("File " + fileNameScripts + " was succesfull generated.");
                 }
-                fwScripts.close();
-
-                CVSStructure.logMessage("File " + fileNameScripts + " was succesfull generated.");
             }
         }catch(IOException ioex){
             CVSStructure.logMessage("File " + fileNameScripts + " was error generated.");

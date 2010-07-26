@@ -12,8 +12,6 @@ import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import sfw.structure.cvsStructure.CVSStructure;
 import sfw.structure.database.ConnectionInout;
 import sfw.structure.database.ConnectionIntegracao;
@@ -59,7 +57,7 @@ public class Sequence {
                 try{
                     fileScripts = new File(fileNameScripts);
                     if(!fileScripts.exists())
-                        fileScripts.createNewFile();
+                        
 
                     CVSStructure.logMessage("Creating or appending to file " + fileNameScripts);
 
@@ -85,11 +83,15 @@ public class Sequence {
                     strOutScripts.append("  increment by "+ rsSequences.getString("INCREMENT_BY") + CVSStructure.quebraLinha);
                     strOutScripts.append("  cache " + rsSequences.getString("CACHE_SIZE") + ";" + CVSStructure.quebraLinha );
 
-                    fwScripts = new FileWriter(fileScripts, false);
-                    fwScripts.write(strOutScripts.toString(),0,strOutScripts.length());
-                    fwScripts.close();
+                    if(strOutScripts != null && !strOutScripts.toString().equals("")){
+                        fileScripts.createNewFile();
+                        fwScripts = new FileWriter(fileScripts, false);
+                        fwScripts.write(strOutScripts.toString(),0,strOutScripts.length());
+                        fwScripts.close();
 
-                    CVSStructure.logMessage("File " + fileNameScripts + " was succesfull generated.");
+                        CVSStructure.nTotalSequences++;
+                        CVSStructure.logMessage("File " + fileNameScripts + " was succesfull generated.");
+                    }
                 }catch(IOException ioex){
                     CVSStructure.logMessage("File " + fileNameScripts + " was error generated.");
                     SfwLogger.saveLog(ioex.getClass().toString(), ioex.getStackTrace());

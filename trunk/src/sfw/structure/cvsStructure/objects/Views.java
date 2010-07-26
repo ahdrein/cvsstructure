@@ -82,6 +82,7 @@ public class Views {
                         fwScripts.write(strOutScripts.toString(),0,strOutScripts.length());
                         fwScripts.close();
 
+                        CVSStructure.nTotalViews++;
                         CVSStructure.logMessage("File " + fileNameScripts + " was succesfull generated.");
                     }catch(IOException ioex){
                         CVSStructure.logMessage("File " + fileNameScripts + " was error generated.");

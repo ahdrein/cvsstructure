@@ -35,16 +35,16 @@ public class IntMapeamento {
     private static PreparedStatement psPermissaoTabela = null;
     private static ResultSet rsPermissaoTabela = null;
 
-    private static PreparedStatement psInterfaceDaTabela = null;
+    private static PreparedStatement psSistemaInterfaceDaTabela = null;
     private static ResultSet rsInterfaceDaTabela = null;
 
 	private static PreparedStatement psCountPermissaoTabela = null;
 	private static ResultSet rsCountPermissaoTabela = null;
 
-    private static PreparedStatement psFoundDadosInterface = null;
-	private static ResultSet rsFoundDadosInterface = null;
+    private static PreparedStatement psDadosInterface = null;
+	private static ResultSet rsDadosInterface = null;
 
-    public IntMapeamento(String system) throws IOException {
+    public IntMapeamento(String system, CVSStructure cvsStructure) throws IOException {
 
         // Informações InOut
         String executavel = "";
@@ -76,27 +76,27 @@ public class IntMapeamento {
         StringBuffer sbCountPermissaoTabela = new StringBuffer();
         sbCountPermissaoTabela.append("select count(*) TOTAL from permissao_tabela where table_name = ?");
 
-        StringBuffer sbInterfaceDaTabela = new StringBuffer();
-        sbInterfaceDaTabela.append("select distinct it.* ");
-        sbInterfaceDaTabela.append("from permissao_tabela ta,");
-        sbInterfaceDaTabela.append("     sistema_interface it");
-        sbInterfaceDaTabela.append(" where ta.table_name like '%' || upper( ? ) ||'%'");
-        sbInterfaceDaTabela.append(" and it.id_interface = ta.id_interface");
+        StringBuffer sbSistemaInterfaceDaTabela = new StringBuffer();
+        sbSistemaInterfaceDaTabela.append("select distinct it.* ");
+        sbSistemaInterfaceDaTabela.append("from permissao_tabela ta,");
+        sbSistemaInterfaceDaTabela.append("     sistema_interface it");
+        sbSistemaInterfaceDaTabela.append(" where ta.table_name like '%' || upper( ? ) ||'%'");
+        sbSistemaInterfaceDaTabela.append(" and it.id_interface = ta.id_interface");
 
         // Obtendo condições do select para encontrar o as interfaces existentes
-        StringBuffer sbFoundDadosInterface = new StringBuffer();
-		sbFoundDadosInterface.append("select replace( replace( replace( substr(interfaces.executavel, instr(interfaces.executavel, '\\')+1, length(interfaces.executavel)), '#IDENT#INTERFACES\\SAP\\', ''), '#IDENT#INTERFACES\\', '') , '#IDENT#INTEGRACAO\\', '') executavel,");
-        sbFoundDadosInterface.append("interfaces.id_interface,");
-        sbFoundDadosInterface.append("interfaces.tipo_interface,");
-        sbFoundDadosInterface.append("nvl(sistema_interface.id_sistema, 'sfw') id_sistema,");
-        sbFoundDadosInterface.append("interfaces.descricao,");
-        sbFoundDadosInterface.append("interfaces.username,");
-        sbFoundDadosInterface.append("interfaces.tempo_medio,");
-        sbFoundDadosInterface.append("interfaces.executavelCompl executavelCompl");
-        sbFoundDadosInterface.append(" from ( select substr(executavel, instr(executavel, '\\')+1, (instr(executavel, '.BAT'))-(instr(executavel, '\\')+1)) executavel, id_interface, tipo_interface, descricao, username, tempo_medio, executavel executavelCompl from interfaces where executavel like '%.BAT%') interfaces,");
-        sbFoundDadosInterface.append(" sistema_interface");
-        sbFoundDadosInterface.append(" where interfaces.id_interface = sistema_interface.id_interface (+)");
-        sbFoundDadosInterface.append("and sistema_interface.id_interface = ?");
+        StringBuffer sbDadosInterface = new StringBuffer();
+		sbDadosInterface.append("select replace( replace( replace( substr(interfaces.executavel, instr(interfaces.executavel, '\\')+1, length(interfaces.executavel)), '#IDENT#INTERFACES\\SAP\\', ''), '#IDENT#INTERFACES\\', '') , '#IDENT#INTEGRACAO\\', '') executavel,");
+        sbDadosInterface.append("interfaces.id_interface,");
+        sbDadosInterface.append("interfaces.tipo_interface,");
+        sbDadosInterface.append("nvl(sistema_interface.id_sistema, 'sfw') id_sistema,");
+        sbDadosInterface.append("interfaces.descricao,");
+        sbDadosInterface.append("interfaces.username,");
+        sbDadosInterface.append("interfaces.tempo_medio,");
+        sbDadosInterface.append("interfaces.executavelCompl executavelCompl");
+        sbDadosInterface.append(" from ( select substr(executavel, instr(executavel, '\\')+1, (instr(executavel, '.BAT'))-(instr(executavel, '\\')+1)) executavel, id_interface, tipo_interface, descricao, username, tempo_medio, executavel executavelCompl from interfaces where executavel like '%.BAT%') interfaces,");
+        sbDadosInterface.append(" sistema_interface");
+        sbDadosInterface.append(" where interfaces.id_interface = sistema_interface.id_interface (+)");
+        sbDadosInterface.append("and sistema_interface.id_interface = ?");
 
         try{
             if(PrepararConsultas.existObject("INT_MAPEAMENTO_LAYOUT", system) >= 1 ){
@@ -124,9 +124,9 @@ public class IntMapeamento {
 
                         boolean sisFlag = true;
                         if (nTotPer > 1){
-                            psInterfaceDaTabela = ConnectionInout.getConnection().prepareStatement(sbInterfaceDaTabela.toString());
-                            psInterfaceDaTabela.setString(1, rsIntMapeamento.getString("LAYOUT"));
-                            rsInterfaceDaTabela = psInterfaceDaTabela.executeQuery();
+                            psSistemaInterfaceDaTabela = ConnectionInout.getConnection().prepareStatement(sbSistemaInterfaceDaTabela.toString());
+                            psSistemaInterfaceDaTabela.setString(1, rsIntMapeamento.getString("LAYOUT"));
+                            rsInterfaceDaTabela = psSistemaInterfaceDaTabela.executeQuery();
                             rsInterfaceDaTabela.next();
 
                             if (!CVSStructure.id_sistema_it.equals("")){
@@ -140,20 +140,20 @@ public class IntMapeamento {
                         if(idInterface == null || idInterface.equals("") || sisFlag){
                             fileNameScripts = CVSStructure.path + "\\"+CVSStructure.userNameSys+"\\Scripts\\comum\\INTEGRACAO\\Mapeamento\\" + fileName;
                         }else{
-                            if(psFoundDadosInterface == null){
-                                psFoundDadosInterface = ConnectionInout.getConnection().prepareStatement(sbFoundDadosInterface.toString());
+                            if(psDadosInterface == null){
+                                psDadosInterface = ConnectionInout.getConnection().prepareStatement(sbDadosInterface.toString());
                             }
 
-                            psFoundDadosInterface.setString(1, idInterface);
-                            rsFoundDadosInterface = psFoundDadosInterface.executeQuery();
-                            while(rsFoundDadosInterface.next()){
-                                executavel = rsFoundDadosInterface.getString("EXECUTAVEL");
-                                tipoInterface = rsFoundDadosInterface.getString("TIPO_INTERFACE");
-                                idSistema = rsFoundDadosInterface.getString("ID_SISTEMA").toLowerCase();
-                                descricao = rsFoundDadosInterface.getString("DESCRICAO");
-                                //userNameApp = rsFoundDadosInterface.getString("USERNAME");
-                                tempoMedio = rsFoundDadosInterface.getString("TEMPO_MEDIO");
-                                executavelCompl = rsFoundDadosInterface.getString("EXECUTAVELCOMPL");
+                            psDadosInterface.setString(1, idInterface);
+                            rsDadosInterface = psDadosInterface.executeQuery();
+                            while(rsDadosInterface.next()){
+                                executavel = rsDadosInterface.getString("EXECUTAVEL");
+                                tipoInterface = rsDadosInterface.getString("TIPO_INTERFACE");
+                                idSistema = rsDadosInterface.getString("ID_SISTEMA").toLowerCase();
+                                descricao = rsDadosInterface.getString("DESCRICAO");
+                                //userNameApp = rsDadosInterface.getString("USERNAME");
+                                tempoMedio = rsDadosInterface.getString("TEMPO_MEDIO");
+                                executavelCompl = rsDadosInterface.getString("EXECUTAVELCOMPL");
                             }
 
                             if(tipoInterface.trim().equals("S")){
@@ -163,14 +163,12 @@ public class IntMapeamento {
                             }else{
                                 fileNameScripts = CVSStructure.path + "\\"+CVSStructure.userNameSys+"\\Scripts\\" + idSistema + "\\INTEGRACAO\\Mapeamento\\"  + fileName;
                             }
-
                         }
 
                         try{
                             fileScripts = new File(fileNameScripts);
                             if(!fileScripts.exists())
-                                fileScripts.createNewFile();
-
+                                
                             CVSStructure.logMessage("Creating or appending to file " + fileNameScripts);
                             strOutScripts = new StringBuffer();
 
@@ -238,11 +236,16 @@ public class IntMapeamento {
                             strOutScripts.append(CVSStructure.quebraLinha);
                             strOutScripts.append("commit;" + CVSStructure.quebraLinha);
 
-                            fwScripts = new FileWriter(fileScripts, false);
-                            fwScripts.write(strOutScripts.toString(),0,strOutScripts.length());
-                            fwScripts.close();
 
-                            CVSStructure.logMessage("File " + fileNameScripts + " was succesfull generated.");
+                            if(strOutScripts != null && !strOutScripts.toString().equals("")){
+                                fileScripts.createNewFile();
+                                fwScripts = new FileWriter(fileScripts, false);
+                                fwScripts.write(strOutScripts.toString(),0,strOutScripts.length());
+                                fwScripts.close();
+
+                                CVSStructure.nTotalIntMapeamento++;
+                                CVSStructure.logMessage("File " + fileNameScripts + " was succesfull generated.");
+                            }
                         }catch(IOException ioex){
                             CVSStructure.logMessage("File " + fileNameScripts + " was error generated.");
                             SfwLogger.saveLog(ioex.getClass().toString(), ioex.getStackTrace());
