@@ -141,7 +141,7 @@ public class PrepararConsultas {
             sbDadosInterface.append("interfaces.username,");
             sbDadosInterface.append("interfaces.tempo_medio,");
             sbDadosInterface.append("interfaces.executavelCompl executavelCompl");
-            sbDadosInterface.append(" from ( select substr(executavel, instr(executavel, '\\')+1, (instr(executavel, '.BAT'))-(instr(executavel, '\\')+1)) executavel, id_interface, tipo_interface, descricao, username, tempo_medio, executavel executavelCompl from interfaces where executavel like '%.BAT%') interfaces,");
+            sbDadosInterface.append(" from ( select substr(executavel, instr(executavel, '\\')+1, (instr(executavel, '.BAT'))-(instr(executavel, '\\')+1)) executavel, id_interface, tipo_interface, descricao, username, tempo_medio, executavel executavelCompl from interfaces where upper(executavel) like '%.BAT%') interfaces,");
             sbDadosInterface.append(" sistema_interface");
             sbDadosInterface.append(" where interfaces.id_interface = sistema_interface.id_interface (+)");
             sbDadosInterface.append("and sistema_interface.id_interface = ?");

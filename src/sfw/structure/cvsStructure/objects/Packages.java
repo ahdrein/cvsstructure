@@ -54,9 +54,7 @@ public class Packages {
 
                 fileScripts = new File(fileNameScripts);
                 if(!fileScripts.exists()){
-                    fileScripts.createNewFile();
 
-                    fwScripts = new FileWriter(fileScripts, false);
 
                     psUserSource.setString(2, referencedName.toUpperCase() );
                     rsUserSource = psUserSource.executeQuery();
@@ -86,12 +84,17 @@ public class Packages {
                     strOutScripts.append(CVSStructure.quebraLinha);
                     strOutScripts.append("/");
 
-                    if(strOutScripts != null ){
-                        fwScripts.write(strOutScripts.toString(),0,strOutScripts.length());
-                    }
-                    fwScripts.close();
+                    if(strOutScripts != null && !strOutScripts.equals("")){
+                        fileScripts.createNewFile();
 
-                    CVSStructure.logMessage("File " + fileNameScripts + " was succesfull generated.");
+                        fwScripts = new FileWriter(fileScripts, false);
+                        fwScripts.write(strOutScripts.toString(),0,strOutScripts.length());
+                        fwScripts.close();
+
+                        CVSStructure.nTotalPackages++;
+                        CVSStructure.logMessage("File " + fileNameScripts + " was succesfull generated.");
+                    }
+
                 }
             }catch(IOException ioex){
                 CVSStructure.logMessage("File " + fileNameScripts + " was error generated.");

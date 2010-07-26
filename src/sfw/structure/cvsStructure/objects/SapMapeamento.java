@@ -37,15 +37,15 @@ public class SapMapeamento {
     private static PreparedStatement psPermissaoTabela = null;
     private static ResultSet rsPermissaoTabela = null;
 
-    private static PreparedStatement psInterfaceDaTabela = null;
-    private static ResultSet rsInterfaceDaTabela = null;
+    private static PreparedStatement psSistemaInterfaceDaTabela = null;
+    private static ResultSet rsSistemaInterfaceDaTabela = null;
 
 	private static PreparedStatement psCountPermissaoTabela = null;
 	private static ResultSet rsCountPermissaoTabela = null;
 
 	private static ResultSet rsDadosInterface = null;
     
-    public SapMapeamento(String system) throws IOException{
+    public SapMapeamento(String system, CVSStructure cvsStructure) throws IOException{
 
         // Informações InOut
         String executavel = "";
@@ -86,19 +86,19 @@ public class SapMapeamento {
         sbInterfaceDaTabela.append(" and it.id_interface = ta.id_interface");
 
         // Obtendo condições do select para encontrar o as interfaces existentes
-        StringBuffer sbFoundDadosInterface = new StringBuffer();
-		sbFoundDadosInterface.append("select replace( replace( replace( substr(interfaces.executavel, instr(interfaces.executavel, '\\')+1, length(interfaces.executavel)), '#IDENT#INTERFACES\\SAP\\', ''), '#IDENT#INTERFACES\\', '') , '#IDENT#INTEGRACAO\\', '') executavel,");
-        sbFoundDadosInterface.append("interfaces.id_interface,");
-        sbFoundDadosInterface.append("interfaces.tipo_interface,");
-        sbFoundDadosInterface.append("nvl(sistema_interface.id_sistema, 'sfw') id_sistema,");
-        sbFoundDadosInterface.append("interfaces.descricao,");
-        sbFoundDadosInterface.append("interfaces.username,");
-        sbFoundDadosInterface.append("interfaces.tempo_medio,");
-        sbFoundDadosInterface.append("interfaces.executavelCompl executavelCompl");
-        sbFoundDadosInterface.append(" from ( select substr(executavel, instr(executavel, '\\')+1, (instr(executavel, '.BAT'))-(instr(executavel, '\\')+1)) executavel, id_interface, tipo_interface, descricao, username, tempo_medio, executavel executavelCompl from interfaces where executavel like '%.BAT%') interfaces,");
-        sbFoundDadosInterface.append(" sistema_interface");
-        sbFoundDadosInterface.append(" where interfaces.id_interface = sistema_interface.id_interface (+)");
-        sbFoundDadosInterface.append("and sistema_interface.id_interface = ?");
+        StringBuffer sbDadosInterface = new StringBuffer();
+		sbDadosInterface.append("select replace( replace( replace( substr(interfaces.executavel, instr(interfaces.executavel, '\\')+1, length(interfaces.executavel)), '#IDENT#INTERFACES\\SAP\\', ''), '#IDENT#INTERFACES\\', '') , '#IDENT#INTEGRACAO\\', '') executavel,");
+        sbDadosInterface.append("interfaces.id_interface,");
+        sbDadosInterface.append("interfaces.tipo_interface,");
+        sbDadosInterface.append("nvl(sistema_interface.id_sistema, 'sfw') id_sistema,");
+        sbDadosInterface.append("interfaces.descricao,");
+        sbDadosInterface.append("interfaces.username,");
+        sbDadosInterface.append("interfaces.tempo_medio,");
+        sbDadosInterface.append("interfaces.executavelCompl executavelCompl");
+        sbDadosInterface.append(" from ( select substr(executavel, instr(executavel, '\\')+1, (instr(executavel, '.BAT'))-(instr(executavel, '\\')+1)) executavel, id_interface, tipo_interface, descricao, username, tempo_medio, executavel executavelCompl from interfaces where executavel like '%.BAT%') interfaces,");
+        sbDadosInterface.append(" sistema_interface");
+        sbDadosInterface.append(" where interfaces.id_interface = sistema_interface.id_interface (+)");
+        sbDadosInterface.append("and sistema_interface.id_interface = ?");
 
         try{
             if(PrepararConsultas.existObject("SAP_INTERFACE_TABLES", system) >= 1 ){
@@ -131,15 +131,15 @@ public class SapMapeamento {
 
                         boolean sisFlag = true;
                         if (nTotPer > 1){
-                            if(psInterfaceDaTabela == null){
-                                psInterfaceDaTabela = ConnectionInout.getConnection().prepareStatement(sbInterfaceDaTabela.toString());
+                            if(psSistemaInterfaceDaTabela == null){
+                                psSistemaInterfaceDaTabela = ConnectionInout.getConnection().prepareStatement(sbInterfaceDaTabela.toString());
                             }
-                            psInterfaceDaTabela.setString(1, rsSapMapeamento.getString("TABLE_NAME"));
-                            rsInterfaceDaTabela = psInterfaceDaTabela.executeQuery();
-                            rsInterfaceDaTabela.next();
+                            psSistemaInterfaceDaTabela.setString(1, rsSapMapeamento.getString("TABLE_NAME"));
+                            rsSistemaInterfaceDaTabela = psSistemaInterfaceDaTabela.executeQuery();
+                            rsSistemaInterfaceDaTabela.next();
 
                             if (!CVSStructure.id_sistema_it.equals("")){
-                                if (CVSStructure.id_sistema_it.equals(rsInterfaceDaTabela.getString("ID_SISTEMA"))){
+                                if (CVSStructure.id_sistema_it.equals(rsSistemaInterfaceDaTabela.getString("ID_SISTEMA"))){
                                     sisFlag = false;
                                 }
                             }
@@ -375,12 +375,15 @@ public class SapMapeamento {
                         strOutScripts.append("alter table sap_interface_tables enable constraint fk_sap_interface_tables;" + CVSStructure.quebraLinha);
                         strOutScripts.append("alter table sap_interface_tables enable constraint fk_sap_interface_block;" + CVSStructure.quebraLinha);
 
-                        fwScripts = new FileWriter(fileScripts, false);
-                        if(strOutScripts != null ){
+                        if(strOutScripts != null && !strOutScripts.toString().equals("")){
+                            fileScripts.createNewFile();
+                            fwScripts = new FileWriter(fileScripts, false);
                             fwScripts.write(strOutScripts.toString(),0,strOutScripts.length());
+                            fwScripts.close();
+
+                            CVSStructure.nTotalSapMapeamento++;
+                            CVSStructure.logMessage("File " + fileNameScripts + " was succesfull generated.");
                         }
-                        fwScripts.close();
-                        CVSStructure.logMessage("File " + fileNameScripts + " was succesfull generated.");
                     }catch(IOException ioex){
                         CVSStructure.logMessage("File " + fileNameScripts + " was error generated.");
                         SfwLogger.saveLog(ioex.getClass().toString(), ioex.getStackTrace());
@@ -400,8 +403,8 @@ public class SapMapeamento {
                 if(rsPermissaoTabela != null) rsPermissaoTabela.close();
                 if(psPermissaoTabela != null) psPermissaoTabela.close();
                 if(rsPermissaoTabela != null) rsPermissaoTabela.close();
-                if(rsInterfaceDaTabela != null) rsInterfaceDaTabela.close();
-                if(rsInterfaceDaTabela != null) rsInterfaceDaTabela.close();
+                if(rsSistemaInterfaceDaTabela != null) rsSistemaInterfaceDaTabela.close();
+                if(rsSistemaInterfaceDaTabela != null) rsSistemaInterfaceDaTabela.close();
             }catch(SQLException sqlex){
                 SfwLogger.log(sqlex);
                 sqlex.printStackTrace();
