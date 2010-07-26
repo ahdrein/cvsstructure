@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.io.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JTextArea;
 import sfw.structure.cvsStructure.objects.DataTableLayout;
 import sfw.structure.cvsStructure.objects.FunctionProcedure;
@@ -25,40 +27,44 @@ import sfw.structure.log.SfwLogger;
 import sfw.structure.validaScripts.SfwValidaScripts;
 
 public class CVSStructure {
-	public String s_User;
+
+    private Usuario ioUser;
+    private Usuario itUser;
+    private Usuario bgUser;
+    private Usuario bsUser;
+    private Usuario isUser;
+    private Usuario ceUser;
+    private Usuario ciUser;
+    private Usuario exUser;
+    private Usuario dbUser;
+
+    public String s_User;
 	public String s_Pass;
 	public String s_Conn;
 	public String s_ItUser;
     public static String s_ItUser2;
 	public String s_ItPass;
- 	private String s_File;
- 	private String sSessionSchema;
- 	private String sRole;
+
     private ArrayList dirScriptsValida = new ArrayList();
+
     public static String chNomePasta;
     public static String chConexaoPorArquivos;
+    public static String chScriptsSemVinculoInterface;
+    private Object[] selectInterfaces;
 
     /* Selects Utilizados */
-	private String sSelectGerarArquivosExternos;
-	private String sSelectExportarArquivosExternos;
-	private String sSelectTabInterface;
-	private String sSelectPermissaoTabela;
-	private String sSelectColunasTabInterface;
-    private String sSelectCountPermissaoTabela;
-    private String sSelectUserUsers;
-    private String sSelectArquivosSynonymos;
-    private String sSelectSequences;
+	private String selectGerarArquivosExternos;
+	private String selectExportarArquivosExternos;
+    private String selectPermissaoTabela;
+    private String selectUsers;
     
-    private String sCountArquivosSynonyms;
-    private String sFoundSQLInterface;
-    private String sFoundBATInterface;
-    private String sFoundDadosInterface;
+    private String sistema;
+    private String interfaceDaTabela;
 
-    private String sSistema;
-    private String sInterfaceDaTabela;
-    private String sView;
+    private String sessionSchema;
+    private String role;
 
-    /* Variaveis */
+    // Variaveis
     public String idInterface;
 
     public static String userNameSys = "";
@@ -76,7 +82,19 @@ public class CVSStructure {
 	public String tempoMedio = "";
     public String executavelCompl = "";
 
-    //public String sQuebraLinha = System.getProperty("line.separator");
+    // Contadores
+    public static int nTotalSistemas = 0;
+    public static int nTotalTabelas = 0;
+    public static int nTotalInterfaces = 0;
+    public static int nTotalViews = 0;
+    public static int nTotalSynonyms = 0;
+    public static int nTotalSequences = 0;
+    public static int nTotalPackages = 0;
+    public static int nTotalSapMapeamento = 0;
+    public static int nTotalIntMapeamento = 0;
+    public static int nTotalFunctionsProcedures = 0;
+
+    // public String sQuebraLinha = System.getProperty("line.separator");
     public static String quebraLinha = "\r\n";
 	
 	public static String path;
@@ -87,7 +105,7 @@ public class CVSStructure {
     
     private String sSynonymsAll = "";
 
-    /* Filtros */
+    // PreparedStatement
 	private PreparedStatement psInterfaces = null;
 	private ResultSet rsInterfaces = null;
 	private PreparedStatement psExportarArquivosExternos = null;
@@ -125,7 +143,6 @@ public class CVSStructure {
     private PreparedStatement psInsertReferencesObjectsIT = null;
     private PreparedStatement psDropTableIT = null;
 
-
     private ResultSet rsSqlInterface = null;
     private ResultSet rsBatInterface = null;
     private ResultSet rsDadosInterface = null;
@@ -133,11 +150,10 @@ public class CVSStructure {
     public static JTextArea textAreaCVS;
     public static JFrameCVS jframe;
 
-
    // Imprime Mensagens na Tela e coloca mensagem no log
 	public static void logMessage(String p_msg)
 	{
-		System.out.println(p_msg);
+		//System.out.println(p_msg);
         if(CVSStructure.jframe != null){
             CVSStructure.jframe.setTextArea(p_msg + quebraLinha);
         }
@@ -159,31 +175,31 @@ public class CVSStructure {
             }
         }
 
-        this.sSelectUserUsers = "select username from user_users";
+        this.selectUsers = "select username from user_users";
 
         
 
-        this.sSelectPermissaoTabela = "select id_interface, table_name from permissao_tabela where lower(table_name) != 'tmp_cvs_structure' and id_interface = ?";
+        this.selectPermissaoTabela = "select id_interface, table_name from permissao_tabela where lower(table_name) != 'tmp_cvs_structure' and id_interface = ?";
 
 		
 
-        this.sSistema = "select * from sistema where user_oracle like '%'|| ? || '%'";
+        this.sistema = "select * from sistema where user_oracle like '%'|| ? || '%'";
 
 
-        this.sInterfaceDaTabela = "select distinct it.* "+
+        this.interfaceDaTabela = "select distinct it.* "+
                 "from permissao_tabela ta,"+
                 "     sistema_interface it"+
                 " where ta.table_name like '%' || upper( ? ) ||'%'"+
                 " and it.id_interface = ta.id_interface";
 
-		this.sSelectGerarArquivosExternos = "select NOME_ARQUIVO," +
+		this.selectGerarArquivosExternos = "select NOME_ARQUIVO," +
 		  "PATH_RELATIVO," +
 		  "DESCRICAO," +
 		  "CONTEUDO" +
 		  " from arquivo_externo" +
 		  " where arquivo_externo.nome_arquivo like '%'|| ? || '%'";
 
-		this.sSelectExportarArquivosExternos = "select NOME_ARQUIVO," +
+		this.selectExportarArquivosExternos = "select NOME_ARQUIVO," +
 		  "PATH_RELATIVO," +
 		  "DESCRICAO," +
 		  "CONTEUDO" +
@@ -191,7 +207,8 @@ public class CVSStructure {
 		  " where arquivo_externo.nome_arquivo like '%'|| ? || '%'";
 
         // Obtendo condições do select para encontrar o as interfaces existentes
-        StringBuffer sbAllInterfaces = new StringBuffer();                
+        StringBuffer sbAllInterfaces = new StringBuffer();
+        sbAllInterfaces.append("select * from (" );
         sbAllInterfaces.append("select replace( replace( replace( substr(interfaces.executavel, instr(interfaces.executavel, '\\')+1, length(interfaces.executavel)), '#IDENT#INTERFACES\\SAP\\', ''), '#IDENT#INTERFACES\\', '') , '#IDENT#INTEGRACAO\\', '') executavel,");
         sbAllInterfaces.append("interfaces.id_interface,");
         sbAllInterfaces.append("interfaces.tipo_interface,");
@@ -201,9 +218,35 @@ public class CVSStructure {
         sbAllInterfaces.append("interfaces.tempo_medio,");
         sbAllInterfaces.append("interfaces.executavelCompl executavelCompl,");
         sbAllInterfaces.append("interfaces.interfere_proc_dir");
-        sbAllInterfaces.append(" from ( select substr(executavel, instr(executavel, '\\')+1, (instr(executavel, '.BAT'))-(instr(executavel, '\\')+1)) executavel, id_interface, tipo_interface, descricao, username, tempo_medio, executavel executavelCompl, interfere_proc_dir from interfaces where executavel like '%.BAT%') interfaces,");
+        sbAllInterfaces.append(" from ( select substr(executavel, instr(executavel, '\\')+1, (instr(executavel, '.BAT'))-(instr(executavel, '\\')+1)) executavel, ");
+        sbAllInterfaces.append("id_interface, ");
+        sbAllInterfaces.append("tipo_interface, ");
+        sbAllInterfaces.append("descricao, ");
+        sbAllInterfaces.append("username, ");
+        sbAllInterfaces.append("tempo_medio, ");
+        sbAllInterfaces.append("executavel executavelCompl, interfere_proc_dir from interfaces ");
+        sbAllInterfaces.append("where executavel like '%.BAT%' ");
+        sbAllInterfaces.append("or executavel like '%.bat%') interfaces,");
         sbAllInterfaces.append(" sistema_interface");
         sbAllInterfaces.append(" where interfaces.id_interface = sistema_interface.id_interface (+)");
+        //sbAllInterfaces.append(" order by descricao");
+        sbAllInterfaces.append("union all ");
+        sbAllInterfaces.append("select ");
+        sbAllInterfaces.append("  executavel, ");
+        sbAllInterfaces.append("  interfaces.id_interface, ");
+        sbAllInterfaces.append("  interfaces.tipo_interface, ");
+        sbAllInterfaces.append("  nvl(sistema_interface.id_sistema, 'sfw') id_sistema, ");
+        sbAllInterfaces.append("  interfaces.descricao, ");
+        sbAllInterfaces.append("  interfaces.username, ");
+        sbAllInterfaces.append("  interfaces.tempo_medio, ");
+        sbAllInterfaces.append("  executavel executavelCompl, ");
+        sbAllInterfaces.append("  interfaces.interfere_proc_dir "   );
+        sbAllInterfaces.append(" from interfaces interfaces, sistema_interface ");
+        sbAllInterfaces.append(" where interfaces.executavel like '%IMPORTADOR_IN_OUT_NEW.EXE%' ");
+        sbAllInterfaces.append(" and interfaces.id_interface = sistema_interface.id_interface (+)");
+
+        sbAllInterfaces.append(" ) order by descricao");
+
 
         StringBuffer sbCountInterface = new StringBuffer();
         sbCountInterface.append("select count(*) total_arquivos");
@@ -374,14 +417,13 @@ public class CVSStructure {
         sbCreateTableCvsStructure.append(" REFERENCED_TYPE  varchar2(100)");
         sbCreateTableCvsStructure.append(")");
 
-        psUsersUser = ConnectionInout.getConnection().prepareStatement(this.sSelectUserUsers);
-        psExportarArquivosExternos = ConnectionInout.getConnection().prepareStatement(this.sSelectExportarArquivosExternos);
-        psGerarArquivosExternos = ConnectionInout.getConnection().prepareStatement(this.sSelectGerarArquivosExternos);
+        psUsersUser = ConnectionInout.getConnection().prepareStatement(this.selectUsers);
+        psExportarArquivosExternos = ConnectionInout.getConnection().prepareStatement(this.selectExportarArquivosExternos);
+        psGerarArquivosExternos = ConnectionInout.getConnection().prepareStatement(this.selectGerarArquivosExternos);
         psGerarArquivosExternosNaoGerados = ConnectionInout.getConnection().prepareStatement(sbArquivosExternosNaoGerados.toString());
         psCountInterface = ConnectionInout.getConnection().prepareStatement(sbCountInterface.toString());
-        psPermissaoTabela = ConnectionInout.getConnection().prepareStatement(sSelectPermissaoTabela);
+        psPermissaoTabela = ConnectionInout.getConnection().prepareStatement(selectPermissaoTabela);
         
-
         psInterfaces = ConnectionInout.getConnection().prepareStatement(sbAllInterfaces.toString());
 
         //
@@ -402,11 +444,24 @@ public class CVSStructure {
             psInsertReferencesObjectsIT = ConnectionIntegracao.getConnection().prepareCall(sbInsertTableCvsStructure.toString());
         }
 
-        psInterfaceDaTabela = ConnectionInout.getConnection().prepareStatement(this.sInterfaceDaTabela);
+        psInterfaceDaTabela = ConnectionInout.getConnection().prepareStatement(this.interfaceDaTabela);
 
         psCreateTable = ConnectionInout.getConnection().prepareCall(sbCreateTableCvsStructure.toString());
 
         psInsertReferencesObjects = ConnectionInout.getConnection().prepareCall(sbInsertTableCvsStructure.toString());
+    }
+
+    public ArrayList readInterfaces() throws SQLException, IOException{
+        StringBuffer sbAllInterfaces = new StringBuffer();
+        sbAllInterfaces.append("select * from interfaces order by descricao");
+        PreparedStatement psInterfacesRead = ConnectionInout.getConnection().prepareStatement(sbAllInterfaces.toString());
+
+        ArrayList arrInterfaces = new ArrayList();
+        ResultSet rsInterfacesRead = psInterfacesRead.executeQuery();
+        while(rsInterfacesRead.next()){
+            arrInterfaces.add(rsInterfacesRead.getString("DESCRICAO"));
+        }
+        return arrInterfaces;
     }
 
 	public void spoolCVSStruture(ArrayList pTipo, JFrameCVS jframe) throws SQLException, IOException{
@@ -417,10 +472,9 @@ public class CVSStructure {
             rsUsersUser = psUsersUser.executeQuery();
             rsUsersUser.next();
             userNameSys = rsUsersUser.getString("USERNAME");
-            flag = true;
 
             id_sistema_it = "";
-            psSistema = ConnectionInout.getConnection().prepareStatement(this.sSistema);
+            psSistema = ConnectionInout.getConnection().prepareStatement(this.sistema);
             s_ItUser2 = s_ItUser;
             psSistema.setString(1, s_ItUser.toUpperCase());
             rsSistema = psSistema.executeQuery();
@@ -430,129 +484,159 @@ public class CVSStructure {
             rsSistema.close();
             psSistema.close();
 
+              if(pTipo.contains("D")){
+                    SfwLogger.saveLog(quebraLinha + "## Criando Diretórios Comuns ##" + quebraLinha);
+                    try {
+                        criarDiretoriosComuns();
+                    } catch (Exception ex) {
+                        Logger.getLogger(CVSStructure.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    SfwLogger.saveLog(quebraLinha + "## Finalizando - Criando Diretórios Comuns ##" + quebraLinha);
+                }
 
-            rsInterfaces = psInterfaces.executeQuery();
-			while(rsInterfaces.next()){
-				try{
-                    String sistema = "";
+            if(pTipo.contains("ArquivosExternos") ||
+               pTipo.contains("Interfaces") ||
+               pTipo.contains("TabelasTemporarias")
+                    ){
+                rsInterfaces = psInterfaces.executeQuery();
+                while(rsInterfaces.next()){
+                    try{
+                        boolean flagSelectInterface = false;
+                        // Quando  for seleciona pelo menos uma interface
+                        if(getSSelectInterfaces().length != 0){
+                            for(int j=0; j < getSSelectInterfaces().length; j++){
+                                if(rsInterfaces.getString("DESCRICAO").equals(getSSelectInterfaces()[j])){
+                                    flagSelectInterface = true;
+                                    break;
+                                }
+                            }
+                        }else{
+                            // Quando nehuma interface for seleciona, gerar de todas
+                            flagSelectInterface = true;
+                        }
 
-                    psCountInterface2.setString(1, rsInterfaces.getString("ID_INTERFACE"));
-                    rsCountInterface = psCountInterface2.executeQuery();
-                    rsCountInterface.next();
-                    int nTotInter = rsCountInterface.getInt("TOTAL");
+                        if(flagSelectInterface){
+                            String sistema = "";
 
-                    boolean sisFlag = true;
-                    if(nTotInter >= 2){
-                        if (!id_sistema_it.equals("")){
-                            if (id_sistema_it.equals(rsInterfaces.getString("ID_SISTEMA"))){
-                                sisFlag = false;
+                            psCountInterface2.setString(1, rsInterfaces.getString("ID_INTERFACE"));
+                            rsCountInterface = psCountInterface2.executeQuery();
+                            rsCountInterface.next();
+                            int nTotInter = rsCountInterface.getInt("TOTAL");
+
+                            boolean sisFlag = true;
+                            if(nTotInter >= 2){
+                                if (!id_sistema_it.equals("")){
+                                    if (id_sistema_it.equals(rsInterfaces.getString("ID_SISTEMA"))){
+                                        sisFlag = false;
+                                    }
+                                }
+                            }
+
+                            if(sisFlag){
+
+                                logMessage("*** Building Interfaces select found " + rsInterfaces.getString("ID_INTERFACE") + " - " + rsInterfaces.getString("DESCRICAO") + "...");
+                                idInterface = rsInterfaces.getString("ID_INTERFACE");
+                                executavel = rsInterfaces.getString("EXECUTAVEL");
+                                tipoInterface = rsInterfaces.getString("TIPO_INTERFACE");
+                                idSistema = rsInterfaces.getString("ID_SISTEMA").toLowerCase();
+                                descricao = rsInterfaces.getString("DESCRICAO");
+                                //sUserNameApp = rsInterfaces.getString("USERNAME");
+                                tempoMedio = rsInterfaces.getString("TEMPO_MEDIO");
+                                executavelCompl = rsInterfaces.getString("EXECUTAVELCOMPL");
+                                if(rsInterfaces.getString("INTERFERE_PROC_DIR") != null){
+                                    interfereProcessamentoDireto = rsInterfaces.getString("INTERFERE_PROC_DIR");
+                                }
+
+                                if(pTipo.contains("D")){
+                                    SfwLogger.saveLog(quebraLinha + "## Criando Diretórios ##" + quebraLinha);
+                                    criarDiretorio();
+                                    SfwLogger.saveLog(quebraLinha + "## Finalizando - Criando Diretórios ##" + quebraLinha);
+                                }
+
+                                if(pTipo.contains("Interfaces")){
+                                    SfwLogger.saveLog(quebraLinha + "## Gerando Interfaces ##" + quebraLinha);
+                                    this.interfaces(); // ok
+                                    SfwLogger.saveLog(quebraLinha + "## Finalizando - Gerando Interfaces ##" + quebraLinha);
+                                }
+
+                                if(pTipo.contains("ArquivosExternos")){
+                                    SfwLogger.saveLog(quebraLinha + "## Exportando Arquivos Externos ##" + quebraLinha);
+                                    this.exportarArquivosExternos(); // ok
+                                    SfwLogger.saveLog(quebraLinha + "## Finalizando - Exportando Arquivos Externos ##" + quebraLinha);
+                                }
+
+                                if(pTipo.contains("ArquivosExternos")){
+                                    SfwLogger.saveLog(quebraLinha + "## Gerando Arquivos Externos ##" + quebraLinha);
+                                    this.arquivosExternos(); // ok
+                                    SfwLogger.saveLog(quebraLinha + "## Finalizando - Gerando Arquivos Externos  ##" + quebraLinha);
+                                }
+
+                                if(pTipo.contains("TabelasTemporarias")){
+                                    SfwLogger.saveLog(quebraLinha + "## Gerando Tabelas da Interface ##" + quebraLinha);
+                                    //this.exportarTabInterface(); //ok
+                                    psPermissaoTabela.setString(1, idInterface);
+                                    rsPermissaoTabela = psPermissaoTabela.executeQuery();
+
+                                    while(rsPermissaoTabela.next()){
+                                        new TabInterfaces(rsPermissaoTabela.getString("TABLE_NAME"), idInterface, idSistema, this);
+                                    }
+                                    SfwLogger.saveLog(quebraLinha + "## Finalizando - Gerando Tabelas da Interface ##" + quebraLinha);
+                                }
                             }
                         }
+                    }catch (Exception e) {
+                        logMessage(e.getLocalizedMessage());
+                        SfwLogger.saveLog(e.getClass().toString(), e.getStackTrace());
                     }
-                    
-                    if(sisFlag){
-
-                        logMessage("*** Building Interfaces select found " + rsInterfaces.getString("ID_INTERFACE") + " - " + rsInterfaces.getString("DESCRICAO") + "...");
-                        idInterface = rsInterfaces.getString("ID_INTERFACE");
-                        executavel = rsInterfaces.getString("EXECUTAVEL");
-                        tipoInterface = rsInterfaces.getString("TIPO_INTERFACE");
-                        idSistema = rsInterfaces.getString("ID_SISTEMA").toLowerCase();
-                        descricao = rsInterfaces.getString("DESCRICAO");
-                        //sUserNameApp = rsInterfaces.getString("USERNAME");
-                        tempoMedio = rsInterfaces.getString("TEMPO_MEDIO");
-                        executavelCompl = rsInterfaces.getString("EXECUTAVELCOMPL");
-                        if(rsInterfaces.getString("INTERFERE_PROC_DIR") != null){
-                            interfereProcessamentoDireto = rsInterfaces.getString("INTERFERE_PROC_DIR");
-                        }
-
-                        if(pTipo.contains("D")){
-                            SfwLogger.saveLog(quebraLinha + "## Criando Diretórios ##" + quebraLinha);
-                            criarDiretorio();
-                            SfwLogger.saveLog(quebraLinha + "## Finalizando - Criando Diretórios ##" + quebraLinha);
-                        }
-
-                        if(pTipo.contains("Interfaces")){
-                            SfwLogger.saveLog(quebraLinha + "## Gerando Interfaces ##" + quebraLinha);
-                            this.interfaces(); // ok
-                            SfwLogger.saveLog(quebraLinha + "## Finalizando - Gerando Interfaces ##" + quebraLinha);
-                        }
-
-                        if(pTipo.contains("ArquivosExternos")){
-                            SfwLogger.saveLog(quebraLinha + "## Exportando Arquivos Externos ##" + quebraLinha);
-                            this.exportarArquivosExternos(); // ok
-                            SfwLogger.saveLog(quebraLinha + "## Finalizando - Exportando Arquivos Externos ##" + quebraLinha);
-                        }
-
-                        if(pTipo.contains("ArquivosExternos")){
-                            SfwLogger.saveLog(quebraLinha + "## Gerando Arquivos Externos ##" + quebraLinha);
-                            this.arquivosExternos(); // ok
-                            SfwLogger.saveLog(quebraLinha + "## Finalizando - Gerando Arquivos Externos  ##" + quebraLinha);
-                        }
-
-                        if(pTipo.contains("TabelasTemporarias")){
-                            SfwLogger.saveLog(quebraLinha + "## Gerando Tabelas da Interface ##" + quebraLinha);
-                            //this.exportarTabInterface(); //ok
-                            psPermissaoTabela.setString(1, idInterface);
-                            rsPermissaoTabela = psPermissaoTabela.executeQuery();
-
-                            while(rsPermissaoTabela.next()){
-                                new TabInterfaces(rsPermissaoTabela.getString("TABLE_NAME"), idInterface, idSistema);
-                            }
-                            SfwLogger.saveLog(quebraLinha + "## Finalizando - Gerando Tabelas da Interface ##" + quebraLinha);
-                        }
-                    }
-				}catch (Exception e) {
-					logMessage(e.getLocalizedMessage());
-                    SfwLogger.saveLog(e.getClass().toString(), e.getStackTrace());
-				}
-			}
+                }
+            }
 
             try {
-                if(pTipo.contains("ArquivosExternos")){
+                if(pTipo.contains("ArquivosExternos")  && chScriptsSemVinculoInterface.equals("S")){
                     SfwLogger.saveLog(quebraLinha + "## Gerando Arquivos Externos ##" + quebraLinha);
                     this.arquivosExternosNaoGerados(); // ok
                     SfwLogger.saveLog(quebraLinha + "## Finalizando - Arquivos Externos ##" + quebraLinha);
                 }
 
-                if(pTipo.contains("Synonyms")){
+                if(pTipo.contains("Synonyms")  && chScriptsSemVinculoInterface.equals("S")){
                     SfwLogger.saveLog(quebraLinha + "## Gerando Synonyms ##" + quebraLinha);
-                    new Synonyms("INOUT");
+                    new Synonyms("INOUT", this);
                     SfwLogger.saveLog(quebraLinha + "## Finalizando - Gerando Synonyms ##" + quebraLinha);
                 }
 
-                if(pTipo.contains("TabelasTemporarias")){
+                if(pTipo.contains("TabelasTemporarias") && chScriptsSemVinculoInterface.equals("S")){
                     SfwLogger.saveLog(quebraLinha + "## Gerando Tabelas Sem Permissão##" + quebraLinha);
                     this.tabInterfaceSemPermissao();
                     SfwLogger.saveLog(quebraLinha + "## Finalizando - Gerando Tabelas Sem Permissão ##" + quebraLinha);
                 }
 
-                if(pTipo.contains("Sistemas")){
+                if(pTipo.contains("Sistemas")  && chScriptsSemVinculoInterface.equals("S")){
                     SfwLogger.saveLog(quebraLinha + "## Gerando Sistemas ##" + quebraLinha);
-                    new Sistemas();
+                    new Sistemas(this);
                     SfwLogger.saveLog(quebraLinha + "## Finalizando - Gerando Sistemas ##" + quebraLinha);
                 }
 
-                if(pTipo.contains("Sequences")){
+                if(pTipo.contains("Sequences") && chScriptsSemVinculoInterface.equals("S")){
                     SfwLogger.saveLog(quebraLinha + "## Gerando Sequences ##" + quebraLinha);
                     new Sequence("INOUT");
                     SfwLogger.saveLog(quebraLinha + "## Finalizando - Gerando Sequences ##" + quebraLinha);
                 }
 
-                if(pTipo.contains("Views")){
+                if(pTipo.contains("Views")  && chScriptsSemVinculoInterface.equals("S")){
                     SfwLogger.saveLog(quebraLinha + "## Gerando Views ##" + quebraLinha);
                     new Views("INOUT");
                     SfwLogger.saveLog(quebraLinha + "## Finalizando - Gerando Views ##" + quebraLinha);
                 }
                 
-                if(pTipo.contains("IntMapeamento")){
+                if(pTipo.contains("IntMapeamento")  && chScriptsSemVinculoInterface.equals("S")){
                     SfwLogger.saveLog(quebraLinha + "## Gerando IntMapeamento ##" + quebraLinha);
-                    new IntMapeamento("INOUT");
+                    new IntMapeamento("INOUT", this);
                     SfwLogger.saveLog(quebraLinha + "## Finalizando - Gerando IntMapeamento ##" + quebraLinha);
                 }
 
-                if(pTipo.contains("SapMapeamento")){
+                if(pTipo.contains("SapMapeamento") && chScriptsSemVinculoInterface.equals("S")){
                     SfwLogger.saveLog(quebraLinha + "## Gerando SapMapeamento ##" + quebraLinha);
-                    new SapMapeamento("INOUT");
+                    new SapMapeamento("INOUT", this);
                     SfwLogger.saveLog(quebraLinha + "## Finalizando - Gerando SapMapeamento ##" + quebraLinha);
                 }
             } catch (Exception ex) {
@@ -563,37 +647,37 @@ public class CVSStructure {
             // Base de Integracao
             if(s_ItUser != null && !s_ItUser.equals("") && !s_ItPass.equals("") && s_ItPass != null){
                 try {
-                    if(pTipo.contains("Synonyms")){
+                    if(pTipo.contains("Synonyms") && chScriptsSemVinculoInterface.equals("S")){
                         SfwLogger.saveLog(quebraLinha + "## Gerando Synonyms Integração ##" + quebraLinha);
-                        new Synonyms("INTEGRACAO");
+                        new Synonyms("INTEGRACAO", this);
                         SfwLogger.saveLog(quebraLinha + "## Finalizando - Gerando Synonyms Integração ##" + quebraLinha);
                     }
                     
-                    if(pTipo.contains("IntMapeamento")){
+                    if(pTipo.contains("IntMapeamento") && chScriptsSemVinculoInterface.equals("S")){
                         SfwLogger.saveLog(quebraLinha + "## Gerando IntMapeamento Integração ##" + quebraLinha);
-                        new IntMapeamento("INTEGRACAO");
+                        new IntMapeamento("INTEGRACAO", this);
                         SfwLogger.saveLog(quebraLinha + "## Finalizando - Gerando IntMapeamento Integração ##" + quebraLinha);
                     }
 
-                    if(pTipo.contains("SapMapeamento")){
+                    if(pTipo.contains("SapMapeamento") && chScriptsSemVinculoInterface.equals("S")){
                         SfwLogger.saveLog(quebraLinha + "## Gerando SapMapeamento Integração ##" + quebraLinha);
-                        new SapMapeamento("INTEGRACAO");
+                        new SapMapeamento("INTEGRACAO", this);
                         SfwLogger.saveLog(quebraLinha + "## Finalizando - Gerando SapMapeamento Integração ##" + quebraLinha);
                     }
 
-                    if(pTipo.contains("Objetos")){
+                    if(pTipo.contains("Objetos") && chScriptsSemVinculoInterface.equals("S")){
                         SfwLogger.saveLog(quebraLinha + "## Gerando Objetos Integração ##" + quebraLinha);
                         this.gerarObjetosIntegracao();
                         SfwLogger.saveLog(quebraLinha + "## Finalizando - Gerando Objetos Integração ##" + quebraLinha);
                     }
 
-                    if(pTipo.contains("Sequences")){
+                    if(pTipo.contains("Sequences") && chScriptsSemVinculoInterface.equals("S")){
                         SfwLogger.saveLog(quebraLinha + "## Gerando Sequences Integração ##" + quebraLinha);
                         new Sequence("INTEGRACAO");
                         SfwLogger.saveLog(quebraLinha + "## Finalizando - Gerando Sequences Integração ##" + quebraLinha);
                     }
 
-                    if(pTipo.contains("Views")){
+                    if(pTipo.contains("Views") && chScriptsSemVinculoInterface.equals("S")){
                         SfwLogger.saveLog(quebraLinha + "## Gerando Views Integração ##" + quebraLinha);
                         new Views("INTEGRACAO");
                         SfwLogger.saveLog(quebraLinha + "## Finalizando - Gerando Views Integração ##" + quebraLinha);
@@ -642,56 +726,69 @@ public class CVSStructure {
 	/**************************************************************************
 	 * <b>Criar diretorio</b>
 	 **************************************************************************/
+	private void criarDiretoriosComuns() throws Exception{
+        ArrayList dirScripts = new ArrayList();
+
+        dirScriptsValida.add(path + "\\"+userNameSys+"\\Scripts\\comum");
+
+        // Arquivos Inout
+        dirScripts.add(path + "\\" + userNameSys);
+        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\");
+        dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\");
+        dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\comum");
+        dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\comum\\INOUT");
+        dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\comum\\INOUT\\Interfaces");
+        dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\comum\\INOUT\\ArquivosExternos");
+        dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\comum\\INOUT\\Tabelas");
+        dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\comum\\INOUT\\Sistemas");
+        dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\comum\\INOUT\\Synonyms");
+        dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\comum\\INOUT\\View");
+        dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\comum\\INOUT\\Sequence");
+
+        // Scripts Inout
+        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum");
+        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT");
+        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT\\Interfaces");
+        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT\\ArquivosExternos");
+        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT\\Tabelas");
+        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT\\Sistemas");
+        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT\\Synonyms");
+        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT\\View");
+        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT\\Sequence");
+        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT\\Package");
+        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT\\PackageBody");
+        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT\\Procedure");
+        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT\\Function");
+
+        // Scripts Integracao
+        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INTEGRACAO");
+        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INTEGRACAO\\Function");
+        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INTEGRACAO\\Procedure");
+        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INTEGRACAO\\Package");
+        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INTEGRACAO\\PackageBody");
+        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INTEGRACAO\\Mapeamento");
+        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INTEGRACAO\\Mapeamento_SAP");
+        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INTEGRACAO\\Table");
+        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INTEGRACAO\\Synonyms");
+        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INTEGRACAO\\View");
+        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INTEGRACAO\\Sequence");
+
+        for(int i = 0; i < dirScripts.size(); i++){
+            File file = new File(dirScripts.get(i).toString());
+            if(file.mkdir()){
+                SfwLogger.saveLog("Diretorio criado com sucesso! " + dirScripts.get(i));
+            }else{
+                SfwLogger.saveLog("Erro ao criar diretorio! "  + dirScripts.get(i));
+            }
+        }
+    }
+
+	/**************************************************************************
+	 * <b>Criar diretorio</b>
+	 **************************************************************************/
 	@SuppressWarnings("unchecked")
 	private void criarDiretorio() throws Exception{
         ArrayList dirScripts = new ArrayList();
-
-        if(flag){
-            flag = false;
-            dirScriptsValida.add(path + "\\"+userNameSys+"\\Scripts\\comum");
-
-            // Arquivos Inout
-            dirScripts.add(path + "\\" + userNameSys);
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\");
-            dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\");
-            dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\comum");
-            dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\comum\\INOUT");
-            dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\comum\\INOUT\\Interfaces");
-            dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\comum\\INOUT\\ArquivosExternos");
-            dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\comum\\INOUT\\Tabelas");
-            dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\comum\\INOUT\\Sistemas");
-            dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\comum\\INOUT\\Synonyms");
-            dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\comum\\INOUT\\View");
-            dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\comum\\INOUT\\Sequence");
-
-            // Scripts Inout
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT\\Interfaces");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT\\ArquivosExternos");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT\\Tabelas");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT\\Sistemas");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT\\Synonyms");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT\\View");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT\\Sequence");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT\\Package");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT\\PackageBody");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT\\Procedure");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT\\Function");
-
-            // Scripts Integracao
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INTEGRACAO");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INTEGRACAO\\Function");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INTEGRACAO\\Procedure");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INTEGRACAO\\Package");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INTEGRACAO\\PackageBody");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INTEGRACAO\\Mapeamento");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INTEGRACAO\\Mapeamento_SAP");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INTEGRACAO\\Table");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INTEGRACAO\\Synonyms");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INTEGRACAO\\View");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INTEGRACAO\\Sequence");
-        }
 
         if(tipoInterface.trim().equals("S")){
             dirScriptsValida.add(path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("OUT") );
@@ -969,7 +1066,7 @@ public class CVSStructure {
         File[] subdiretorios = subDir.listFiles();
         for(File subdir : subdiretorios){
             if(subdir.isDirectory()){
-                System.out.println(subdir.getName());
+                //System.out.println(subdir.getName());
                 if(listaSubDir(subdir) == 0){
                     if(subdir.delete()){
                         SfwLogger.saveLog("Diretório deletado: " + subdir.getName());
@@ -1007,7 +1104,9 @@ public class CVSStructure {
 
                 logMessage("Creating or appending to file " + fileNameScripts);
 
-                strOut.append("conn &&INOUT_USER/&&INOUT_PASS@&&TNS" + quebraLinha + quebraLinha);
+                if(CVSStructure.chConexaoPorArquivos.equals("S")){
+                    strOut.append("conn &&INOUT_USER/&&INOUT_PASS@&&TNS" + quebraLinha + quebraLinha);
+                }
                 strOut.append("--  ///////" + quebraLinha);
                 strOut.append("--  ///////     Script Gerado a partir do Sistema Gerenciador de Interfaces IN-OUT" + quebraLinha);
                 strOut.append("--  ///////     Interface: " + descricao + quebraLinha);
@@ -1073,6 +1172,7 @@ public class CVSStructure {
                 }
 
                 fwScripts.close();
+                CVSStructure.nTotalInterfaces++;
             }
         }catch(Exception ex){
             logMessage("Error generating " + fileNameScripts);
@@ -1096,7 +1196,7 @@ public class CVSStructure {
             rsCountInterface.next();
             int nTotalArquivos = rsCountInterface.getInt("TOTAL_ARQUIVOS");
 
-            //psArquivosExternos = ConnectionInout.getConnection().prepareStatement(this.sSelectGerarArquivosExternos);
+            //psArquivosExternos = ConnectionInout.getConnection().prepareStatement(this.selectGerarArquivosExternos);
             psGerarArquivosExternos.setString(1, executavel);
             rsArquivosExternos = psGerarArquivosExternos.executeQuery();
 
@@ -1265,9 +1365,9 @@ public class CVSStructure {
                 psDropTableIT = ConnectionInout.getConnection().prepareStatement("drop table TMP_CVS_STRUCTURE");
                 psDropTableIT.executeQuery();
             }catch(Exception ex){
-                logMessage("Error drop table TMP_CVS_STRUCTURE ");
-                logMessage(ex.getLocalizedMessage());
-                SfwLogger.saveLog(ex.getClass().toString(), ex.getStackTrace());
+                //logMessage("Error drop table TMP_CVS_STRUCTURE ");
+                //logMessage(ex.getLocalizedMessage());
+                //SfwLogger.saveLog(ex.getClass().toString(), ex.getStackTrace());
             }
 
             try{
@@ -1277,9 +1377,9 @@ public class CVSStructure {
                 psInsertReferencesObjects.executeUpdate();
                 ConnectionInout.getConnection().commit();
             }catch(Exception ex){
-                logMessage("Error create table TMP_CVS_STRUCTURE ");
-                logMessage(ex.getLocalizedMessage());
-                SfwLogger.saveLog(ex.getClass().toString(), ex.getStackTrace());
+                //logMessage("Error create table TMP_CVS_STRUCTURE ");
+                //logMessage(ex.getLocalizedMessage());
+                //SfwLogger.saveLog(ex.getClass().toString(), ex.getStackTrace());
             }
 
             rsGerarArquivosExternosNaoGerados = psGerarArquivosExternosNaoGerados.executeQuery();
@@ -1301,11 +1401,11 @@ public class CVSStructure {
                     rsCountArquivosExternosNaoGerados.next();
                     int nTotalArquivos = rsCountArquivosExternosNaoGerados.getInt("TOTAL_ARQUIVOS");
 
-                    String a = rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO").toLowerCase();
-                    System.out.println(a);
-                    if(rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO").toLowerCase().contains("igi")){
-                        String b = rsGerarArquivosExternosNaoGerados.getString("CONTEM").toLowerCase();
-                    }
+                    //String a = rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO").toLowerCase();
+                    //System.out.println(a);
+                    //if(rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO").toLowerCase().contains("igi")){
+                    //    String b = rsGerarArquivosExternosNaoGerados.getString("CONTEM").toLowerCase();
+                    //}
 
                     if(nTotalArquivos > 1 || nTotalArquivos == 0){
                         if(i == 1){
@@ -1596,7 +1696,7 @@ public class CVSStructure {
 
             rsFoundObjectsIT = psFoundObjectsIT.executeQuery();
             while(rsFoundObjectsIT.next()){
-                //psCountArquivosExternosNaoGerados = ConnectionInout.getConnection().prepareStatement(this.sCountArquivosSynonyms);
+                //psCountArquivosExternosNaoGerados = ConnectionInout.getConnection().prepareStatement(this.countArquivosSynonyms);
                 //psCountArquivosExternosNaoGerados.setString(1, rsGerarArquivosExternosNaoGerados.getString("CONTEM"));
                 //rsCountArquivosExternosNaoGerados = psCountArquivosExternosNaoGerados.executeQuery();
                 //rsCountArquivosExternosNaoGerados.next();
@@ -1763,7 +1863,7 @@ public class CVSStructure {
 	 **************************************************************************/
 	private void exportarArquivosExternos() throws Exception{
 
-        //psArquivosExternos = ConnectionInout.getConnection().prepareStatement(this.sSelectExportarArquivosExternos);
+        //psArquivosExternos = ConnectionInout.getConnection().prepareStatement(this.selectExportarArquivosExternos);
         try{
             psExportarArquivosExternos.setString(1, executavel);
             rsArquivosExternos = psExportarArquivosExternos.executeQuery();
@@ -1836,7 +1936,7 @@ public class CVSStructure {
 
         try{
             while(rsTabsSemPermissao.next()){
-                new TabInterfaces(rsTabsSemPermissao.getString("TABLE_NAME"), idInterface, idSistema);
+                new TabInterfaces(rsTabsSemPermissao.getString("TABLE_NAME"), idInterface, idSistema, this);
             }
         }catch(Exception ex){
             logMessage(ex.getLocalizedMessage());
@@ -1867,12 +1967,12 @@ public class CVSStructure {
         //armazena o schema a utilizar durante o processamento corrente
         sChave = "-sessionschema=";
         if (args[i].startsWith(sChave))
-        	sSessionSchema = args[i].substring(sChave.length(),args[i].length());
+        	sessionSchema = args[i].substring(sChave.length(),args[i].length());
 
         //armazena a ROLE utilizada durante o processamento
         sChave = "-role=";
         if (args[i].startsWith(sChave))
-        	sRole = args[i].substring(sChave.length(),args[i].length());
+        	role = args[i].substring(sChave.length(),args[i].length());
         }
 
       // Parametros recusados
@@ -1886,7 +1986,7 @@ public class CVSStructure {
 	public static void main(String[] args){
         // foi utilizado somente para teste
 		try{
-			System.setErr(System.out);
+			//System.setErr(System.out);
 			ArrayList arr = new ArrayList();
 			arr.add("T");
 
@@ -1899,5 +1999,147 @@ public class CVSStructure {
 			e.printStackTrace(System.err);
 		}
 	}
+
+    /**
+     * @return the selectInterfaces
+     */
+    public Object[] getSSelectInterfaces() {
+        return selectInterfaces;
+    }
+
+    /**
+     * @param selectInterfaces the selectInterfaces to set
+     */
+    public void setSSelectInterfaces(Object[] sSelectInterfaces) {
+        this.selectInterfaces = sSelectInterfaces;
+    }
+
+    /**
+     * @return the ioUser
+     */
+    public Usuario getIoUser() {
+        return ioUser;
+    }
+
+    /**
+     * @return the itUser
+     */
+    public Usuario getItUser() {
+        return itUser;
+    }
+
+    /**
+     * @param itUser the itUser to set
+     */
+    public void setItUser(Usuario itUser) {
+        this.itUser = itUser;
+    }
+
+    /**
+     * @return the bgUser
+     */
+    public Usuario getBgUser() {
+        return bgUser;
+    }
+
+    /**
+     * @param bgUser the bgUser to set
+     */
+    public void setBgUser(Usuario bgUser) {
+        this.bgUser = bgUser;
+    }
+
+    /**
+     * @return the bsUser
+     */
+    public Usuario getBsUser() {
+        return bsUser;
+    }
+
+    /**
+     * @param bsUser the bsUser to set
+     */
+    public void setBsUser(Usuario bsUser) {
+        this.bsUser = bsUser;
+    }
+
+    /**
+     * @return the isUser
+     */
+    public Usuario getIsUser() {
+        return isUser;
+    }
+
+    /**
+     * @param isUser the isUser to set
+     */
+    public void setIsUser(Usuario isUser) {
+        this.isUser = isUser;
+    }
+
+    /**
+     * @return the ceUser
+     */
+    public Usuario getCeUser() {
+        return ceUser;
+    }
+
+    /**
+     * @param ceUser the ceUser to set
+     */
+    public void setCeUser(Usuario ceUser) {
+        this.ceUser = ceUser;
+    }
+
+    /**
+     * @return the ciUser
+     */
+    public Usuario getCiUser() {
+        return ciUser;
+    }
+
+    /**
+     * @param ciUser the ciUser to set
+     */
+    public void setCiUser(Usuario ciUser) {
+        this.ciUser = ciUser;
+    }
+
+    /**
+     * @return the exUser
+     */
+    public Usuario getExUser() {
+        return exUser;
+    }
+
+    /**
+     * @param exUser the exUser to set
+     */
+    public void setExUser(Usuario exUser) {
+        this.exUser = exUser;
+    }
+
+    /**
+     * @return the dbUser
+     */
+    public Usuario getDbUser() {
+        return dbUser;
+    }
+
+    /**
+     * @param dbUser the dbUser to set
+     */
+    public void setDbUser(Usuario dbUser) {
+        this.dbUser = dbUser;
+    }
+
+    /**
+     * @param ioUser the ioUser to set
+     */
+    public void setIoUser(Usuario ioUser) {
+        this.ioUser = ioUser;
+    }
+
+
 
 }
