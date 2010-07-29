@@ -1,7 +1,7 @@
 package sfw.structure.main;
 
 import javax.swing.JOptionPane;
-import sfw.structure.cvsStructure.JFrameCVS;
+import cvsstructure.JFrameCVS;
 import sfw.structure.instalador.SfwInstalador;
 import sfw.structure.interfaces.SfwMapeamento;
 import sfw.structure.validaScripts.SfwValidaScripts;
