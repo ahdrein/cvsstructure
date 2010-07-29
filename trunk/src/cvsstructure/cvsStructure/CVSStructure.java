@@ -1,5 +1,8 @@
-package cvsstructure;
+package cvsstructure.cvsStructure;
 
+import cvsstructure.Usuario;
+import cvsstructure.database.ConnectionInout;
+import cvsstructure.database.ConnectionIntegracao;
 import java.sql.Clob;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -21,10 +24,8 @@ import cvsstructure.objects.Synonyms;
 import cvsstructure.objects.TabInterfaces;
 import cvsstructure.objects.Tables;
 import cvsstructure.objects.Views;
-import sfw.structure.database.ConnectionInout;
-import sfw.structure.database.ConnectionIntegracao;
-import sfw.structure.log.SfwLogger;
-import sfw.structure.validaScripts.SfwValidaScripts;
+import cvsstructure.log.SfwLogger;
+import cvsstructure.validaScripts.SfwValidaScripts;
 
 public class CVSStructure {
 
