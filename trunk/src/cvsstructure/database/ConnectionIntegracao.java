@@ -1,10 +1,10 @@
-package sfw.structure.database;
+package cvsstructure.database;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import sfw.structure.log.SfwLogger;
+import cvsstructure.log.SfwLogger;
 
 
 //Singleton for use just one connection
