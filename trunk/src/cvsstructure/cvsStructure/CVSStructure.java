@@ -1,4 +1,4 @@
-package sfw.structure.cvsStructure;
+package cvsstructure;
 
 import java.sql.Clob;
 import java.sql.PreparedStatement;
@@ -9,18 +9,18 @@ import java.io.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JTextArea;
-import sfw.structure.cvsStructure.objects.DataTableLayout;
-import sfw.structure.cvsStructure.objects.FunctionProcedure;
-import sfw.structure.cvsStructure.objects.IntMapeamento;
-import sfw.structure.cvsStructure.objects.Packages;
-import sfw.structure.cvsStructure.objects.PrepararConsultas;
-import sfw.structure.cvsStructure.objects.SapMapeamento;
-import sfw.structure.cvsStructure.objects.Sequence;
-import sfw.structure.cvsStructure.objects.Sistemas;
-import sfw.structure.cvsStructure.objects.Synonyms;
-import sfw.structure.cvsStructure.objects.TabInterfaces;
-import sfw.structure.cvsStructure.objects.Tables;
-import sfw.structure.cvsStructure.objects.Views;
+import cvsstructure.objects.DataTableLayout;
+import cvsstructure.objects.FunctionProcedure;
+import cvsstructure.objects.IntMapeamento;
+import cvsstructure.objects.Packages;
+import cvsstructure.objects.PrepararConsultas;
+import cvsstructure.objects.SapMapeamento;
+import cvsstructure.objects.Sequence;
+import cvsstructure.objects.Sistemas;
+import cvsstructure.objects.Synonyms;
+import cvsstructure.objects.TabInterfaces;
+import cvsstructure.objects.Tables;
+import cvsstructure.objects.Views;
 import sfw.structure.database.ConnectionInout;
 import sfw.structure.database.ConnectionIntegracao;
 import sfw.structure.log.SfwLogger;
@@ -37,6 +37,11 @@ public class CVSStructure {
     private Usuario ciUser;
     private Usuario exUser;
     private Usuario dbUser;
+
+    private Usuario caiUser;
+    private Usuario appsUser;
+    private String dbLinkCai;
+    private String dbLinkApps;
 
     public String s_User;
 	public String s_Pass;
@@ -2138,6 +2143,62 @@ public class CVSStructure {
      */
     public void setIoUser(Usuario ioUser) {
         this.ioUser = ioUser;
+    }
+
+    /**
+     * @return the caiUser
+     */
+    public Usuario getCaiUser() {
+        return caiUser;
+    }
+
+    /**
+     * @param caiUser the caiUser to set
+     */
+    public void setCaiUser(Usuario caiUser) {
+        this.caiUser = caiUser;
+    }
+
+    /**
+     * @return the appsUser
+     */
+    public Usuario getAppsUser() {
+        return appsUser;
+    }
+
+    /**
+     * @param appsUser the appsUser to set
+     */
+    public void setAppsUser(Usuario appsUser) {
+        this.appsUser = appsUser;
+    }
+
+    /**
+     * @return the dbLinkCai
+     */
+    public String getDbLinkCai() {
+        return dbLinkCai;
+    }
+
+    /**
+     * @param dbLinkCai the dbLinkCai to set
+     */
+    public void setDbLinkCai(String dbLinkCai) {
+        this.dbLinkCai = dbLinkCai;
+    }
+
+    /**
+     * @return the dbLinkApps
+     */
+    public String getDbLinkApps() {
+        return dbLinkApps;
+    }
+
+    /**
+     * @param dbLinkApps the dbLinkApps to set
+     */
+    public void setDbLinkApps(String dbLinkApps) {
+        this.dbLinkApps = dbLinkApps;
     }
 
 
