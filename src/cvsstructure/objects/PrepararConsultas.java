@@ -1,15 +1,10 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package cvsstructure.objects;
 
+import cvsstructure.database.ConnectionInout;
+import cvsstructure.database.ConnectionIntegracao;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import sfw.structure.database.ConnectionInout;
-import sfw.structure.database.ConnectionIntegracao;
 
 /**
  *

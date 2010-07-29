@@ -1,10 +1,7 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package cvsstructure.objects;
 
+import cvsstructure.cvsStructure.CVSStructure;
+import cvsstructure.database.ConnectionInout;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
@@ -12,9 +9,7 @@ import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import sfw.structure.cvsStructure.CVSStructure;
-import sfw.structure.database.ConnectionInout;
-import sfw.structure.log.SfwLogger;
+import cvsstructure.log.SfwLogger;
 
 /**
  *
@@ -23,18 +18,18 @@ import sfw.structure.log.SfwLogger;
 public class TabInterfaces {
     private String idInterface;
     private String idSistema;
-	private static PreparedStatement psTabInterface;
-	private ResultSet rsTabInterface = null;
+    private static PreparedStatement psTabInterface;
+    private ResultSet rsTabInterface = null;
 
-	private static PreparedStatement psColunasTabInterface;
-	private ResultSet rsColunasTabInterface = null;
+    private static PreparedStatement psColunasTabInterface;
+    private ResultSet rsColunasTabInterface = null;
 
-	private static PreparedStatement psDependHeaderItem;
+    private static PreparedStatement psDependHeaderItem;
     private static PreparedStatement psDependHeaderItemTrigger;
-	private ResultSet rsDependHeaderItemTrigger = null;
+    private ResultSet rsDependHeaderItemTrigger = null;
 
-	private static PreparedStatement psCountPermissaoTabela;
-	private ResultSet rsCountPermissaoTabela = null;
+    private static PreparedStatement psCountPermissaoTabela;
+    private ResultSet rsCountPermissaoTabela = null;
 
     private static PreparedStatement psPermissaoTabela = null;
     private static ResultSet rsPermissaoTabela = null;

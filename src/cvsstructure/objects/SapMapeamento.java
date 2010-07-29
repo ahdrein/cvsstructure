@@ -5,6 +5,9 @@
 
 package cvsstructure.objects;
 
+import cvsstructure.cvsStructure.CVSStructure;
+import cvsstructure.database.ConnectionInout;
+import cvsstructure.database.ConnectionIntegracao;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
@@ -12,10 +15,7 @@ import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import sfw.structure.cvsStructure.CVSStructure;
-import sfw.structure.database.ConnectionInout;
-import sfw.structure.database.ConnectionIntegracao;
-import sfw.structure.log.SfwLogger;
+import cvsstructure.log.SfwLogger;
 
 /**
  *
