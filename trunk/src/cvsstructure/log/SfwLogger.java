@@ -1,5 +1,4 @@
-package sfw.structure.log;
-
+package cvsstructure.log;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -8,13 +7,13 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Calendar;
 import java.util.TimeZone;
-import org.apache.log4j.Logger;
-import cvsstructure.CVSStructure;
+import cvsstructure.cvsStructure.CVSStructure;
+import java.util.logging.Logger;
 
 public class SfwLogger {
 
-	private static Logger logInfo;
-	private static Logger logDebug;
+    private static Logger logInfo;
+    private static Logger logDebug;
     private static String currentTime = null;
     private static String nameArq;
 
@@ -30,20 +29,20 @@ public class SfwLogger {
 	}
 
 	public static void log(Object object){
-		if(object instanceof Throwable){
-			logInfo.info((Object)((Throwable)object).getMessage(), (Throwable) object);
-		}
-		else{
-			logInfo.info(object);
-		}
+            if(object instanceof Throwable){
+                    //logInfo.info((Object)((Throwable)object).getMessage(), (Throwable) object);
+            }
+            else{
+                    logInfo.info((String) object);
+            }
 	}
 
 	public static void debug(Object object){
 		if(object instanceof Throwable){
-			logDebug.debug((Object)((Throwable)object).getMessage(), (Throwable) object);
+			//logDebug.debug((Object)((Throwable)object).getMessage(), (Throwable) object);
 		}
 		else{
-			logDebug.debug(object);
+			//logDebug.debug(object);
 		}
 	}
 
