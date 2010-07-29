@@ -1,4 +1,4 @@
-package sfw.structure.validaScripts;
+package cvsstructure.validaScripts;
 
 
 import java.io.File;
