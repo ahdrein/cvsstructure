@@ -1,13 +1,13 @@
-package sfw.structure.instalador;
+package cvsstructure.instalador;
 
-import java.awt.event.ActionEvent;
+import cvsstructure.instalador.model.InterfacesFactory;
+import cvsstructure.instalador.model.LayoutInterfaces;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JScrollPane;
@@ -19,8 +19,9 @@ import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
-import sfw.structure.instalador.model.InterfacesFactory;
-import sfw.structure.instalador.model.LayoutInterfaces;
+import sfw.structure.instalador.CheckNode;
+import sfw.structure.instalador.CheckRenderer;
+
 
 /*
  * To change this template, choose Tools | Templates
