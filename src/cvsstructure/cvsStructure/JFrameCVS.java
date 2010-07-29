@@ -1,7 +1,7 @@
-package sfw.structure.cvsStructure;
+package cvsstructure;
 
 
-import sfw.structure.cvsStructure.CVSStructure;
+import cvsstructure.CVSStructure;
 import sfw.structure.database.ConnectionInout;
 import java.io.File;
 import java.io.FileInputStream;
@@ -1361,7 +1361,31 @@ public class JFrameCVS extends javax.swing.JFrame {
             for(int i=0;i < arrUsers.length;i++){
                 if(arrUsers[i][2] !=null && arrUsers[i][4] !=null ){
                     //String userArray = arrUsers[i][2].toUpperCase()+"/"+arrUsers[i][4].toUpperCase();
-                    strOutScripts.append(arrUsers[i][2] + ";" + arrUsers[i][3] + ";" + arrUsers[i][5] + ";" + arrUsers[i][6] + ";" + arrUsers[i][1] + "\n");
+                    strOutScripts.append(arrUsers[i][2] + ";"); //
+                    strOutScripts.append(arrUsers[i][3] + ";"); //
+                    strOutScripts.append(arrUsers[i][5] + ";"); //
+                    strOutScripts.append(arrUsers[i][6] + ";"); //
+                    strOutScripts.append(arrUsers[i][1] + ";"); //
+
+                    strOutScripts.append(cvsStruct.getBgUser().getUser() + ";"); //
+                    strOutScripts.append(cvsStruct.getBgUser().getPass() + ";"); //
+
+                    strOutScripts.append(cvsStruct.getExUser().getUser() + ";"); //
+                    strOutScripts.append(cvsStruct.getExUser().getPass() + ";"); //
+
+                    strOutScripts.append(cvsStruct.getIsUser().getUser() + ";"); //
+                    strOutScripts.append(cvsStruct.getIsUser().getPass() + ";"); //
+
+                    strOutScripts.append(cvsStruct.getDbUser().getUser() + ";"); //
+                    strOutScripts.append(cvsStruct.getDbUser().getPass() + ";"); //
+
+                    strOutScripts.append(cvsStruct.getCeUser().getUser() + ";"); //
+                    strOutScripts.append(cvsStruct.getCeUser().getPass() + ";"); //
+
+                    strOutScripts.append(cvsStruct.getCiUser().getUser() + ";"); //
+                    strOutScripts.append(cvsStruct.getCiUser().getPass()); //
+
+                    strOutScripts.append("\n");
                 }
             }
 
@@ -1454,14 +1478,37 @@ public class JFrameCVS extends javax.swing.JFrame {
     }
 
     public void cleanField(){
-        txHost.setText("");
+        txUser.setText("");
         txPass.setText("");
+
+        txBGUser.setText("");
+        txBGPass.setText("");
+
+        txEXUser.setText("");
+        txEXPass.setText("");
+
+        txISUser.setText("");
+        txISPass.setText("");
+
+        txDBUser.setText("");
+        txDBPass.setText("");
+
+        txBSUser.setText("");
+        txBSPass.setText("");
+
+        txCEUser.setText("");
+        txCEPass.setText("");
+
+        txCIUser.setText("");
+        txCIPass.setText("");
+
+        txItUser.setText("");
+        txItPass.setText("");
+
+        txHost.setText("");
         txPort.setText("");
         txService.setText("");
         txSid.setText("");
-        txUser.setText("");
-        txItUser.setText("");
-        txItPass.setText("");
     }
     private void jList1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jList1MouseClicked
         String  sSelectedUser = jList1.getSelectedValue().toString();
@@ -1480,6 +1527,35 @@ public class JFrameCVS extends javax.swing.JFrame {
                     txHost.setText(arrUsers[i][7]);
                     txPort.setText(arrUsers[i][8]);
                     txSid.setText(arrUsers[i][9]);
+                    
+                    txBGUser.setText(cvsStruct.getBgUser().getUser());
+                    txBGPass.setText(cvsStruct.getBgUser().getPass());
+
+                    txBSUser.setText(cvsStruct.getBsUser().getUser());
+                    txBSPass.setText(cvsStruct.getBsUser().getPass());
+
+                    txCEUser.setText(cvsStruct.getCeUser().getUser());
+                    txCEPass.setText(cvsStruct.getCeUser().getPass());
+
+                    txCIUser.setText(cvsStruct.getCiUser().getUser());
+                    txCIPass.setText(cvsStruct.getCiUser().getPass());
+
+                    txDBUser.setText(cvsStruct.getDbUser().getUser());
+                    txDBPass.setText(cvsStruct.getDbUser().getPass());
+
+                    txEXUser.setText(cvsStruct.getExUser().getUser());
+                    txEXPass.setText(cvsStruct.getExUser().getPass());
+
+                    txISUser.setText(cvsStruct.getIsUser().getUser());
+                    txISPass.setText(cvsStruct.getIsUser().getPass());
+
+                    txCAIUser.setText(cvsStruct.getCaiUser().getUser());
+                    txCAIPass.setText(cvsStruct.getCaiUser().getPass());
+
+                    txAPPSUser.setText(cvsStruct.getAppsUser().getUser());
+                    txAPPSPass.setText(cvsStruct.getAppsUser().getPass());
+
+
 
                     break;
                 }
