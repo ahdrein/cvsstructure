@@ -1,7 +1,9 @@
 package cvsstructure.objects;
 
 
-import sfw.structure.database.ConnectionInout;
+import cvsstructure.cvsStructure.CVSStructure;
+import cvsstructure.database.ConnectionInout;
+import cvsstructure.database.ConnectionIntegracao;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
@@ -9,9 +11,7 @@ import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import sfw.structure.cvsStructure.CVSStructure;
-import sfw.structure.database.ConnectionIntegracao;
-import sfw.structure.log.SfwLogger;
+import cvsstructure.log.SfwLogger;
 
 /*
  * To change this template, choose Tools | Templates
@@ -27,10 +27,10 @@ public class IntMapeamento {
     private String idSistema = "";
 
     private static PreparedStatement psIntMapeamento = null;
-	private static ResultSet rsIntMapeamento = null;
+    private static ResultSet rsIntMapeamento = null;
 
     private static PreparedStatement psIntMapeamentoColuna = null;
-	private static ResultSet rsIntMapeamentoColuna = null;
+    private static ResultSet rsIntMapeamentoColuna = null;
 
     private static PreparedStatement psPermissaoTabela = null;
     private static ResultSet rsPermissaoTabela = null;
@@ -38,11 +38,11 @@ public class IntMapeamento {
     private static PreparedStatement psSistemaInterfaceDaTabela = null;
     private static ResultSet rsInterfaceDaTabela = null;
 
-	private static PreparedStatement psCountPermissaoTabela = null;
-	private static ResultSet rsCountPermissaoTabela = null;
+    private static PreparedStatement psCountPermissaoTabela = null;
+    private static ResultSet rsCountPermissaoTabela = null;
 
     private static PreparedStatement psDadosInterface = null;
-	private static ResultSet rsDadosInterface = null;
+    private static ResultSet rsDadosInterface = null;
 
     public IntMapeamento(String system, CVSStructure cvsStructure) throws IOException {
 
