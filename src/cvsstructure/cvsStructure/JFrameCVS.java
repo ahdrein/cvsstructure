@@ -1,8 +1,9 @@
-package cvsstructure;
+package cvsstructure.cvsStructure;
 
 
-import cvsstructure.CVSStructure;
-import sfw.structure.database.ConnectionInout;
+import cvsstructure.Usuario;
+import cvsstructure.database.ConnectionInout;
+import cvsstructure.database.ConnectionIntegracao;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -18,7 +19,7 @@ import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import sfw.structure.database.ConnectionIntegracao;
+
 
 /*
  * To change this template, choose Tools | Templates
