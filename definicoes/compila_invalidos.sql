@@ -1,5 +1,4 @@
-@".\define.sql"
-conn &&INTEGRACAO_USER/&&INTEGRACAO_PASS@&&TNS
+
 -- Autor: Carlos Seikiti Matsuoka
 -- Data: 01/09/2003
 -- Alterado por Rodrigo Mezzacappa Barbosa
