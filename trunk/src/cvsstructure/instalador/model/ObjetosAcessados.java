@@ -1,12 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-package sfw.structure.instalador.model;
-
-import java.sql.PreparedStatement;
-import sfw.structure.database.ConnectionSQLLite;
+package cvsstructure.instalador.model;
 
 /**
  *
