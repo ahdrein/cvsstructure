@@ -1,10 +1,10 @@
-package sfw.structure.main;
+package cvsstructure.main;
 
-import javax.swing.JOptionPane;
-import cvsstructure.JFrameCVS;
-import sfw.structure.instalador.SfwInstalador;
-import sfw.structure.interfaces.SfwMapeamento;
-import sfw.structure.validaScripts.SfwValidaScripts;
+import cvsstructure.cvsStructure.JFrameCVS;
+import cvsstructure.instalador.SfwInstalador;
+import cvsstructure.interfaces.SfwMapeamento;
+import cvsstructure.validaScripts.SfwValidaScripts;
+
 
 /*
  * To change this template, choose Tools | Templates
@@ -56,7 +56,7 @@ public class SfwMain extends javax.swing.JFrame {
         setIconImage(getIconImage());
         setResizable(false);
 
-        jToggleButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/sfw/structure/images/images (1).jpg"))); // NOI18N
+        jToggleButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cvsstructure/images/images (1).jpg"))); // NOI18N
         jToggleButton1.setText("CvsStructore");
         jToggleButton1.setOpaque(true);
         jToggleButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -65,7 +65,7 @@ public class SfwMain extends javax.swing.JFrame {
             }
         });
 
-        jToggleButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/sfw/structure/images/images (2).jpg"))); // NOI18N
+        jToggleButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cvsstructure/images/images (2).jpg"))); // NOI18N
         jToggleButton2.setText("OrdemScripts");
         jToggleButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -79,7 +79,7 @@ public class SfwMain extends javax.swing.JFrame {
         jLabel2.setFont(new java.awt.Font("Comic Sans MS", 3, 12));
         jLabel2.setText("Gerar CVS Struture");
 
-        jToggleButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/sfw/structure/images/images (3).gif"))); // NOI18N
+        jToggleButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cvsstructure/images/images (3).gif"))); // NOI18N
         jToggleButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jToggleButton3ActionPerformed(evt);
@@ -89,7 +89,7 @@ public class SfwMain extends javax.swing.JFrame {
         jLabel3.setFont(new java.awt.Font("Comic Sans MS", 3, 12));
         jLabel3.setText("Gerador Pacote");
 
-        jToggleButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/sfw/structure/images/ms-excel-bug.jpg"))); // NOI18N
+        jToggleButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cvsstructure/images/ms-excel-bug.jpg"))); // NOI18N
         jToggleButton4.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jToggleButton4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -144,13 +144,14 @@ public class SfwMain extends javax.swing.JFrame {
                         .addComponent(jToggleButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(76, 76, 76)
                         .addComponent(jToggleButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(41, 41, 41)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jToggleButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(10, 10, 10)
-                        .addComponent(jLabel4)))
-                .addContainerGap(94, Short.MAX_VALUE))
+                        .addGap(51, 51, 51)
+                        .addComponent(jLabel4))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(41, 41, 41)
+                        .addComponent(jToggleButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(87, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -158,10 +159,9 @@ public class SfwMain extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jToggleButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 129, Short.MAX_VALUE)
+                        .addComponent(jToggleButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
+                        .addComponent(jLabel4))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(jToggleButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -174,7 +174,7 @@ public class SfwMain extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel2)
                             .addComponent(jLabel3))))
-                .addGap(42, 42, 42))
+                .addGap(34, 34, 34))
         );
 
         jToggleButton1.getAccessibleContext().setAccessibleDescription("CvsStructore");
