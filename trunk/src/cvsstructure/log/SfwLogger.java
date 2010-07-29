@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 import java.util.Calendar;
 import java.util.TimeZone;
 import org.apache.log4j.Logger;
-import sfw.structure.cvsStructure.CVSStructure;
+import cvsstructure.CVSStructure;
 
 public class SfwLogger {
 
