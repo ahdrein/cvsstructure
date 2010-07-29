@@ -1,0 +1,46 @@
+Pré-Requisitos
+--------------
+
+	1º - Todas as instancias do InOut que acessam a base devem permanecer fechadas durante a execução da instalação dos scripts.
+	
+	2º - Para o funcionamento das Interfaces as packages para processamento do Import devem ser criada na base de dados do Import-Sys e os grants devem ser dados pela equipe do IMPORT.
+
+	3º - Os arquivos que serão carregados pelo INOUT devem possuir a extenssão TXT e devem estar na pasta ArquivosTXT.
+	
+	4º - O cadastro de sistema deve estar previamente preenchido com os devidos sistemas.
+	
+	EX - Export Sys
+	IS - Import Sys
+	BS - Broker Sys
+	RF - Recof Sys
+	IT - Integração
+	DB - DrawBack Sys
+	
+	5º - É necessário ter instalado o java JRE versão 5.
+	
+Instruções
+-----------
+
+1 - Alterar define.sql conforme base de dados a ser atualizada. Considerar as tablespaces.
+
+2 - Incluir os arquivos da pasta JAVA deste pacote na raiz do Inout.
+
+3 - Rodar a instalação
+
+3a.   [Ambiente Windows] -> Rodar o arquivo instala_win.bat.
+
+3b.   [Ambiente Linux] -> Rodar o arquivo instala_linux.sh.
+                          OBS: executar na linha de comando: sh ./instala_linux.sh
+
+4.   Consultar problemas no arquivo de log: instalacao_<versao>_xml.log
+
+5 - Inicie o InOut.
+
+6 - Na tela "Arquivos externos" busque por:
+6ºa - "config_ambiente_java.bat", sem aspas, e edite o conteudo alterando os valores das variaveis para valores que reflitam as configurações locais.
+6ºb - "config_ambiente_oracle.bat", sem aspas, e edite o conteudo alterando os valores das variaveis para valores que reflitam as configurações de acesso.
+
+
+
+
+
