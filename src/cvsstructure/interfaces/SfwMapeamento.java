@@ -1,4 +1,4 @@
-package sfw.structure.interfaces;
+package cvsstructure.interfaces;
 
 
 import java.io.File;
@@ -9,16 +9,13 @@ import java.io.IOException;
 import java.io.LineNumberReader;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.AbstractListModel;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultListModel;
-import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import javax.swing.JScrollBar;
 import javax.swing.table.DefaultTableModel;
 
 /*

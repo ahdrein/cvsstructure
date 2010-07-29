@@ -1,10 +1,7 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+package cvsstructure.interfaces;
 
-package sfw.structure.interfaces;
-
+import cvsstructure.database.ConnectionInout;
+import cvsstructure.database.ConnectionIntegracao;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -17,8 +14,7 @@ import jxl.CellType;
 import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
-import sfw.structure.database.ConnectionInout;
-import sfw.structure.database.ConnectionIntegracao;
+import sfw.structure.interfaces.SFWStringUtils;
 
 public class ReadExcel {
 
