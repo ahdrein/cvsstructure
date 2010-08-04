@@ -59,14 +59,14 @@ public class Views {
 
                     if(CVSStructure.chConexaoPorArquivos.equals("S")){
                         if(system.equals("INOUT")){
-                            strOutScripts.append("conn &&INOUT_USER/&&INOUT_PASS@&&TNS" + CVSStructure.quebraLinha + CVSStructure.quebraLinha);
+                            strOutScripts.append("conn &&INOUT_USER/&&INOUT_PASS@&&TNS" + CVSStructure.QUEBRA_LINHA + CVSStructure.QUEBRA_LINHA);
                         }else{
-                            strOutScripts.append("conn &&INTEGRACAO_USER/&&INTEGRACAO_PASS@&&TNS" + CVSStructure.quebraLinha + CVSStructure.quebraLinha);
+                            strOutScripts.append("conn &&INTEGRACAO_USER/&&INTEGRACAO_PASS@&&TNS" + CVSStructure.QUEBRA_LINHA + CVSStructure.QUEBRA_LINHA);
                         }
                     }
-                    strOutScripts.append("create or replace force view " + rsView.getString("VIEW_NAME") + " as " + CVSStructure.quebraLinha);
-                    strOutScripts.append(longText.trim().replace((CVSStructure.s_ItUser2+".").toUpperCase(), "").replace((CVSStructure.userNameSys+".").toUpperCase(), "") + CVSStructure.quebraLinha);
-                    strOutScripts.append(";" + CVSStructure.quebraLinha);
+                    strOutScripts.append("create or replace force view " + rsView.getString("VIEW_NAME") + " as " + CVSStructure.QUEBRA_LINHA);
+                    strOutScripts.append(longText.trim().replace((CVSStructure.s_ItUser2+".").toUpperCase(), "").replace((CVSStructure.userNameSys+".").toUpperCase(), "") + CVSStructure.QUEBRA_LINHA);
+                    strOutScripts.append(";" + CVSStructure.QUEBRA_LINHA);
 
                     try{
                         fileScripts = new File(fileNameScripts);

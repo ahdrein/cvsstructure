@@ -176,14 +176,14 @@ public class Synonyms {
 
                             if(CVSStructure.chConexaoPorArquivos.equals("S")){
                                 if(system.equals("INOUT")){
-                                    strOutScripts.append("conn &&INOUT_USER/&&INOUT_PASS@&&TNS" + CVSStructure.quebraLinha + CVSStructure.quebraLinha);
+                                    strOutScripts.append("conn &&INOUT_USER/&&INOUT_PASS@&&TNS" + CVSStructure.QUEBRA_LINHA + CVSStructure.QUEBRA_LINHA);
                                 }else{
-                                    strOutScripts.append("conn &&INTEGRACAO_USER/&&INTEGRACAO_PASS@&&TNS" + CVSStructure.quebraLinha + CVSStructure.quebraLinha);
+                                    strOutScripts.append("conn &&INTEGRACAO_USER/&&INTEGRACAO_PASS@&&TNS" + CVSStructure.QUEBRA_LINHA + CVSStructure.QUEBRA_LINHA);
                                 }
                             }
 
-                            strOutScripts.append("-- Create the synonym" + CVSStructure.quebraLinha);
-                            strOutScripts.append("create or replace synonym " + rsSynonyms.getString("SYNONYM_NAME") + CVSStructure.quebraLinha);
+                            strOutScripts.append("-- Create the synonym" + CVSStructure.QUEBRA_LINHA);
+                            strOutScripts.append("create or replace synonym " + rsSynonyms.getString("SYNONYM_NAME") + CVSStructure.QUEBRA_LINHA);
 
                             String tableOwner = "";
                             if(rsSynonyms.getString("TABLE_OWNER") == null && rsSynonyms.getString("DB_LINK") == null){
@@ -230,8 +230,8 @@ public class Synonyms {
                                 }
 
                             }
-                            //strOutScripts.append(rsSynonyms.getString("DB_LINK") != null ? "@" + rsSynonyms.getString("DB_LINK") + CVSStructure.quebraLinha : "");
-                            strOutScripts.append(";" + CVSStructure.quebraLinha);
+                            //strOutScripts.append(rsSynonyms.getString("DB_LINK") != null ? "@" + rsSynonyms.getString("DB_LINK") + CVSStructure.QUEBRA_LINHA : "");
+                            strOutScripts.append(";" + CVSStructure.QUEBRA_LINHA);
 
                             fwScripts = new FileWriter(fileScripts, false);
                             fwScripts.write(strOutScripts.toString(),0,strOutScripts.length());

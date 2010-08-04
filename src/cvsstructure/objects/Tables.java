@@ -86,9 +86,9 @@ public class Tables {
                     if(clob!=null){
                         if(CVSStructure.chConexaoPorArquivos.equals("S")){
                             if(system.equals("INOUT")){
-                                strOutScripts.append("conn &&INOUT_USER/&&INOUT_PASS@&&TNS" + CVSStructure.quebraLinha + CVSStructure.quebraLinha);
+                                strOutScripts.append("conn &&INOUT_USER/&&INOUT_PASS@&&TNS" + CVSStructure.QUEBRA_LINHA + CVSStructure.QUEBRA_LINHA);
                             }else{
-                                strOutScripts.append("conn &&INTEGRACAO_USER/&&INTEGRACAO_PASS@&&TNS" + CVSStructure.quebraLinha + CVSStructure.quebraLinha);
+                                strOutScripts.append("conn &&INTEGRACAO_USER/&&INTEGRACAO_PASS@&&TNS" + CVSStructure.QUEBRA_LINHA + CVSStructure.QUEBRA_LINHA);
                             }
                         }
                         pcFree = false;
@@ -113,13 +113,13 @@ public class Tables {
                                                                 //.replace(tablespace, "&&SFW_DATA_1M");
                                                                 //.substring(0, (auxScripts.indexOf("PCFREE") == -1 ? auxScripts.length() -1 : auxScripts.indexOf("PCFREE")));
                                     //}
-                                    strOutScripts.append(auxScripts + CVSStructure.quebraLinha);
+                                    strOutScripts.append(auxScripts + CVSStructure.QUEBRA_LINHA);
                                 }
                             }
                         }
-                        //strOutScripts.append(CVSStructure.quebraLinha );
-                        //strOutScripts.append(CVSStructure.quebraLinha);
-                        strOutScripts.append(";" + CVSStructure.quebraLinha);
+                        //strOutScripts.append(CVSStructure.QUEBRA_LINHA );
+                        //strOutScripts.append(CVSStructure.QUEBRA_LINHA);
+                        strOutScripts.append(";" + CVSStructure.QUEBRA_LINHA);
                         //strOutScripts.append("/");
                     }else{
                         CVSStructure.logMessage("No data are being generated");

@@ -65,18 +65,18 @@ public class Sequence {
 
                     if(CVSStructure.chConexaoPorArquivos.equals("S")){
                         if(system.toUpperCase().equals("INOUT")){
-                            strOutScripts.append("conn &&INOUT_USER/&&INOUT_PASS@&&TNS" + CVSStructure.quebraLinha + CVSStructure.quebraLinha);
+                            strOutScripts.append("conn &&INOUT_USER/&&INOUT_PASS@&&TNS" + CVSStructure.QUEBRA_LINHA + CVSStructure.QUEBRA_LINHA);
                         }else{
-                            strOutScripts.append("conn &&INTEGRACAO_USER/&&INTEGRACAO_PASS@&&TNS" + CVSStructure.quebraLinha + CVSStructure.quebraLinha);
+                            strOutScripts.append("conn &&INTEGRACAO_USER/&&INTEGRACAO_PASS@&&TNS" + CVSStructure.QUEBRA_LINHA + CVSStructure.QUEBRA_LINHA);
                         }
                     }
-                    strOutScripts.append("-- Create sequence " + CVSStructure.quebraLinha);
-                    strOutScripts.append("create sequence " + rsSequences.getString("SEQUENCE_NAME") + CVSStructure.quebraLinha);
-                    strOutScripts.append("  minvalue 1" + rsSequences.getString("MIN_VALUE") + CVSStructure.quebraLinha);
-                    strOutScripts.append("  maxvalue " + rsSequences.getString("MAX_VALUE") + CVSStructure.quebraLinha);
-                    strOutScripts.append("  start with " + rsSequences.getString("LAST_NUMBER") + CVSStructure.quebraLinha);
-                    strOutScripts.append("  increment by "+ rsSequences.getString("INCREMENT_BY") + CVSStructure.quebraLinha);
-                    strOutScripts.append("  cache " + rsSequences.getString("CACHE_SIZE") + ";" + CVSStructure.quebraLinha );
+                    strOutScripts.append("-- Create sequence " + CVSStructure.QUEBRA_LINHA);
+                    strOutScripts.append("create sequence " + rsSequences.getString("SEQUENCE_NAME") + CVSStructure.QUEBRA_LINHA);
+                    strOutScripts.append("  minvalue 1" + rsSequences.getString("MIN_VALUE") + CVSStructure.QUEBRA_LINHA);
+                    strOutScripts.append("  maxvalue " + rsSequences.getString("MAX_VALUE") + CVSStructure.QUEBRA_LINHA);
+                    strOutScripts.append("  start with " + rsSequences.getString("LAST_NUMBER") + CVSStructure.QUEBRA_LINHA);
+                    strOutScripts.append("  increment by "+ rsSequences.getString("INCREMENT_BY") + CVSStructure.QUEBRA_LINHA);
+                    strOutScripts.append("  cache " + rsSequences.getString("CACHE_SIZE") + ";" + CVSStructure.QUEBRA_LINHA );
 
                     if(strOutScripts != null && !strOutScripts.toString().equals("")){
                         fileScripts.createNewFile();
