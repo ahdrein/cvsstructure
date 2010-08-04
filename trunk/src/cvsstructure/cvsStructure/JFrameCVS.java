@@ -209,14 +209,13 @@ public class JFrameCVS extends javax.swing.JFrame {
         btRemover = new javax.swing.JButton();
         jToggleButton3 = new javax.swing.JToggleButton();
         btTesteConexao = new javax.swing.JToggleButton();
-        jComboBoxCliente = new javax.swing.JComboBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("CvsStructure");
         setBackground(new java.awt.Color(0, 0, 0));
         setBounds(new java.awt.Rectangle(300, 150, 500, 500));
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        setFont(new java.awt.Font("Comic Sans MS", 0, 10)); // NOI18N
+        setFont(new java.awt.Font("Comic Sans MS", 0, 10));
         setForeground(java.awt.Color.black);
         setName("frameCVSStruct"); // NOI18N
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -911,7 +910,7 @@ public class JFrameCVS extends javax.swing.JFrame {
             });
             jScrollPane2.setViewportView(jListInterfaces);
 
-            chScriptsSemVinculo.setFont(new java.awt.Font("Arial", 0, 10)); // NOI18N
+            chScriptsSemVinculo.setFont(new java.awt.Font("Arial", 0, 10));
             chScriptsSemVinculo.setSelected(true);
             chScriptsSemVinculo.setText("Gerar scripts comuns sem vinculo com interface selecionada");
 
@@ -970,8 +969,6 @@ public class JFrameCVS extends javax.swing.JFrame {
                 }
             });
 
-            jComboBoxCliente.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-
             javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
             getContentPane().setLayout(layout);
             layout.setHorizontalGroup(
@@ -986,8 +983,7 @@ public class JFrameCVS extends javax.swing.JFrame {
                                     .addComponent(btSalvar)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                     .addComponent(btCarregar))
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 195, Short.MAX_VALUE)
-                                .addComponent(jComboBoxCliente, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 195, Short.MAX_VALUE))
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addGroup(layout.createSequentialGroup()
                                     .addGap(322, 322, 322)
@@ -1014,9 +1010,7 @@ public class JFrameCVS extends javax.swing.JFrame {
                 .addGroup(layout.createSequentialGroup()
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(layout.createSequentialGroup()
-                            .addGap(14, 14, 14)
-                            .addComponent(jComboBoxCliente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addGap(40, 40, 40)
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -1528,7 +1522,8 @@ public class JFrameCVS extends javax.swing.JFrame {
                     txHost.setText(arrUsers[i][7]);
                     txPort.setText(arrUsers[i][8]);
                     txSid.setText(arrUsers[i][9]);
-                    
+
+                    /*
                     txBGUser.setText(cvsStruct.getBgUser().getUser());
                     txBGPass.setText(cvsStruct.getBgUser().getPass());
 
@@ -1555,7 +1550,7 @@ public class JFrameCVS extends javax.swing.JFrame {
 
                     txAPPSUser.setText(cvsStruct.getAppsUser().getUser());
                     txAPPSPass.setText(cvsStruct.getAppsUser().getPass());
-
+                    */
 
 
                     break;
@@ -1814,7 +1809,6 @@ public class JFrameCVS extends javax.swing.JFrame {
     private javax.swing.JCheckBox chTabelasTemporiarias;
     private javax.swing.JCheckBox chViews;
     private javax.swing.JButton jButton1;
-    private javax.swing.JComboBox jComboBoxCliente;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;

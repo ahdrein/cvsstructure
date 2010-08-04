@@ -38,56 +38,44 @@ public class CVSStructure {
     private Usuario ciUser;
     private Usuario exUser;
     private Usuario dbUser;
-
     private Usuario caiUser;
     private Usuario appsUser;
     private String dbLinkCai;
     private String dbLinkApps;
-
     public String s_User;
-	public String s_Pass;
-	public String s_Conn;
-	public String s_ItUser;
+    public String s_Pass;
+    public String s_Conn;
+    public String s_ItUser;
     public static String s_ItUser2;
-	public String s_ItPass;
-
+    public String s_ItPass;
     private ArrayList dirScriptsValida = new ArrayList();
-
     public static String chNomePasta;
     public static String chConexaoPorArquivos;
     public static String chScriptsSemVinculoInterface;
     private Object[] selectInterfaces;
 
     /* Selects Utilizados */
-	private String selectGerarArquivosExternos;
-	private String selectExportarArquivosExternos;
+    private String selectGerarArquivosExternos;
+    private String selectExportarArquivosExternos;
     private String selectPermissaoTabela;
     private String selectUsers;
-    
     private String sistema;
     private String interfaceDaTabela;
-
     private String sessionSchema;
     private String role;
-
     // Variaveis
     public String idInterface;
-
     public static String userNameSys = "";
     public static String id_sistema_it = "";
-
     private String fileName = "";
-	private String fileNameScripts = "";
-
+    private String fileNameScripts = "";
     public String executavel = "";
-	public String tipoInterface = "";
-	public String idSistema = "";
-	public String descricao = "";
+    public String tipoInterface = "";
+    public String idSistema = "";
+    public String descricao = "";
     public String interfereProcessamentoDireto = null;
-	
-	public String tempoMedio = "";
+    public String tempoMedio = "";
     public String executavelCompl = "";
-
     // Contadores
     public static int nTotalSistemas = 0;
     public static int nTotalTabelas = 0;
@@ -99,122 +87,105 @@ public class CVSStructure {
     public static int nTotalSapMapeamento = 0;
     public static int nTotalIntMapeamento = 0;
     public static int nTotalFunctionsProcedures = 0;
-
     // public String sQuebraLinha = System.getProperty("line.separator");
-    public static String quebraLinha = "\r\n";
-	
-	public static String path;
-	private Clob clob;
+    public static final String QUEBRA_LINHA = "\r\n";
+    public static String path;
+    private Clob clob;
     public static String sDebug = "N";
     private boolean flag = true;
     private String sCaminhaGeracao;
-    
     private String sSynonymsAll = "";
-
     // PreparedStatement
-	private PreparedStatement psInterfaces = null;
-	private ResultSet rsInterfaces = null;
-	private PreparedStatement psExportarArquivosExternos = null;
+    private PreparedStatement psInterfaces = null;
+    private ResultSet rsInterfaces = null;
+    private PreparedStatement psExportarArquivosExternos = null;
     private PreparedStatement psUsersUser = null;
     private ResultSet rsUsersUser = null;
-	private PreparedStatement psGerarArquivosExternos = null;
-	private ResultSet rsArquivosExternos = null;
-
+    private PreparedStatement psGerarArquivosExternos = null;
+    private ResultSet rsArquivosExternos = null;
     private PreparedStatement psGerarArquivosExternosNaoGerados;
     private ResultSet rsGerarArquivosExternosNaoGerados;
-    
     private PreparedStatement psCountArquivosExternosNaoGerados;
     private ResultSet rsCountArquivosExternosNaoGerados;
-
-	private PreparedStatement psPermissaoTabela = null;
-	private ResultSet rsPermissaoTabela = null;
-
-	private PreparedStatement psCountInterface = null;
+    private PreparedStatement psPermissaoTabela = null;
+    private ResultSet rsPermissaoTabela = null;
+    private PreparedStatement psCountInterface = null;
     private PreparedStatement psCountInterface2 = null;
-	private ResultSet rsCountInterface = null;
-
-	private PreparedStatement psFoundObjectsIT = null;
-	private ResultSet rsFoundObjectsIT = null;
-
+    private ResultSet rsCountInterface = null;
+    private PreparedStatement psFoundObjectsIT = null;
+    private ResultSet rsFoundObjectsIT = null;
     private PreparedStatement psSistema = null;
     private ResultSet rsSistema = null;
-
     private PreparedStatement psInterfaceDaTabela = null;
     private ResultSet rsInterfaceDaTabela = null;
-
     private PreparedStatement psCreateTable = null;
     private PreparedStatement psInsertReferencesObjects = null;
-
     private PreparedStatement psCreateTableIT = null;
     private PreparedStatement psInsertReferencesObjectsIT = null;
     private PreparedStatement psDropTableIT = null;
-
     private ResultSet rsSqlInterface = null;
     private ResultSet rsBatInterface = null;
     private ResultSet rsDadosInterface = null;
-
     public static JTextArea textAreaCVS;
-    public static JFrameCVS jframe;
+    private static JFrameCVS jframe;
 
-   // Imprime Mensagens na Tela e coloca mensagem no log
-	public static void logMessage(String p_msg)
-	{
-		//System.out.println(p_msg);
-        if(CVSStructure.jframe != null){
-            CVSStructure.jframe.setTextArea(p_msg + quebraLinha);
+    // Imprime Mensagens na Tela e coloca mensagem no log
+    public static void logMessage(String p_msg) {
+        //System.out.println(p_msg);
+        if (CVSStructure.jframe != null) {
+            CVSStructure.jframe.setTextArea(p_msg + QUEBRA_LINHA);
         }
-        
-	}
+    }
 
-    private void intialize() throws SQLException, IOException{
-        
+    private void intialize() throws SQLException, IOException {
+
         //System.getProperty("user.dir");
 
         sCaminhaGeracao = CVSStructure.jframe.getTxCaminhaGeracao();
-        if (sCaminhaGeracao.equals(".\\")){
+        if (sCaminhaGeracao.equals(".\\")) {
             path = new File(".").getCanonicalPath();
-        }else{
-            if(sCaminhaGeracao.substring(sCaminhaGeracao.length()-1).equals("\\")){
-                path = sCaminhaGeracao.substring(0, sCaminhaGeracao.length()-1);
-            }else{
+        } else {
+            if (sCaminhaGeracao.substring(sCaminhaGeracao.length() - 1).equals("\\")) {
+                path = sCaminhaGeracao.substring(0, sCaminhaGeracao.length() - 1);
+            } else {
                 path = sCaminhaGeracao;
             }
         }
 
         this.selectUsers = "select username from user_users";
 
-        
+
 
         this.selectPermissaoTabela = "select id_interface, table_name from permissao_tabela where lower(table_name) != 'tmp_cvs_structure' and id_interface = ?";
 
-		
+
 
         this.sistema = "select * from sistema where user_oracle like '%'|| ? || '%'";
 
 
-        this.interfaceDaTabela = "select distinct it.* "+
-                "from permissao_tabela ta,"+
-                "     sistema_interface it"+
-                " where ta.table_name like '%' || upper( ? ) ||'%'"+
-                " and it.id_interface = ta.id_interface";
+        this.interfaceDaTabela = "select distinct it.* "
+                + "from permissao_tabela ta,"
+                + "     sistema_interface it"
+                + " where ta.table_name like '%' || upper( ? ) ||'%'"
+                + " and it.id_interface = ta.id_interface";
 
-		this.selectGerarArquivosExternos = "select NOME_ARQUIVO," +
-		  "PATH_RELATIVO," +
-		  "DESCRICAO," +
-		  "CONTEUDO" +
-		  " from arquivo_externo" +
-		  " where arquivo_externo.nome_arquivo like '%'|| ? || '%'";
+        this.selectGerarArquivosExternos = "select NOME_ARQUIVO,"
+                + "PATH_RELATIVO,"
+                + "DESCRICAO,"
+                + "CONTEUDO"
+                + " from arquivo_externo"
+                + " where arquivo_externo.nome_arquivo like '%'|| ? || '%'";
 
-		this.selectExportarArquivosExternos = "select NOME_ARQUIVO," +
-		  "PATH_RELATIVO," +
-		  "DESCRICAO," +
-		  "CONTEUDO" +
-		  " from arquivo_externo" +
-		  " where arquivo_externo.nome_arquivo like '%'|| ? || '%'";
+        this.selectExportarArquivosExternos = "select NOME_ARQUIVO,"
+                + "PATH_RELATIVO,"
+                + "DESCRICAO,"
+                + "CONTEUDO"
+                + " from arquivo_externo"
+                + " where arquivo_externo.nome_arquivo like '%'|| ? || '%'";
 
         // Obtendo condições do select para encontrar o as interfaces existentes
         StringBuffer sbAllInterfaces = new StringBuffer();
-        sbAllInterfaces.append("select * from (" );
+        sbAllInterfaces.append("select * from (");
         sbAllInterfaces.append("select replace( replace( replace( substr(interfaces.executavel, instr(interfaces.executavel, '\\')+1, length(interfaces.executavel)), '#IDENT#INTERFACES\\SAP\\', ''), '#IDENT#INTERFACES\\', '') , '#IDENT#INTEGRACAO\\', '') executavel,");
         sbAllInterfaces.append("interfaces.id_interface,");
         sbAllInterfaces.append("interfaces.tipo_interface,");
@@ -246,7 +217,7 @@ public class CVSStructure {
         sbAllInterfaces.append("  interfaces.username, ");
         sbAllInterfaces.append("  interfaces.tempo_medio, ");
         sbAllInterfaces.append("  executavel executavelCompl, ");
-        sbAllInterfaces.append("  interfaces.interfere_proc_dir "   );
+        sbAllInterfaces.append("  interfaces.interfere_proc_dir ");
         sbAllInterfaces.append(" from interfaces interfaces, sistema_interface ");
         sbAllInterfaces.append(" where interfaces.executavel like '%IMPORTADOR_IN_OUT_NEW.EXE%' ");
         sbAllInterfaces.append(" and interfaces.id_interface = sistema_interface.id_interface (+)");
@@ -268,7 +239,7 @@ public class CVSStructure {
         sbCountInterface.append(" from ( select substr(executavel, instr(executavel, '\\')+1, (instr(executavel, '.BAT'))-(instr(executavel, '\\')+1)) executavel, id_interface, tipo_interface, descricao, username, tempo_medio, executavel executavelCompl from interfaces where executavel like '%.BAT%') interfaces)");
         sbCountInterface.append(" where executavel like '%'||?||'%'");
 
-        
+
 
         StringBuffer sbArquivosExternosNaoGerados = new StringBuffer();
         sbArquivosExternosNaoGerados.append("select distinct nome_arquivo, contem, tipo from (");
@@ -429,7 +400,7 @@ public class CVSStructure {
         psGerarArquivosExternosNaoGerados = ConnectionInout.getConnection().prepareStatement(sbArquivosExternosNaoGerados.toString());
         psCountInterface = ConnectionInout.getConnection().prepareStatement(sbCountInterface.toString());
         psPermissaoTabela = ConnectionInout.getConnection().prepareStatement(selectPermissaoTabela);
-        
+
         psInterfaces = ConnectionInout.getConnection().prepareStatement(sbAllInterfaces.toString());
 
         //
@@ -442,7 +413,7 @@ public class CVSStructure {
 
         psCountInterface2 = ConnectionInout.getConnection().prepareStatement(sbCountSistemaPorInterface.toString());
 
-        if(ConnectionIntegracao.getConnection() != null){
+        if (ConnectionIntegracao.getConnection() != null) {
 
             psFoundObjectsIT = ConnectionIntegracao.getConnection().prepareStatement(sbAllObjectsSystem.toString());
 
@@ -457,24 +428,24 @@ public class CVSStructure {
         psInsertReferencesObjects = ConnectionInout.getConnection().prepareCall(sbInsertTableCvsStructure.toString());
     }
 
-    public ArrayList readInterfaces() throws SQLException, IOException{
+    public ArrayList readInterfaces() throws SQLException, IOException {
         StringBuffer sbAllInterfaces = new StringBuffer();
         sbAllInterfaces.append("select * from interfaces order by descricao");
         PreparedStatement psInterfacesRead = ConnectionInout.getConnection().prepareStatement(sbAllInterfaces.toString());
 
         ArrayList arrInterfaces = new ArrayList();
         ResultSet rsInterfacesRead = psInterfacesRead.executeQuery();
-        while(rsInterfacesRead.next()){
+        while (rsInterfacesRead.next()) {
             arrInterfaces.add(rsInterfacesRead.getString("DESCRICAO"));
         }
         return arrInterfaces;
     }
 
-	public void spoolCVSStruture(ArrayList pTipo, JFrameCVS jframe) throws SQLException, IOException{
+    public void spoolCVSStruture(ArrayList pTipo, JFrameCVS jframe) throws SQLException, IOException {
         CVSStructure.jframe = (JFrameCVS) jframe;
         SfwLogger.debug("Iniciando validação dos parâmetros ...");
         intialize();
-		try{
+        try {
             rsUsersUser = psUsersUser.executeQuery();
             rsUsersUser.next();
             userNameSys = rsUsersUser.getString("USERNAME");
@@ -484,44 +455,43 @@ public class CVSStructure {
             s_ItUser2 = s_ItUser;
             psSistema.setString(1, s_ItUser.toUpperCase());
             rsSistema = psSistema.executeQuery();
-            while(rsSistema.next()){
+            while (rsSistema.next()) {
                 id_sistema_it = rsSistema.getString("ID_SISTEMA");
             }
             rsSistema.close();
             psSistema.close();
 
-              if(pTipo.contains("D")){
-                    SfwLogger.saveLog(quebraLinha + "## Criando Diretórios Comuns ##" + quebraLinha);
-                    try {
-                        criarDiretoriosComuns();
-                    } catch (Exception ex) {
-                        Logger.getLogger(CVSStructure.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                    SfwLogger.saveLog(quebraLinha + "## Finalizando - Criando Diretórios Comuns ##" + quebraLinha);
+            if (pTipo.contains("D")) {
+                SfwLogger.saveLog(QUEBRA_LINHA + "## Criando Diretórios Comuns ##" + QUEBRA_LINHA);
+                try {
+                    criarDiretoriosComuns();
+                } catch (Exception ex) {
+                    Logger.getLogger(CVSStructure.class.getName()).log(Level.SEVERE, null, ex);
                 }
+                SfwLogger.saveLog(QUEBRA_LINHA + "## Finalizando - Criando Diretórios Comuns ##" + QUEBRA_LINHA);
+            }
 
-            if(pTipo.contains("ArquivosExternos") ||
-               pTipo.contains("Interfaces") ||
-               pTipo.contains("TabelasTemporarias")
-                    ){
+            if (pTipo.contains("ArquivosExternos")
+                    || pTipo.contains("Interfaces")
+                    || pTipo.contains("TabelasTemporarias")) {
                 rsInterfaces = psInterfaces.executeQuery();
-                while(rsInterfaces.next()){
-                    try{
+                while (rsInterfaces.next()) {
+                    try {
                         boolean flagSelectInterface = false;
                         // Quando  for seleciona pelo menos uma interface
-                        if(getSSelectInterfaces().length != 0){
-                            for(int j=0; j < getSSelectInterfaces().length; j++){
-                                if(rsInterfaces.getString("DESCRICAO").equals(getSSelectInterfaces()[j])){
+                        if (getSSelectInterfaces().length != 0) {
+                            for (int j = 0; j < getSSelectInterfaces().length; j++) {
+                                if (rsInterfaces.getString("DESCRICAO").equals(getSSelectInterfaces()[j])) {
                                     flagSelectInterface = true;
                                     break;
                                 }
                             }
-                        }else{
+                        } else {
                             // Quando nehuma interface for seleciona, gerar de todas
                             flagSelectInterface = true;
                         }
 
-                        if(flagSelectInterface){
+                        if (flagSelectInterface) {
                             String sistema = "";
 
                             psCountInterface2.setString(1, rsInterfaces.getString("ID_INTERFACE"));
@@ -530,15 +500,15 @@ public class CVSStructure {
                             int nTotInter = rsCountInterface.getInt("TOTAL");
 
                             boolean sisFlag = true;
-                            if(nTotInter >= 2){
-                                if (!id_sistema_it.equals("")){
-                                    if (id_sistema_it.equals(rsInterfaces.getString("ID_SISTEMA"))){
+                            if (nTotInter >= 2) {
+                                if (!id_sistema_it.equals("")) {
+                                    if (id_sistema_it.equals(rsInterfaces.getString("ID_SISTEMA"))) {
                                         sisFlag = false;
                                     }
                                 }
                             }
 
-                            if(sisFlag){
+                            if (sisFlag) {
 
                                 logMessage("*** Building Interfaces select found " + rsInterfaces.getString("ID_INTERFACE") + " - " + rsInterfaces.getString("DESCRICAO") + "...");
                                 idInterface = rsInterfaces.getString("ID_INTERFACE");
@@ -549,48 +519,48 @@ public class CVSStructure {
                                 //sUserNameApp = rsInterfaces.getString("USERNAME");
                                 tempoMedio = rsInterfaces.getString("TEMPO_MEDIO");
                                 executavelCompl = rsInterfaces.getString("EXECUTAVELCOMPL");
-                                if(rsInterfaces.getString("INTERFERE_PROC_DIR") != null){
+                                if (rsInterfaces.getString("INTERFERE_PROC_DIR") != null) {
                                     interfereProcessamentoDireto = rsInterfaces.getString("INTERFERE_PROC_DIR");
                                 }
 
-                                if(pTipo.contains("D")){
-                                    SfwLogger.saveLog(quebraLinha + "## Criando Diretórios ##" + quebraLinha);
+                                if (pTipo.contains("D")) {
+                                    SfwLogger.saveLog(QUEBRA_LINHA + "## Criando Diretórios ##" + QUEBRA_LINHA);
                                     criarDiretorio();
-                                    SfwLogger.saveLog(quebraLinha + "## Finalizando - Criando Diretórios ##" + quebraLinha);
+                                    SfwLogger.saveLog(QUEBRA_LINHA + "## Finalizando - Criando Diretórios ##" + QUEBRA_LINHA);
                                 }
 
-                                if(pTipo.contains("Interfaces")){
-                                    SfwLogger.saveLog(quebraLinha + "## Gerando Interfaces ##" + quebraLinha);
+                                if (pTipo.contains("Interfaces")) {
+                                    SfwLogger.saveLog(QUEBRA_LINHA + "## Gerando Interfaces ##" + QUEBRA_LINHA);
                                     this.interfaces(); // ok
-                                    SfwLogger.saveLog(quebraLinha + "## Finalizando - Gerando Interfaces ##" + quebraLinha);
+                                    SfwLogger.saveLog(QUEBRA_LINHA + "## Finalizando - Gerando Interfaces ##" + QUEBRA_LINHA);
                                 }
 
-                                if(pTipo.contains("ArquivosExternos")){
-                                    SfwLogger.saveLog(quebraLinha + "## Exportando Arquivos Externos ##" + quebraLinha);
+                                if (pTipo.contains("ArquivosExternos")) {
+                                    SfwLogger.saveLog(QUEBRA_LINHA + "## Exportando Arquivos Externos ##" + QUEBRA_LINHA);
                                     this.exportarArquivosExternos(); // ok
-                                    SfwLogger.saveLog(quebraLinha + "## Finalizando - Exportando Arquivos Externos ##" + quebraLinha);
+                                    SfwLogger.saveLog(QUEBRA_LINHA + "## Finalizando - Exportando Arquivos Externos ##" + QUEBRA_LINHA);
                                 }
 
-                                if(pTipo.contains("ArquivosExternos")){
-                                    SfwLogger.saveLog(quebraLinha + "## Gerando Arquivos Externos ##" + quebraLinha);
+                                if (pTipo.contains("ArquivosExternos")) {
+                                    SfwLogger.saveLog(QUEBRA_LINHA + "## Gerando Arquivos Externos ##" + QUEBRA_LINHA);
                                     this.arquivosExternos(); // ok
-                                    SfwLogger.saveLog(quebraLinha + "## Finalizando - Gerando Arquivos Externos  ##" + quebraLinha);
+                                    SfwLogger.saveLog(QUEBRA_LINHA + "## Finalizando - Gerando Arquivos Externos  ##" + QUEBRA_LINHA);
                                 }
 
-                                if(pTipo.contains("TabelasTemporarias")){
-                                    SfwLogger.saveLog(quebraLinha + "## Gerando Tabelas da Interface ##" + quebraLinha);
+                                if (pTipo.contains("TabelasTemporarias")) {
+                                    SfwLogger.saveLog(QUEBRA_LINHA + "## Gerando Tabelas da Interface ##" + QUEBRA_LINHA);
                                     //this.exportarTabInterface(); //ok
                                     psPermissaoTabela.setString(1, idInterface);
                                     rsPermissaoTabela = psPermissaoTabela.executeQuery();
 
-                                    while(rsPermissaoTabela.next()){
+                                    while (rsPermissaoTabela.next()) {
                                         new TabInterfaces(rsPermissaoTabela.getString("TABLE_NAME"), idInterface, idSistema, this);
                                     }
-                                    SfwLogger.saveLog(quebraLinha + "## Finalizando - Gerando Tabelas da Interface ##" + quebraLinha);
+                                    SfwLogger.saveLog(QUEBRA_LINHA + "## Finalizando - Gerando Tabelas da Interface ##" + QUEBRA_LINHA);
                                 }
                             }
                         }
-                    }catch (Exception e) {
+                    } catch (Exception e) {
                         logMessage(e.getLocalizedMessage());
                         SfwLogger.saveLog(e.getClass().toString(), e.getStackTrace());
                     }
@@ -598,52 +568,52 @@ public class CVSStructure {
             }
 
             try {
-                if(pTipo.contains("ArquivosExternos")  && chScriptsSemVinculoInterface.equals("S")){
-                    SfwLogger.saveLog(quebraLinha + "## Gerando Arquivos Externos ##" + quebraLinha);
+                if (pTipo.contains("ArquivosExternos") && chScriptsSemVinculoInterface.equals("S")) {
+                    SfwLogger.saveLog(QUEBRA_LINHA + "## Gerando Arquivos Externos ##" + QUEBRA_LINHA);
                     this.arquivosExternosNaoGerados(); // ok
-                    SfwLogger.saveLog(quebraLinha + "## Finalizando - Arquivos Externos ##" + quebraLinha);
+                    SfwLogger.saveLog(QUEBRA_LINHA + "## Finalizando - Arquivos Externos ##" + QUEBRA_LINHA);
                 }
 
-                if(pTipo.contains("Synonyms")  && chScriptsSemVinculoInterface.equals("S")){
-                    SfwLogger.saveLog(quebraLinha + "## Gerando Synonyms ##" + quebraLinha);
+                if (pTipo.contains("Synonyms") && chScriptsSemVinculoInterface.equals("S")) {
+                    SfwLogger.saveLog(QUEBRA_LINHA + "## Gerando Synonyms ##" + QUEBRA_LINHA);
                     new Synonyms("INOUT", this);
-                    SfwLogger.saveLog(quebraLinha + "## Finalizando - Gerando Synonyms ##" + quebraLinha);
+                    SfwLogger.saveLog(QUEBRA_LINHA + "## Finalizando - Gerando Synonyms ##" + QUEBRA_LINHA);
                 }
 
-                if(pTipo.contains("TabelasTemporarias") && chScriptsSemVinculoInterface.equals("S")){
-                    SfwLogger.saveLog(quebraLinha + "## Gerando Tabelas Sem Permissão##" + quebraLinha);
+                if (pTipo.contains("TabelasTemporarias") && chScriptsSemVinculoInterface.equals("S")) {
+                    SfwLogger.saveLog(QUEBRA_LINHA + "## Gerando Tabelas Sem Permissão##" + QUEBRA_LINHA);
                     this.tabInterfaceSemPermissao();
-                    SfwLogger.saveLog(quebraLinha + "## Finalizando - Gerando Tabelas Sem Permissão ##" + quebraLinha);
+                    SfwLogger.saveLog(QUEBRA_LINHA + "## Finalizando - Gerando Tabelas Sem Permissão ##" + QUEBRA_LINHA);
                 }
 
-                if(pTipo.contains("Sistemas")  && chScriptsSemVinculoInterface.equals("S")){
-                    SfwLogger.saveLog(quebraLinha + "## Gerando Sistemas ##" + quebraLinha);
+                if (pTipo.contains("Sistemas") && chScriptsSemVinculoInterface.equals("S")) {
+                    SfwLogger.saveLog(QUEBRA_LINHA + "## Gerando Sistemas ##" + QUEBRA_LINHA);
                     new Sistemas(this);
-                    SfwLogger.saveLog(quebraLinha + "## Finalizando - Gerando Sistemas ##" + quebraLinha);
+                    SfwLogger.saveLog(QUEBRA_LINHA + "## Finalizando - Gerando Sistemas ##" + QUEBRA_LINHA);
                 }
 
-                if(pTipo.contains("Sequences") && chScriptsSemVinculoInterface.equals("S")){
-                    SfwLogger.saveLog(quebraLinha + "## Gerando Sequences ##" + quebraLinha);
+                if (pTipo.contains("Sequences") && chScriptsSemVinculoInterface.equals("S")) {
+                    SfwLogger.saveLog(QUEBRA_LINHA + "## Gerando Sequences ##" + QUEBRA_LINHA);
                     new Sequence("INOUT");
-                    SfwLogger.saveLog(quebraLinha + "## Finalizando - Gerando Sequences ##" + quebraLinha);
+                    SfwLogger.saveLog(QUEBRA_LINHA + "## Finalizando - Gerando Sequences ##" + QUEBRA_LINHA);
                 }
 
-                if(pTipo.contains("Views")  && chScriptsSemVinculoInterface.equals("S")){
-                    SfwLogger.saveLog(quebraLinha + "## Gerando Views ##" + quebraLinha);
+                if (pTipo.contains("Views") && chScriptsSemVinculoInterface.equals("S")) {
+                    SfwLogger.saveLog(QUEBRA_LINHA + "## Gerando Views ##" + QUEBRA_LINHA);
                     new Views("INOUT");
-                    SfwLogger.saveLog(quebraLinha + "## Finalizando - Gerando Views ##" + quebraLinha);
-                }
-                
-                if(pTipo.contains("IntMapeamento")  && chScriptsSemVinculoInterface.equals("S")){
-                    SfwLogger.saveLog(quebraLinha + "## Gerando IntMapeamento ##" + quebraLinha);
-                    new IntMapeamento("INOUT", this);
-                    SfwLogger.saveLog(quebraLinha + "## Finalizando - Gerando IntMapeamento ##" + quebraLinha);
+                    SfwLogger.saveLog(QUEBRA_LINHA + "## Finalizando - Gerando Views ##" + QUEBRA_LINHA);
                 }
 
-                if(pTipo.contains("SapMapeamento") && chScriptsSemVinculoInterface.equals("S")){
-                    SfwLogger.saveLog(quebraLinha + "## Gerando SapMapeamento ##" + quebraLinha);
+                if (pTipo.contains("IntMapeamento") && chScriptsSemVinculoInterface.equals("S")) {
+                    SfwLogger.saveLog(QUEBRA_LINHA + "## Gerando IntMapeamento ##" + QUEBRA_LINHA);
+                    new IntMapeamento("INOUT", this);
+                    SfwLogger.saveLog(QUEBRA_LINHA + "## Finalizando - Gerando IntMapeamento ##" + QUEBRA_LINHA);
+                }
+
+                if (pTipo.contains("SapMapeamento") && chScriptsSemVinculoInterface.equals("S")) {
+                    SfwLogger.saveLog(QUEBRA_LINHA + "## Gerando SapMapeamento ##" + QUEBRA_LINHA);
                     new SapMapeamento("INOUT", this);
-                    SfwLogger.saveLog(quebraLinha + "## Finalizando - Gerando SapMapeamento ##" + quebraLinha);
+                    SfwLogger.saveLog(QUEBRA_LINHA + "## Finalizando - Gerando SapMapeamento ##" + QUEBRA_LINHA);
                 }
             } catch (Exception ex) {
                 logMessage(ex.getLocalizedMessage());
@@ -651,42 +621,42 @@ public class CVSStructure {
             }
 
             // Base de Integracao
-            if(s_ItUser != null && !s_ItUser.equals("") && !s_ItPass.equals("") && s_ItPass != null){
+            if (s_ItUser != null && !s_ItUser.equals("") && !s_ItPass.equals("") && s_ItPass != null) {
                 try {
-                    if(pTipo.contains("Synonyms") && chScriptsSemVinculoInterface.equals("S")){
-                        SfwLogger.saveLog(quebraLinha + "## Gerando Synonyms Integração ##" + quebraLinha);
+                    if (pTipo.contains("Synonyms") && chScriptsSemVinculoInterface.equals("S")) {
+                        SfwLogger.saveLog(QUEBRA_LINHA + "## Gerando Synonyms Integração ##" + QUEBRA_LINHA);
                         new Synonyms("INTEGRACAO", this);
-                        SfwLogger.saveLog(quebraLinha + "## Finalizando - Gerando Synonyms Integração ##" + quebraLinha);
+                        SfwLogger.saveLog(QUEBRA_LINHA + "## Finalizando - Gerando Synonyms Integração ##" + QUEBRA_LINHA);
                     }
-                    
-                    if(pTipo.contains("IntMapeamento") && chScriptsSemVinculoInterface.equals("S")){
-                        SfwLogger.saveLog(quebraLinha + "## Gerando IntMapeamento Integração ##" + quebraLinha);
+
+                    if (pTipo.contains("IntMapeamento") && chScriptsSemVinculoInterface.equals("S")) {
+                        SfwLogger.saveLog(QUEBRA_LINHA + "## Gerando IntMapeamento Integração ##" + QUEBRA_LINHA);
                         new IntMapeamento("INTEGRACAO", this);
-                        SfwLogger.saveLog(quebraLinha + "## Finalizando - Gerando IntMapeamento Integração ##" + quebraLinha);
+                        SfwLogger.saveLog(QUEBRA_LINHA + "## Finalizando - Gerando IntMapeamento Integração ##" + QUEBRA_LINHA);
                     }
 
-                    if(pTipo.contains("SapMapeamento") && chScriptsSemVinculoInterface.equals("S")){
-                        SfwLogger.saveLog(quebraLinha + "## Gerando SapMapeamento Integração ##" + quebraLinha);
+                    if (pTipo.contains("SapMapeamento") && chScriptsSemVinculoInterface.equals("S")) {
+                        SfwLogger.saveLog(QUEBRA_LINHA + "## Gerando SapMapeamento Integração ##" + QUEBRA_LINHA);
                         new SapMapeamento("INTEGRACAO", this);
-                        SfwLogger.saveLog(quebraLinha + "## Finalizando - Gerando SapMapeamento Integração ##" + quebraLinha);
+                        SfwLogger.saveLog(QUEBRA_LINHA + "## Finalizando - Gerando SapMapeamento Integração ##" + QUEBRA_LINHA);
                     }
 
-                    if(pTipo.contains("Objetos") && chScriptsSemVinculoInterface.equals("S")){
-                        SfwLogger.saveLog(quebraLinha + "## Gerando Objetos Integração ##" + quebraLinha);
+                    if (pTipo.contains("Objetos") && chScriptsSemVinculoInterface.equals("S")) {
+                        SfwLogger.saveLog(QUEBRA_LINHA + "## Gerando Objetos Integração ##" + QUEBRA_LINHA);
                         this.gerarObjetosIntegracao();
-                        SfwLogger.saveLog(quebraLinha + "## Finalizando - Gerando Objetos Integração ##" + quebraLinha);
+                        SfwLogger.saveLog(QUEBRA_LINHA + "## Finalizando - Gerando Objetos Integração ##" + QUEBRA_LINHA);
                     }
 
-                    if(pTipo.contains("Sequences") && chScriptsSemVinculoInterface.equals("S")){
-                        SfwLogger.saveLog(quebraLinha + "## Gerando Sequences Integração ##" + quebraLinha);
+                    if (pTipo.contains("Sequences") && chScriptsSemVinculoInterface.equals("S")) {
+                        SfwLogger.saveLog(QUEBRA_LINHA + "## Gerando Sequences Integração ##" + QUEBRA_LINHA);
                         new Sequence("INTEGRACAO");
-                        SfwLogger.saveLog(quebraLinha + "## Finalizando - Gerando Sequences Integração ##" + quebraLinha);
+                        SfwLogger.saveLog(QUEBRA_LINHA + "## Finalizando - Gerando Sequences Integração ##" + QUEBRA_LINHA);
                     }
 
-                    if(pTipo.contains("Views") && chScriptsSemVinculoInterface.equals("S")){
-                        SfwLogger.saveLog(quebraLinha + "## Gerando Views Integração ##" + quebraLinha);
+                    if (pTipo.contains("Views") && chScriptsSemVinculoInterface.equals("S")) {
+                        SfwLogger.saveLog(QUEBRA_LINHA + "## Gerando Views Integração ##" + QUEBRA_LINHA);
                         new Views("INTEGRACAO");
-                        SfwLogger.saveLog(quebraLinha + "## Finalizando - Gerando Views Integração ##" + quebraLinha);
+                        SfwLogger.saveLog(QUEBRA_LINHA + "## Finalizando - Gerando Views Integração ##" + QUEBRA_LINHA);
                     }
                 } catch (Exception ex) {
                     logMessage(ex.getLocalizedMessage());
@@ -702,407 +672,409 @@ public class CVSStructure {
                 SfwLogger.saveLog(ex.getClass().toString(), ex.getStackTrace());
             }
 
-		}catch (SQLException e) {
+        } catch (SQLException e) {
             SfwLogger.saveLog(e.getClass().toString(), e.getStackTrace());
-			logMessage("Error in the implementation of the interface with Id_Importação " + idInterface);
-		}finally{
-			//ConnectionInout.getConnection().close();
+            logMessage("Error in the implementation of the interface with Id_Importação " + idInterface);
+        } finally {
+            //ConnectionInout.getConnection().close();
             //rsSistema.close();
             //psSistema.close();
             //psCountInterface2.close();
             //rsCountInterface.close();
             //rsInterfaces.close();
-		}
-	}
+        }
+    }
 
     /*
      * Obtem o IDInterface
      */
-    public String getIdInterface(){
-            return idInterface.trim().replace("(", "").replace(")", ")").replace(".", "").replace(" ", "").replace("[", "").replace("]", "").replace("{", "").replace("}", "").replace(">", "").replace("<", "").replace("-", "_").trim().toLowerCase();
+    public String getIdInterface() {
+        return idInterface.trim().replace("(", "").replace(")", ")").replace(".", "").replace(" ", "").replace("[", "").replace("]", "").replace("{", "").replace("}", "").replace(">", "").replace("<", "").replace("-", "_").trim().toLowerCase();
     }
 
     /*
      * Obtem o IDSistema
      */
-    public String getIdSistema(){
-            return idSistema.trim().toLowerCase();
+    public String getIdSistema() {
+        return idSistema.trim().toLowerCase();
     }
 
-	/**************************************************************************
-	 * <b>Criar diretorio</b>
-	 **************************************************************************/
-	private void criarDiretoriosComuns() throws Exception{
+    /**************************************************************************
+     * <b>Criar diretorio</b>
+     **************************************************************************/
+    private void criarDiretoriosComuns() throws Exception {
         ArrayList dirScripts = new ArrayList();
 
-        dirScriptsValida.add(path + "\\"+userNameSys+"\\Scripts\\comum");
+        dirScriptsValida.add(path + "\\" + userNameSys + "\\Scripts\\comum");
 
         // Arquivos Inout
         dirScripts.add(path + "\\" + userNameSys);
-        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\");
-        dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\");
-        dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\comum");
-        dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\comum\\INOUT");
-        dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\comum\\INOUT\\Interfaces");
-        dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\comum\\INOUT\\ArquivosExternos");
-        dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\comum\\INOUT\\Tabelas");
-        dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\comum\\INOUT\\Sistemas");
-        dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\comum\\INOUT\\Synonyms");
-        dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\comum\\INOUT\\View");
-        dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\comum\\INOUT\\Sequence");
+        dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\");
+        dirScripts.add(path + "\\" + userNameSys + "\\Arquivos\\");
+        dirScripts.add(path + "\\" + userNameSys + "\\Arquivos\\comum");
+        dirScripts.add(path + "\\" + userNameSys + "\\Arquivos\\comum\\INOUT");
+        dirScripts.add(path + "\\" + userNameSys + "\\Arquivos\\comum\\INOUT\\Interfaces");
+        dirScripts.add(path + "\\" + userNameSys + "\\Arquivos\\comum\\INOUT\\ArquivosExternos");
+        dirScripts.add(path + "\\" + userNameSys + "\\Arquivos\\comum\\INOUT\\Tabelas");
+        dirScripts.add(path + "\\" + userNameSys + "\\Arquivos\\comum\\INOUT\\Sistemas");
+        dirScripts.add(path + "\\" + userNameSys + "\\Arquivos\\comum\\INOUT\\Synonyms");
+        dirScripts.add(path + "\\" + userNameSys + "\\Arquivos\\comum\\INOUT\\View");
+        dirScripts.add(path + "\\" + userNameSys + "\\Arquivos\\comum\\INOUT\\Sequence");
 
         // Scripts Inout
-        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum");
-        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT");
-        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT\\Interfaces");
-        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT\\ArquivosExternos");
-        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT\\Tabelas");
-        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT\\Sistemas");
-        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT\\Synonyms");
-        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT\\View");
-        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT\\Sequence");
-        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT\\Package");
-        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT\\PackageBody");
-        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT\\Procedure");
-        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT\\Function");
+        dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\comum");
+        dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\comum\\INOUT");
+        dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\comum\\INOUT\\Interfaces");
+        dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\comum\\INOUT\\ArquivosExternos");
+        dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\comum\\INOUT\\Tabelas");
+        dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\comum\\INOUT\\Sistemas");
+        dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\comum\\INOUT\\Synonyms");
+        dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\comum\\INOUT\\View");
+        dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\comum\\INOUT\\Sequence");
+        dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\comum\\INOUT\\Package");
+        dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\comum\\INOUT\\PackageBody");
+        dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\comum\\INOUT\\Procedure");
+        dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\comum\\INOUT\\Function");
 
         // Scripts Integracao
-        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INTEGRACAO");
-        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INTEGRACAO\\Function");
-        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INTEGRACAO\\Procedure");
-        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INTEGRACAO\\Package");
-        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INTEGRACAO\\PackageBody");
-        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INTEGRACAO\\Mapeamento");
-        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INTEGRACAO\\Mapeamento_SAP");
-        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INTEGRACAO\\Table");
-        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INTEGRACAO\\Synonyms");
-        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INTEGRACAO\\View");
-        dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\comum\\INTEGRACAO\\Sequence");
+        dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\comum\\INTEGRACAO");
+        dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\comum\\INTEGRACAO\\Function");
+        dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\comum\\INTEGRACAO\\Procedure");
+        dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\comum\\INTEGRACAO\\Package");
+        dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\comum\\INTEGRACAO\\PackageBody");
+        dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\comum\\INTEGRACAO\\Mapeamento");
+        dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\comum\\INTEGRACAO\\Mapeamento_SAP");
+        dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\comum\\INTEGRACAO\\Table");
+        dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\comum\\INTEGRACAO\\Synonyms");
+        dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\comum\\INTEGRACAO\\View");
+        dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\comum\\INTEGRACAO\\Sequence");
 
-        for(int i = 0; i < dirScripts.size(); i++){
+        for (int i = 0; i < dirScripts.size(); i++) {
             File file = new File(dirScripts.get(i).toString());
-            if(file.mkdir()){
+            if (file.mkdir()) {
                 SfwLogger.saveLog("Diretorio criado com sucesso! " + dirScripts.get(i));
-            }else{
-                SfwLogger.saveLog("Erro ao criar diretorio! "  + dirScripts.get(i));
+            } else {
+                SfwLogger.saveLog("Erro ao criar diretorio! " + dirScripts.get(i));
             }
         }
     }
 
-	/**************************************************************************
-	 * <b>Criar diretorio</b>
-	 **************************************************************************/
-	@SuppressWarnings("unchecked")
-	private void criarDiretorio() throws Exception{
+    /**************************************************************************
+     * <b>Criar diretorio</b>
+     **************************************************************************/
+    @SuppressWarnings("unchecked")
+    private void criarDiretorio() throws Exception {
         ArrayList dirScripts = new ArrayList();
 
-        if(tipoInterface.trim().equals("S")){
-            dirScriptsValida.add(path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("OUT") );
+        if (tipoInterface.trim().equals("S")) {
+            dirScriptsValida.add(path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("OUT"));
 
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("OUT") );
-            dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\" + getNomePasta("OUT") );
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("OUT"));
+            dirScripts.add(path + "\\" + userNameSys + "\\Arquivos\\" + getNomePasta("OUT"));
 
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("OUT") + "\\INOUT\\");
-            dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\" + getNomePasta("OUT") + "\\INOUT\\");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("OUT") + "\\INOUT\\");
+            dirScripts.add(path + "\\" + userNameSys + "\\Arquivos\\" + getNomePasta("OUT") + "\\INOUT\\");
 
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("OUT") + "\\INOUT\\Interface\\");
-            dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\" + getNomePasta("OUT") + "\\INOUT\\Interface\\");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("OUT") + "\\INOUT\\Interface\\");
+            dirScripts.add(path + "\\" + userNameSys + "\\Arquivos\\" + getNomePasta("OUT") + "\\INOUT\\Interface\\");
 
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("OUT") + "\\INOUT\\ArquivosExternos\\");
-            dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\" + getNomePasta("OUT") + "\\INOUT\\ArquivosExternos\\");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("OUT") + "\\INOUT\\ArquivosExternos\\");
+            dirScripts.add(path + "\\" + userNameSys + "\\Arquivos\\" + getNomePasta("OUT") + "\\INOUT\\ArquivosExternos\\");
 
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("OUT") + "\\INOUT\\Tabelas\\");
-            dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\" + getNomePasta("OUT") + "\\INOUT\\Tabelas\\");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("OUT") + "\\INOUT\\Tabelas\\");
+            dirScripts.add(path + "\\" + userNameSys + "\\Arquivos\\" + getNomePasta("OUT") + "\\INOUT\\Tabelas\\");
 
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("OUT") + "\\INOUT\\Synonyms\\");
-            dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\" + getNomePasta("OUT") + "\\INOUT\\Synonyms\\");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("OUT") + "\\INOUT\\Synonyms\\");
+            dirScripts.add(path + "\\" + userNameSys + "\\Arquivos\\" + getNomePasta("OUT") + "\\INOUT\\Synonyms\\");
 
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("OUT") + "\\INOUT\\View\\");
-            dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\" + getNomePasta("OUT") + "\\INOUT\\View\\");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("OUT") + "\\INOUT\\View\\");
+            dirScripts.add(path + "\\" + userNameSys + "\\Arquivos\\" + getNomePasta("OUT") + "\\INOUT\\View\\");
 
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("OUT") + "\\INOUT\\Sequence\\");
-            dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\" + getNomePasta("OUT") + "\\INOUT\\Sequence\\");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("OUT") + "\\INOUT\\Sequence\\");
+            dirScripts.add(path + "\\" + userNameSys + "\\Arquivos\\" + getNomePasta("OUT") + "\\INOUT\\Sequence\\");
 
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("OUT") + "\\INOUT\\Package\\");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("OUT") + "\\INOUT\\PackageBody\\");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("OUT") + "\\INOUT\\Procedure\\");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("OUT") + "\\INOUT\\Function\\");
-
-            /*Integracao*/
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("OUT") + "\\INTEGRACAO");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("OUT") + "\\INTEGRACAO\\Function");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("OUT") + "\\INTEGRACAO\\Procedure");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("OUT") + "\\INTEGRACAO\\Package");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("OUT") + "\\INTEGRACAO\\PackageBody");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("OUT") + "\\INTEGRACAO\\Mapeamento");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("OUT") + "\\INTEGRACAO\\Mapeamento_SAP");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("OUT") + "\\INTEGRACAO\\Table");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("OUT") + "\\INTEGRACAO\\View");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("OUT") + "\\INTEGRACAO\\Sequence");
-
-        }else if(tipoInterface.trim().equals("E")){
-            dirScriptsValida.add(path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("IN") );
-
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("IN") );
-            dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\" + getNomePasta("IN") );
-
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("IN") + "\\INOUT\\");
-            dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\" + getNomePasta("IN") + "\\INOUT\\");
-
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("IN") + "\\INOUT\\Interface\\");
-            dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\" + getNomePasta("IN") + "\\INOUT\\Interface\\");
-
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("IN") + "\\INOUT\\ArquivosExternos\\");
-            dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\" + getNomePasta("IN") + "\\INOUT\\ArquivosExternos\\");
-
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("IN") + "\\INOUT\\Tabelas\\");
-            dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\" + getNomePasta("IN") + "\\INOUT\\Tabelas\\");
-
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("IN") + "\\INOUT\\Synonyms\\");
-            dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\" + getNomePasta("IN") + "\\INOUT\\Synonyms\\");
-
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("IN") + "\\INOUT\\View\\");
-            dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\" + getNomePasta("IN") + "\\INOUT\\View\\");
-
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("IN") + "\\INOUT\\Sequence\\");
-            dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\" + getNomePasta("IN") + "\\INOUT\\Sequence\\");
-
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("IN") + "\\INOUT\\Package\\");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("IN") + "\\INOUT\\PackageBody\\");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("IN") + "\\INOUT\\Procedure\\");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("IN") + "\\INOUT\\Function\\");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("OUT") + "\\INOUT\\Package\\");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("OUT") + "\\INOUT\\PackageBody\\");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("OUT") + "\\INOUT\\Procedure\\");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("OUT") + "\\INOUT\\Function\\");
 
             /*Integracao*/
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("IN") + "\\INTEGRACAO");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("IN") + "\\INTEGRACAO\\Function");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("IN") + "\\INTEGRACAO\\Procedure");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("IN") + "\\INTEGRACAO\\Package");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("IN") + "\\INTEGRACAO\\PackageBody");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("IN") + "\\INTEGRACAO\\Mapeamento");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("IN") + "\\INTEGRACAO\\Mapeamento_SAP");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("IN") + "\\INTEGRACAO\\Table");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("IN") + "\\INTEGRACAO\\View");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("IN") + "\\INTEGRACAO\\Sequence");
-        }else{
-            dirScriptsValida.add(path + "\\"+userNameSys+"\\Scripts\\" + getIdInterface() );
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("OUT") + "\\INTEGRACAO");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("OUT") + "\\INTEGRACAO\\Function");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("OUT") + "\\INTEGRACAO\\Procedure");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("OUT") + "\\INTEGRACAO\\Package");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("OUT") + "\\INTEGRACAO\\PackageBody");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("OUT") + "\\INTEGRACAO\\Mapeamento");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("OUT") + "\\INTEGRACAO\\Mapeamento_SAP");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("OUT") + "\\INTEGRACAO\\Table");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("OUT") + "\\INTEGRACAO\\View");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("OUT") + "\\INTEGRACAO\\Sequence");
 
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getIdInterface() );
-            dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\" + getIdInterface() );
+        } else if (tipoInterface.trim().equals("E")) {
+            dirScriptsValida.add(path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("IN"));
 
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getIdInterface() + "\\INOUT\\");
-            dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\" + getIdInterface() + "\\INOUT\\");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("IN"));
+            dirScripts.add(path + "\\" + userNameSys + "\\Arquivos\\" + getNomePasta("IN"));
 
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getIdInterface() + "\\INOUT\\Interface\\");
-            dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\" + getIdInterface() + "\\INOUT\\Interface\\");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("IN") + "\\INOUT\\");
+            dirScripts.add(path + "\\" + userNameSys + "\\Arquivos\\" + getNomePasta("IN") + "\\INOUT\\");
 
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getIdInterface() + "\\INOUT\\ArquivosExternos\\");
-            dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\" + getIdInterface() + "\\INOUT\\ArquivosExternos\\");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("IN") + "\\INOUT\\Interface\\");
+            dirScripts.add(path + "\\" + userNameSys + "\\Arquivos\\" + getNomePasta("IN") + "\\INOUT\\Interface\\");
 
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getIdInterface() + "\\INOUT\\Tabelas\\");
-            dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\" + getIdInterface() + "\\INOUT\\Tabelas\\");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("IN") + "\\INOUT\\ArquivosExternos\\");
+            dirScripts.add(path + "\\" + userNameSys + "\\Arquivos\\" + getNomePasta("IN") + "\\INOUT\\ArquivosExternos\\");
 
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getIdInterface() + "\\INOUT\\Synonyms\\");
-            dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\" + getIdInterface() + "\\INOUT\\Synonyms\\");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("IN") + "\\INOUT\\Tabelas\\");
+            dirScripts.add(path + "\\" + userNameSys + "\\Arquivos\\" + getNomePasta("IN") + "\\INOUT\\Tabelas\\");
 
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getIdInterface() + "\\INOUT\\View\\");
-            dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\" + getIdInterface() + "\\INOUT\\View\\");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("IN") + "\\INOUT\\Synonyms\\");
+            dirScripts.add(path + "\\" + userNameSys + "\\Arquivos\\" + getNomePasta("IN") + "\\INOUT\\Synonyms\\");
 
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getIdInterface() + "\\INOUT\\Sequence\\");
-            dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\" + getIdInterface() + "\\INOUT\\Sequence\\");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("IN") + "\\INOUT\\View\\");
+            dirScripts.add(path + "\\" + userNameSys + "\\Arquivos\\" + getNomePasta("IN") + "\\INOUT\\View\\");
 
-            dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\" + getIdInterface() + "\\INOUT\\Package\\");
-            dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\" + getIdInterface() + "\\INOUT\\PackageBody\\");
-            dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\" + getIdInterface() + "\\INOUT\\Procedure\\");
-            dirScripts.add(path + "\\"+userNameSys+"\\Arquivos\\" + getIdInterface() + "\\INOUT\\Function\\");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("IN") + "\\INOUT\\Sequence\\");
+            dirScripts.add(path + "\\" + userNameSys + "\\Arquivos\\" + getNomePasta("IN") + "\\INOUT\\Sequence\\");
+
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("IN") + "\\INOUT\\Package\\");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("IN") + "\\INOUT\\PackageBody\\");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("IN") + "\\INOUT\\Procedure\\");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("IN") + "\\INOUT\\Function\\");
 
             /*Integracao*/
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getIdInterface() + "\\INTEGRACAO");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getIdInterface() + "\\INTEGRACAO\\Function");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getIdInterface() + "\\INTEGRACAO\\Procedure");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getIdInterface() + "\\INTEGRACAO\\Package");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getIdInterface() + "\\INTEGRACAO\\PackageBody");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getIdInterface() + "\\INTEGRACAO\\Mapeamento");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getIdInterface() + "\\INTEGRACAO\\Mapeamento_SAP");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getIdInterface() + "\\INTEGRACAO\\Table");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getIdInterface() + "\\INTEGRACAO\\View");
-            dirScripts.add(path + "\\"+userNameSys+"\\Scripts\\" + getIdInterface() + "\\INTEGRACAO\\Sequence");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("IN") + "\\INTEGRACAO");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("IN") + "\\INTEGRACAO\\Function");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("IN") + "\\INTEGRACAO\\Procedure");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("IN") + "\\INTEGRACAO\\Package");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("IN") + "\\INTEGRACAO\\PackageBody");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("IN") + "\\INTEGRACAO\\Mapeamento");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("IN") + "\\INTEGRACAO\\Mapeamento_SAP");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("IN") + "\\INTEGRACAO\\Table");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("IN") + "\\INTEGRACAO\\View");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("IN") + "\\INTEGRACAO\\Sequence");
+        } else {
+            dirScriptsValida.add(path + "\\" + userNameSys + "\\Scripts\\" + getIdInterface());
+
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getIdInterface());
+            dirScripts.add(path + "\\" + userNameSys + "\\Arquivos\\" + getIdInterface());
+
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getIdInterface() + "\\INOUT\\");
+            dirScripts.add(path + "\\" + userNameSys + "\\Arquivos\\" + getIdInterface() + "\\INOUT\\");
+
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getIdInterface() + "\\INOUT\\Interface\\");
+            dirScripts.add(path + "\\" + userNameSys + "\\Arquivos\\" + getIdInterface() + "\\INOUT\\Interface\\");
+
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getIdInterface() + "\\INOUT\\ArquivosExternos\\");
+            dirScripts.add(path + "\\" + userNameSys + "\\Arquivos\\" + getIdInterface() + "\\INOUT\\ArquivosExternos\\");
+
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getIdInterface() + "\\INOUT\\Tabelas\\");
+            dirScripts.add(path + "\\" + userNameSys + "\\Arquivos\\" + getIdInterface() + "\\INOUT\\Tabelas\\");
+
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getIdInterface() + "\\INOUT\\Synonyms\\");
+            dirScripts.add(path + "\\" + userNameSys + "\\Arquivos\\" + getIdInterface() + "\\INOUT\\Synonyms\\");
+
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getIdInterface() + "\\INOUT\\View\\");
+            dirScripts.add(path + "\\" + userNameSys + "\\Arquivos\\" + getIdInterface() + "\\INOUT\\View\\");
+
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getIdInterface() + "\\INOUT\\Sequence\\");
+            dirScripts.add(path + "\\" + userNameSys + "\\Arquivos\\" + getIdInterface() + "\\INOUT\\Sequence\\");
+
+            dirScripts.add(path + "\\" + userNameSys + "\\Arquivos\\" + getIdInterface() + "\\INOUT\\Package\\");
+            dirScripts.add(path + "\\" + userNameSys + "\\Arquivos\\" + getIdInterface() + "\\INOUT\\PackageBody\\");
+            dirScripts.add(path + "\\" + userNameSys + "\\Arquivos\\" + getIdInterface() + "\\INOUT\\Procedure\\");
+            dirScripts.add(path + "\\" + userNameSys + "\\Arquivos\\" + getIdInterface() + "\\INOUT\\Function\\");
+
+            /*Integracao*/
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getIdInterface() + "\\INTEGRACAO");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getIdInterface() + "\\INTEGRACAO\\Function");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getIdInterface() + "\\INTEGRACAO\\Procedure");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getIdInterface() + "\\INTEGRACAO\\Package");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getIdInterface() + "\\INTEGRACAO\\PackageBody");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getIdInterface() + "\\INTEGRACAO\\Mapeamento");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getIdInterface() + "\\INTEGRACAO\\Mapeamento_SAP");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getIdInterface() + "\\INTEGRACAO\\Table");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getIdInterface() + "\\INTEGRACAO\\View");
+            dirScripts.add(path + "\\" + userNameSys + "\\Scripts\\" + getIdInterface() + "\\INTEGRACAO\\Sequence");
         }
 
-        for(int i = 0; i < dirScripts.size(); i++){
+        for (int i = 0; i < dirScripts.size(); i++) {
             File file = new File(dirScripts.get(i).toString());
-            if(file.mkdir()){
+            if (file.mkdir()) {
                 SfwLogger.saveLog("Diretorio criado com sucesso! " + dirScripts.get(i));
-            }else{
-                SfwLogger.saveLog("Erro ao criar diretorio! "  + dirScripts.get(i));
+            } else {
+                SfwLogger.saveLog("Erro ao criar diretorio! " + dirScripts.get(i));
             }
         }
-	}
+    }
 
-    public String getNomePasta(String tipo){
+    public String getNomePasta(String tipo) {
         String pasta = "";
-        
-        if(tipo.equals("") || chNomePasta.equals("N")){
+
+        if (tipo.equals("") || chNomePasta.equals("N")) {
             pasta = getIdInterface();
-        }else if (tipo.equals("IN")){
+        } else if (tipo.equals("IN")) {
             pasta = getIdSistema() + "_in_" + getIdInterface();
-        }else if (tipo.equals("OUT")){
+        } else if (tipo.equals("OUT")) {
             pasta = getIdSistema() + "_out_" + getIdInterface();
         }
 
         return pasta;
     }
-  	private void validaDiretorio() throws Exception{
+
+    private void validaDiretorio() throws Exception {
         StringBuffer strOutScripts = new StringBuffer();
         SfwValidaScripts valid = new SfwValidaScripts();
         valid.setArqsInstala("N");
-        //strOutScripts.append("SPOOL SCRIPT_STATUS.LOG" + quebraLinha);
-        //strOutScripts.append("@\".\\define.sql\"" + quebraLinha);
+        //strOutScripts.append("SPOOL SCRIPT_STATUS.LOG" + QUEBRA_LINHA);
+        //strOutScripts.append("@\".\\define.sql\"" + QUEBRA_LINHA);
 
         // comum em primeiro lugar
         //valid.executar(path + "\\"+userNameSys+"\\Scripts\\comum");
-        //strOutScripts.append("@\"" + (path + "\\"+userNameSys+"\\Scripts\\").replace(path + "\\"+userNameSys+"\\Scripts", ".") + "\\comum\\ordem_instalacao.sql\"" + quebraLinha);
+        //strOutScripts.append("@\"" + (path + "\\"+userNameSys+"\\Scripts\\").replace(path + "\\"+userNameSys+"\\Scripts", ".") + "\\comum\\ordem_instalacao.sql\"" + QUEBRA_LINHA);
 
-        strOutScripts.append("--spool instalacao_v01r01p00_txt.log  -- esse comando passou a ser executado no script dispara_script_instalacao.sql" + quebraLinha);
-        strOutScripts.append(quebraLinha);
-        strOutScripts.append("@define.sql" + quebraLinha);
-        strOutScripts.append("-- Conectar na base do INOUT para obter a data do inicio do processamento" + quebraLinha);
-        strOutScripts.append("conn &INOUT_USER/&INOUT_PASS@&TNS" + quebraLinha);
-        strOutScripts.append(quebraLinha);
-        strOutScripts.append(quebraLinha);
-        strOutScripts.append(quebraLinha);
-        strOutScripts.append("column \"DATA INICIO\" format A23" + quebraLinha);
-        strOutScripts.append("prompt" + quebraLinha);
-        strOutScripts.append("prompt =======================" + quebraLinha);
-        strOutScripts.append("SELECT TO_CHAR(SYSDATE,'DD/MM/YYYY HH24:MI:SS') AS \"DATA INICIO\" FROM DUAL;" + quebraLinha);
-        strOutScripts.append("prompt =======================" + quebraLinha);
-        strOutScripts.append("prompt INICIO do Processamento" + quebraLinha);
-        strOutScripts.append("prompt =======================" + quebraLinha);
-        strOutScripts.append("prompt" + quebraLinha);
-        strOutScripts.append(quebraLinha);
+        strOutScripts.append("--spool instalacao_v01r01p00_txt.log  -- esse comando passou a ser executado no script dispara_script_instalacao.sql" + QUEBRA_LINHA);
+        strOutScripts.append(QUEBRA_LINHA);
+        strOutScripts.append("@define.sql" + QUEBRA_LINHA);
+        strOutScripts.append("-- Conectar na base do INOUT para obter a data do inicio do processamento" + QUEBRA_LINHA);
+        strOutScripts.append("conn &INOUT_USER/&INOUT_PASS@&TNS" + QUEBRA_LINHA);
+        strOutScripts.append(QUEBRA_LINHA);
+        strOutScripts.append(QUEBRA_LINHA);
+        strOutScripts.append(QUEBRA_LINHA);
+        strOutScripts.append("column \"DATA INICIO\" format A23" + QUEBRA_LINHA);
+        strOutScripts.append("prompt" + QUEBRA_LINHA);
+        strOutScripts.append("prompt =======================" + QUEBRA_LINHA);
+        strOutScripts.append("SELECT TO_CHAR(SYSDATE,'DD/MM/YYYY HH24:MI:SS') AS \"DATA INICIO\" FROM DUAL;" + QUEBRA_LINHA);
+        strOutScripts.append("prompt =======================" + QUEBRA_LINHA);
+        strOutScripts.append("prompt INICIO do Processamento" + QUEBRA_LINHA);
+        strOutScripts.append("prompt =======================" + QUEBRA_LINHA);
+        strOutScripts.append("prompt" + QUEBRA_LINHA);
+        strOutScripts.append(QUEBRA_LINHA);
 
-        for(int i = 0; i < dirScriptsValida.size(); i++){
+        for (int i = 0; i < dirScriptsValida.size(); i++) {
 
             // iginora o comum pq ele já foi valido em primeiro lugar
             //if( dirScriptsValida.get(i).toString().indexOf("\\comum\\") == 0 ){
-                valid.executar(dirScriptsValida.get(i).toString());
-                strOutScripts.append("@\"" + dirScriptsValida.get(i).toString().replace(path + "\\"+userNameSys+"\\Scripts", ".") + "\\ordem_instalacao.sql\"" + quebraLinha);
+            valid.executar(dirScriptsValida.get(i).toString());
+            strOutScripts.append("@\"" + dirScriptsValida.get(i).toString().replace(path + "\\" + userNameSys + "\\Scripts", ".") + "\\ordem_instalacao.sql\"" + QUEBRA_LINHA);
             //}
         }
 
-        strOutScripts.append(quebraLinha);
-        strOutScripts.append("@\".\\processa_grants.sql\"" + quebraLinha);
-        strOutScripts.append(quebraLinha);
-        strOutScripts.append("@\".\\processa_grants_sistema.sql\"" + quebraLinha);
-        strOutScripts.append(quebraLinha);
-        //strOutScripts.append("conn &INOUT_USER/&INOUT_PASS@&TNS" + quebraLinha);
-        strOutScripts.append("connect_io.sql" + quebraLinha);
-        strOutScripts.append("@\".\\compila_invalidos.sql\"" + quebraLinha);
-        strOutScripts.append(quebraLinha);
-        //strOutScripts.append("conn &&INTEGRACAO_USER/&&INTEGRACAO_PASS@&&TNS" + quebraLinha);
-        strOutScripts.append("connect_it.sql" + quebraLinha);
-        strOutScripts.append("@\".\\compila_invalidos.sql\"" + quebraLinha);
+        strOutScripts.append(QUEBRA_LINHA);
+        strOutScripts.append("@\".\\processa_grants.sql\"" + QUEBRA_LINHA);
+        strOutScripts.append(QUEBRA_LINHA);
+        strOutScripts.append("@\".\\processa_grants_sistema.sql\"" + QUEBRA_LINHA);
+        strOutScripts.append(QUEBRA_LINHA);
+        //strOutScripts.append("conn &INOUT_USER/&INOUT_PASS@&TNS" + QUEBRA_LINHA);
+        strOutScripts.append("connect_io.sql" + QUEBRA_LINHA);
+        strOutScripts.append("@\".\\compila_invalidos.sql\"" + QUEBRA_LINHA);
+        strOutScripts.append(QUEBRA_LINHA);
+        //strOutScripts.append("conn &&INTEGRACAO_USER/&&INTEGRACAO_PASS@&&TNS" + QUEBRA_LINHA);
+        strOutScripts.append("connect_it.sql" + QUEBRA_LINHA);
+        strOutScripts.append("@\".\\compila_invalidos.sql\"" + QUEBRA_LINHA);
 
-        strOutScripts.append(quebraLinha);
-        //strOutScripts.append("@define.sql" + quebraLinha);
-        //strOutScripts.append("-- Conectar na base do INOUT para obter a data de fim do processamento" + quebraLinha);
-        //strOutScripts.append("-- utilizar a mesma base utilizada no inicio do processamento" + quebraLinha);
-        //strOutScripts.append("conn &INOUT_USER/&INOUT_PASS@&TNS" + quebraLinha);
-        strOutScripts.append("prompt" + quebraLinha);
-        strOutScripts.append("prompt =======================" + quebraLinha);
-        strOutScripts.append("SELECT 'Finalizado em: '||TO_CHAR(SYSDATE,'DD/MM/YYYY HH24:MI:SS') AS \"DATA FIM\" FROM DUAL;" + quebraLinha);
-        strOutScripts.append("prompt =======================" + quebraLinha);
-        strOutScripts.append("prompt Fim do Processamento" + quebraLinha);
-        strOutScripts.append("prompt =======================" + quebraLinha);
-        strOutScripts.append("prompt" + quebraLinha);
-        strOutScripts.append("@\"limpa_definicoes.sql\"" + quebraLinha);
-        strOutScripts.append(quebraLinha);
+        strOutScripts.append(QUEBRA_LINHA);
+        //strOutScripts.append("@define.sql" + QUEBRA_LINHA);
+        //strOutScripts.append("-- Conectar na base do INOUT para obter a data de fim do processamento" + QUEBRA_LINHA);
+        //strOutScripts.append("-- utilizar a mesma base utilizada no inicio do processamento" + QUEBRA_LINHA);
+        //strOutScripts.append("conn &INOUT_USER/&INOUT_PASS@&TNS" + QUEBRA_LINHA);
+        strOutScripts.append("prompt" + QUEBRA_LINHA);
+        strOutScripts.append("prompt =======================" + QUEBRA_LINHA);
+        strOutScripts.append("SELECT 'Finalizado em: '||TO_CHAR(SYSDATE,'DD/MM/YYYY HH24:MI:SS') AS \"DATA FIM\" FROM DUAL;" + QUEBRA_LINHA);
+        strOutScripts.append("prompt =======================" + QUEBRA_LINHA);
+        strOutScripts.append("prompt Fim do Processamento" + QUEBRA_LINHA);
+        strOutScripts.append("prompt =======================" + QUEBRA_LINHA);
+        strOutScripts.append("prompt" + QUEBRA_LINHA);
+        strOutScripts.append("@\"limpa_definicoes.sql\"" + QUEBRA_LINHA);
+        strOutScripts.append(QUEBRA_LINHA);
 
-        strOutScripts.append("spool off" + quebraLinha);
-        strOutScripts.append("exit" + quebraLinha);
+        strOutScripts.append("spool off" + QUEBRA_LINHA);
+        strOutScripts.append("exit" + QUEBRA_LINHA);
 
-        valid.copy(new File(".\\definicoes\\define.sql"), new File(path + "\\"+userNameSys+"\\Scripts\\" + "define.sql" ));
-        valid.copy(new File(".\\definicoes\\Instrucoes.txt"), new File(path + "\\"+userNameSys+"\\Scripts\\" + "Instrucoes.txt" ));
-        valid.copy(new File(".\\definicoes\\limpa_definicoes.sql"), new File(path + "\\"+userNameSys+"\\Scripts\\" + "limpa_definicoes.sql" ));
-        valid.copy(new File(".\\definicoes\\processa_grants.sql"), new File(path + "\\"+userNameSys+"\\Scripts\\" + "processa_grants.sql" ));
-        valid.copy(new File(".\\definicoes\\compila_invalidos.sql"), new File(path + "\\"+userNameSys+"\\Scripts\\" + "compila_invalidos.sql" ));
-        valid.copy(new File(".\\definicoes\\instala_linux.sh"), new File(path + "\\"+userNameSys+"\\Scripts\\" + "instala_linux.sh" ));
-        valid.copy(new File(".\\definicoes\\Instala_win.bat"), new File(path + "\\"+userNameSys+"\\Scripts\\" + "Instala_win.bat" ));
-        valid.copy(new File(".\\definicoes\\dispara_script_instalacao.sql"), new File(path + "\\"+userNameSys+"\\Scripts\\" + "dispara_script_instalacao.sql" ));
-        valid.copy(new File(".\\definicoes\\connect_io.sql"), new File(path + "\\"+userNameSys+ "\\Scripts\\" + "connect_io.sql" ));
-        valid.copy(new File(".\\definicoes\\connect_it.sql"), new File(path + "\\"+userNameSys+ "\\Scripts\\" + "connect_it.sql" ));
-        valid.copy(new File(".\\definicoes\\processa_grants_sistema.sql"), new File(path + "\\"+userNameSys+ "\\Scripts\\" + "processa_grants_sistema.sql" ));
+        valid.copy(new File(".\\definicoes\\define.sql"), new File(path + "\\" + userNameSys + "\\Scripts\\" + "define.sql"));
+        valid.copy(new File(".\\definicoes\\Instrucoes.txt"), new File(path + "\\" + userNameSys + "\\Scripts\\" + "Instrucoes.txt"));
+        valid.copy(new File(".\\definicoes\\limpa_definicoes.sql"), new File(path + "\\" + userNameSys + "\\Scripts\\" + "limpa_definicoes.sql"));
+        valid.copy(new File(".\\definicoes\\processa_grants.sql"), new File(path + "\\" + userNameSys + "\\Scripts\\" + "processa_grants.sql"));
+        valid.copy(new File(".\\definicoes\\compila_invalidos.sql"), new File(path + "\\" + userNameSys + "\\Scripts\\" + "compila_invalidos.sql"));
+        valid.copy(new File(".\\definicoes\\instala_linux.sh"), new File(path + "\\" + userNameSys + "\\Scripts\\" + "instala_linux.sh"));
+        valid.copy(new File(".\\definicoes\\Instala_win.bat"), new File(path + "\\" + userNameSys + "\\Scripts\\" + "Instala_win.bat"));
+        valid.copy(new File(".\\definicoes\\dispara_script_instalacao.sql"), new File(path + "\\" + userNameSys + "\\Scripts\\" + "dispara_script_instalacao.sql"));
+        valid.copy(new File(".\\definicoes\\connect_io.sql"), new File(path + "\\" + userNameSys + "\\Scripts\\" + "connect_io.sql"));
+        valid.copy(new File(".\\definicoes\\connect_it.sql"), new File(path + "\\" + userNameSys + "\\Scripts\\" + "connect_it.sql"));
+        valid.copy(new File(".\\definicoes\\processa_grants_sistema.sql"), new File(path + "\\" + userNameSys + "\\Scripts\\" + "processa_grants_sistema.sql"));
 
-        File fileScripts = new File(path + "\\"+userNameSys+"\\Scripts\\ordem_instalacao.sql");
-        if(!fileScripts.exists())
+        File fileScripts = new File(path + "\\" + userNameSys + "\\Scripts\\ordem_instalacao.sql");
+        if (!fileScripts.exists()) {
             fileScripts.createNewFile();
+        }
 
         FileWriter fwScripts = new FileWriter(fileScripts, false);
-        fwScripts.write(strOutScripts.toString(),0,strOutScripts.length());
+        fwScripts.write(strOutScripts.toString(), 0, strOutScripts.length());
         fwScripts.close();
-        logMessage("File .\\"+userNameSys+"\\Scripts\\ordem_instalacao.sql was succesfull generated.");
+        logMessage("File .\\" + userNameSys + "\\Scripts\\ordem_instalacao.sql was succesfull generated.");
 
     }
 
-	/**************************************************************************
-	 * <b>Remover diretórios</b>
-	 **************************************************************************/
-	private void removeDiretorio() throws Exception{
+    /**************************************************************************
+     * <b>Remover diretórios</b>
+     **************************************************************************/
+    private void removeDiretorio() throws Exception {
         File diretorio = new File(path + "\\" + userNameSys);
         File[] subdiretorios = diretorio.listFiles();
         SfwLogger.saveLog("Removendo diretórios! ");
-        for(File subdir : subdiretorios){
-            if(subdir.isDirectory()){
+        for (File subdir : subdiretorios) {
+            if (subdir.isDirectory()) {
                 //SfwLogger.saveLog(subdir.getName());
                 int nArqs = listaSubDir(subdir);
-                if(nArqs == 0){
-                    if(subdir.delete()){
+                if (nArqs == 0) {
+                    if (subdir.delete()) {
                         //SfwLogger.saveLog("Diretório deletado: " + subdir.getName());
                     }
                 }
             }
         }
-	}
+    }
 
-	/**************************************************************************
-	 * <b>Listar subDiretórios</b>
-	 * @param subDir
-	 **************************************************************************/
-    private int listaSubDir(File subDir) throws IOException{
+    /**************************************************************************
+     * <b>Listar subDiretórios</b>
+     * @param subDir
+     **************************************************************************/
+    private int listaSubDir(File subDir) throws IOException {
         int nArqs = 0;
         File[] subdiretorios = subDir.listFiles();
-        for(File subdir : subdiretorios){
-            if(subdir.isDirectory()){
+        for (File subdir : subdiretorios) {
+            if (subdir.isDirectory()) {
                 //System.out.println(subdir.getName());
-                if(listaSubDir(subdir) == 0){
-                    if(subdir.delete()){
+                if (listaSubDir(subdir) == 0) {
+                    if (subdir.delete()) {
                         SfwLogger.saveLog("Diretório deletado: " + subdir.getName());
                     }
                 }
-            }else{
+            } else {
                 nArqs += 1;
             }
         }
         return nArqs;
     }
-    
-	/**************************************************************************
-	 * <b>Gerar scripts das interfaces</b>
-	 **************************************************************************/
-	private void interfaces() throws Exception{
 
-        try{
+    /**************************************************************************
+     * <b>Gerar scripts das interfaces</b>
+     **************************************************************************/
+    private void interfaces() throws Exception {
+
+        try {
             fileName = "interface.sql";
-            if(tipoInterface.trim().equals("S")){
-                fileNameScripts = path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("OUT") + "\\INOUT\\Interface\\" + fileName;
-            }else if(tipoInterface.trim().equals("E")){
-                fileNameScripts = path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("IN") + "\\INOUT\\Interface\\" + fileName;
-            }else{
-                fileNameScripts = path + "\\"+userNameSys+"\\Scripts\\" + this.getIdInterface() + "\\INOUT\\Interface\\" + fileName;
+            if (tipoInterface.trim().equals("S")) {
+                fileNameScripts = path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("OUT") + "\\INOUT\\Interface\\" + fileName;
+            } else if (tipoInterface.trim().equals("E")) {
+                fileNameScripts = path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("IN") + "\\INOUT\\Interface\\" + fileName;
+            } else {
+                fileNameScripts = path + "\\" + userNameSys + "\\Scripts\\" + this.getIdInterface() + "\\INOUT\\Interface\\" + fileName;
             }
 
             // Criando arquivo na pasta de scripts
             File fileScripts = new File(fileNameScripts);
-            if(!fileScripts.exists()){
+            if (!fileScripts.exists()) {
                 fileScripts.createNewFile();
 
                 FileWriter fwScripts = new FileWriter(fileScripts, false);
@@ -1110,93 +1082,93 @@ public class CVSStructure {
 
                 logMessage("Creating or appending to file " + fileNameScripts);
 
-                if(CVSStructure.chConexaoPorArquivos.equals("S")){
-                    strOut.append("conn &&INOUT_USER/&&INOUT_PASS@&&TNS" + quebraLinha + quebraLinha);
+                if (CVSStructure.chConexaoPorArquivos.equals("S")) {
+                    strOut.append("conn &&INOUT_USER/&&INOUT_PASS@&&TNS" + QUEBRA_LINHA + QUEBRA_LINHA);
                 }
-                strOut.append("--  ///////" + quebraLinha);
-                strOut.append("--  ///////     Script Gerado a partir do Sistema Gerenciador de Interfaces IN-OUT" + quebraLinha);
-                strOut.append("--  ///////     Interface: " + descricao + quebraLinha);
-                strOut.append("--  ///////" + quebraLinha + quebraLinha + quebraLinha);
-                strOut.append("delete from PERMISSAO_TABELA where ID_INTERFACE = '" + idInterface + "';" + quebraLinha + quebraLinha);
-                strOut.append("delete from SISTEMA_INTERFACE where ID_INTERFACE = '" + idInterface + "';" + quebraLinha + quebraLinha);
-                strOut.append("begin" + quebraLinha);
-                strOut.append("   insert into    INTERFACES" + quebraLinha);
-                strOut.append("      (ID_INTERFACE," + quebraLinha);
-                strOut.append("      DESCRICAO," + quebraLinha);
-                strOut.append("      NOME_MAQUINA," + quebraLinha);
-                strOut.append("      EXECUTAVEL," + quebraLinha);
-                strOut.append("      USERNAME," + quebraLinha);
-                strOut.append("      TEMPO_MEDIO," + quebraLinha);
-                strOut.append("      TIPO_INTERFACE" );
+                strOut.append("--  ///////" + QUEBRA_LINHA);
+                strOut.append("--  ///////     Script Gerado a partir do Sistema Gerenciador de Interfaces IN-OUT" + QUEBRA_LINHA);
+                strOut.append("--  ///////     Interface: " + descricao + QUEBRA_LINHA);
+                strOut.append("--  ///////" + QUEBRA_LINHA + QUEBRA_LINHA + QUEBRA_LINHA);
+                strOut.append("delete from PERMISSAO_TABELA where ID_INTERFACE = '" + idInterface + "';" + QUEBRA_LINHA + QUEBRA_LINHA);
+                strOut.append("delete from SISTEMA_INTERFACE where ID_INTERFACE = '" + idInterface + "';" + QUEBRA_LINHA + QUEBRA_LINHA);
+                strOut.append("begin" + QUEBRA_LINHA);
+                strOut.append("   insert into    INTERFACES" + QUEBRA_LINHA);
+                strOut.append("      (ID_INTERFACE," + QUEBRA_LINHA);
+                strOut.append("      DESCRICAO," + QUEBRA_LINHA);
+                strOut.append("      NOME_MAQUINA," + QUEBRA_LINHA);
+                strOut.append("      EXECUTAVEL," + QUEBRA_LINHA);
+                strOut.append("      USERNAME," + QUEBRA_LINHA);
+                strOut.append("      TEMPO_MEDIO," + QUEBRA_LINHA);
+                strOut.append("      TIPO_INTERFACE");
 
-                if( interfereProcessamentoDireto != null && !interfereProcessamentoDireto.equals("") ){
-                    strOut.append("," + quebraLinha + "     INTERFERE_PROC_DIR)" + quebraLinha);
-                }else{
-                    strOut.append(")" + quebraLinha);
+                if (interfereProcessamentoDireto != null && !interfereProcessamentoDireto.equals("")) {
+                    strOut.append("," + QUEBRA_LINHA + "     INTERFERE_PROC_DIR)" + QUEBRA_LINHA);
+                } else {
+                    strOut.append(")" + QUEBRA_LINHA);
                 }
 
-                strOut.append("      values" + quebraLinha);
-                strOut.append("      ('" + idInterface + "'," + quebraLinha);
-                strOut.append("      '" + descricao + "'," + quebraLinha);
-                strOut.append("   	  '&&USER_MACHINE'," + quebraLinha);
-                strOut.append("	  '" + executavelCompl + "'," + quebraLinha);
-                strOut.append("	  'ADM'," + quebraLinha);
-                strOut.append("	  '0'," + quebraLinha);
+                strOut.append("      values" + QUEBRA_LINHA);
+                strOut.append("      ('" + idInterface + "'," + QUEBRA_LINHA);
+                strOut.append("      '" + descricao + "'," + QUEBRA_LINHA);
+                strOut.append("   	  '&&USER_MACHINE'," + QUEBRA_LINHA);
+                strOut.append("	  '" + executavelCompl + "'," + QUEBRA_LINHA);
+                strOut.append("	  'ADM'," + QUEBRA_LINHA);
+                strOut.append("	  '0'," + QUEBRA_LINHA);
                 strOut.append("   '" + tipoInterface + "'");
-                if( interfereProcessamentoDireto != null && !interfereProcessamentoDireto.equals("") ){
-                    strOut.append(quebraLinha);
-                    strOut.append("      ,'" + interfereProcessamentoDireto + "'" + quebraLinha);
+                if (interfereProcessamentoDireto != null && !interfereProcessamentoDireto.equals("")) {
+                    strOut.append(QUEBRA_LINHA);
+                    strOut.append("      ,'" + interfereProcessamentoDireto + "'" + QUEBRA_LINHA);
                 }
-                strOut.append( ");" + quebraLinha);
-                strOut.append("exception" + quebraLinha);
-                strOut.append("    when dup_val_on_index then" + quebraLinha);
-                strOut.append("        update INTERFACES" + quebraLinha);
-                strOut.append("        set" + quebraLinha);
-                strOut.append("                DESCRICAO = '" + descricao + "'," + quebraLinha);
-                strOut.append("                NOME_MAQUINA = '&&USER_MACHINE'," + quebraLinha);
-                strOut.append("                EXECUTAVEL = '" + executavelCompl + "'," + quebraLinha);
-                strOut.append("                USERNAME = 'ADM'," + quebraLinha);
-                strOut.append("                TIPO_INTERFACE = '" + tipoInterface + "'" + quebraLinha);
-                strOut.append("        where id_interface  = '" + idInterface + "';" + quebraLinha);
-                strOut.append("end;" + quebraLinha);
-                strOut.append("/" + quebraLinha + quebraLinha);
+                strOut.append(");" + QUEBRA_LINHA);
+                strOut.append("exception" + QUEBRA_LINHA);
+                strOut.append("    when dup_val_on_index then" + QUEBRA_LINHA);
+                strOut.append("        update INTERFACES" + QUEBRA_LINHA);
+                strOut.append("        set" + QUEBRA_LINHA);
+                strOut.append("                DESCRICAO = '" + descricao + "'," + QUEBRA_LINHA);
+                strOut.append("                NOME_MAQUINA = '&&USER_MACHINE'," + QUEBRA_LINHA);
+                strOut.append("                EXECUTAVEL = '" + executavelCompl + "'," + QUEBRA_LINHA);
+                strOut.append("                USERNAME = 'ADM'," + QUEBRA_LINHA);
+                strOut.append("                TIPO_INTERFACE = '" + tipoInterface + "'" + QUEBRA_LINHA);
+                strOut.append("        where id_interface  = '" + idInterface + "';" + QUEBRA_LINHA);
+                strOut.append("end;" + QUEBRA_LINHA);
+                strOut.append("/" + QUEBRA_LINHA + QUEBRA_LINHA);
 
                 psPermissaoTabela.setString(1, idInterface);
                 strOut.append(new DataTableLayout("INOUT",
-                                                        "permissao_tabela",
-                                                         psPermissaoTabela).create());
+                        "permissao_tabela",
+                        psPermissaoTabela).create());
 
-                strOut.append("delete from INTERFACE_SAIDA where ID_INTERFACE =  '" + idInterface + "';" + quebraLinha + quebraLinha);
-                strOut.append("insert into SISTEMA_INTERFACE (ID_INTERFACE, ID_SISTEMA) values ('" + idInterface + "' , '" + (idSistema.toUpperCase().equals("SFW") ? "BG" : idSistema.toUpperCase())+ "');" + quebraLinha + quebraLinha);
-                strOut.append("commit;" + quebraLinha + quebraLinha + quebraLinha);
-                strOut.append("-- //////" + quebraLinha);
-                strOut.append("-- //////  FIM DO SCRIPT" + quebraLinha);
+                strOut.append("delete from INTERFACE_SAIDA where ID_INTERFACE =  '" + idInterface + "';" + QUEBRA_LINHA + QUEBRA_LINHA);
+                strOut.append("insert into SISTEMA_INTERFACE (ID_INTERFACE, ID_SISTEMA) values ('" + idInterface + "' , '" + (idSistema.toUpperCase().equals("SFW") ? "BG" : idSistema.toUpperCase()) + "');" + QUEBRA_LINHA + QUEBRA_LINHA);
+                strOut.append("commit;" + QUEBRA_LINHA + QUEBRA_LINHA + QUEBRA_LINHA);
+                strOut.append("-- //////" + QUEBRA_LINHA);
+                strOut.append("-- //////  FIM DO SCRIPT" + QUEBRA_LINHA);
                 strOut.append("-- //////");
 
-                if(strOut != null && !strOut.equals("")){
-                    fwScripts.write(strOut.toString(),0,strOut.length());
+                if (strOut != null && !strOut.toString().equals("")) {
+                    fwScripts.write(strOut.toString(), 0, strOut.length());
                 }
 
                 fwScripts.close();
                 CVSStructure.nTotalInterfaces++;
             }
-        }catch(Exception ex){
+        } catch (Exception ex) {
             logMessage("Error generating " + fileNameScripts);
             logMessage(ex.getLocalizedMessage());
             SfwLogger.saveLog(ex.getClass().toString(), ex.getStackTrace());
         }
-	}
+    }
 
-	/**************************************************************************
-	 * <b>Gerar scripts dos arquivos externos</b>
-	 **************************************************************************/
-	private void arquivosExternos() throws Exception{
-		File fileScripts;
-		FileWriter fwScripts;
-		StringBuffer strOutScripts;
-		BufferedReader brScripts;
+    /**************************************************************************
+     * <b>Gerar scripts dos arquivos externos</b>
+     **************************************************************************/
+    private void arquivosExternos() throws Exception {
+        File fileScripts;
+        FileWriter fwScripts;
+        StringBuffer strOutScripts;
+        BufferedReader brScripts;
 
-        try{
+        try {
             psCountInterface.setString(1, executavel);
             rsCountInterface = psCountInterface.executeQuery();
             rsCountInterface.next();
@@ -1206,35 +1178,35 @@ public class CVSStructure {
             psGerarArquivosExternos.setString(1, executavel);
             rsArquivosExternos = psGerarArquivosExternos.executeQuery();
 
-            while(rsArquivosExternos.next()){
+            while (rsArquivosExternos.next()) {
 
-                if(rsArquivosExternos.getString("NOME_ARQUIVO").toLowerCase().substring(rsArquivosExternos.getString("NOME_ARQUIVO").indexOf(".")+1,rsArquivosExternos.getString("NOME_ARQUIVO").length()).equals("sql")){
+                if (rsArquivosExternos.getString("NOME_ARQUIVO").toLowerCase().substring(rsArquivosExternos.getString("NOME_ARQUIVO").indexOf(".") + 1, rsArquivosExternos.getString("NOME_ARQUIVO").length()).equals("sql")) {
                     fileName = rsArquivosExternos.getString("NOME_ARQUIVO").toLowerCase();
-                }else{
+                } else {
                     fileName = rsArquivosExternos.getString("NOME_ARQUIVO").toLowerCase() + ".sql";
                 }
 
-                 if(nTotalArquivos == 1){
-                    if(tipoInterface.trim().equals("S")){
-                        fileNameScripts = path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("OUT") + "\\INOUT\\ArquivosExternos\\" + fileName;
-                    }else if(tipoInterface.trim().equals("E")){
-                        fileNameScripts = path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("IN") + "\\INOUT\\ArquivosExternos\\" + fileName;
-                    }else{
-                        fileNameScripts = path + "\\"+userNameSys+"\\Scripts\\" + this.getIdInterface() + "\\INOUT\\ArquivosExternos\\" + fileName;
+                if (nTotalArquivos == 1) {
+                    if (tipoInterface.trim().equals("S")) {
+                        fileNameScripts = path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("OUT") + "\\INOUT\\ArquivosExternos\\" + fileName;
+                    } else if (tipoInterface.trim().equals("E")) {
+                        fileNameScripts = path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("IN") + "\\INOUT\\ArquivosExternos\\" + fileName;
+                    } else {
+                        fileNameScripts = path + "\\" + userNameSys + "\\Scripts\\" + this.getIdInterface() + "\\INOUT\\ArquivosExternos\\" + fileName;
                     }
-                }else if(nTotalArquivos >= 2){
-                    fileNameScripts = path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT\\ArquivosExternos\\" + fileName;
-                }else{
-                    fileNameScripts = path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT\\ArquivosExternos\\" + fileName;
+                } else if (nTotalArquivos >= 2) {
+                    fileNameScripts = path + "\\" + userNameSys + "\\Scripts\\comum\\INOUT\\ArquivosExternos\\" + fileName;
+                } else {
+                    fileNameScripts = path + "\\" + userNameSys + "\\Scripts\\comum\\INOUT\\ArquivosExternos\\" + fileName;
                 }
                 logMessage("Creating or appending to file " + fileName);
                 //fileName = ".\\"+sUserName+"\\Scripts\\" + IDInterface + " \\" fileName;
 
                 clob = rsArquivosExternos.getClob("CONTEUDO");
-                if(clob!=null){
-                    try{
+                if (clob != null) {
+                    try {
                         fileScripts = new File(fileNameScripts);
-                        if(!fileScripts.exists()){
+                        if (!fileScripts.exists()) {
                             fileScripts.createNewFile();
 
                             fwScripts = new FileWriter(fileScripts, false);
@@ -1247,36 +1219,36 @@ public class CVSStructure {
                             strOutScripts = new StringBuffer();
                             String auxScripts;
 
-                            strOutScripts.append("conn &&INOUT_USER/&&INOUT_PASS@&&TNS" + quebraLinha + quebraLinha);
-                            strOutScripts.append("--  ///////" + quebraLinha);
-                            strOutScripts.append("--  ///////     Script Gerado a partir do Sistema Gerenciador de Interfaces IN-OUT" + quebraLinha);
-                            strOutScripts.append("--  ///////     Arquivo Externo: " + rsArquivosExternos.getString("NOME_ARQUIVO") + quebraLinha );
-                            strOutScripts.append("--  ///////" + quebraLinha + quebraLinha);
-                            strOutScripts.append("set define off" + quebraLinha + quebraLinha + quebraLinha + quebraLinha);
-                            strOutScripts.append("delete from ARQUIVO_EXTERNO where NOME_ARQUIVO = '" + rsArquivosExternos.getString("NOME_ARQUIVO") + "';" + quebraLinha + quebraLinha);
-                            strOutScripts.append("insert into ARQUIVO_EXTERNO" + quebraLinha);
-                            strOutScripts.append("(NOME_ARQUIVO, DESCRICAO, PATH_RELATIVO, CONTEUDO)" + quebraLinha);
-                            strOutScripts.append("values" + quebraLinha);
+                            strOutScripts.append("conn &&INOUT_USER/&&INOUT_PASS@&&TNS" + QUEBRA_LINHA + QUEBRA_LINHA);
+                            strOutScripts.append("--  ///////" + QUEBRA_LINHA);
+                            strOutScripts.append("--  ///////     Script Gerado a partir do Sistema Gerenciador de Interfaces IN-OUT" + QUEBRA_LINHA);
+                            strOutScripts.append("--  ///////     Arquivo Externo: " + rsArquivosExternos.getString("NOME_ARQUIVO") + QUEBRA_LINHA);
+                            strOutScripts.append("--  ///////" + QUEBRA_LINHA + QUEBRA_LINHA);
+                            strOutScripts.append("set define off" + QUEBRA_LINHA + QUEBRA_LINHA + QUEBRA_LINHA + QUEBRA_LINHA);
+                            strOutScripts.append("delete from ARQUIVO_EXTERNO where NOME_ARQUIVO = '" + rsArquivosExternos.getString("NOME_ARQUIVO") + "';" + QUEBRA_LINHA + QUEBRA_LINHA);
+                            strOutScripts.append("insert into ARQUIVO_EXTERNO" + QUEBRA_LINHA);
+                            strOutScripts.append("(NOME_ARQUIVO, DESCRICAO, PATH_RELATIVO, CONTEUDO)" + QUEBRA_LINHA);
+                            strOutScripts.append("values" + QUEBRA_LINHA);
 
                             // We access to stream, as this way we don't have to use the CLOB.length() which is slower...
                             brScripts = new BufferedReader(clob.getCharacterStream());
                             int contador = 0;
                             int maxLin = 0;
-                            while ((auxScripts=brScripts.readLine())!=null){
+                            while ((auxScripts = brScripts.readLine()) != null) {
 
-                                auxScripts = auxScripts.replaceAll("'",  "' || chr(39) || '");
-                                auxScripts = auxScripts.replaceAll("@",  "' || chr(64) || '");
-                                auxScripts = auxScripts.replaceAll("\t",  "' '");
+                                auxScripts = auxScripts.replaceAll("'", "' || chr(39) || '");
+                                auxScripts = auxScripts.replaceAll("@", "' || chr(64) || '");
+                                auxScripts = auxScripts.replaceAll("\t", "' '");
                                 //auxScripts = auxScripts.replaceAll(sQuebraLinha,  "' || chr(13) || '");
-                                auxScripts = auxScripts.replaceAll(quebraLinha,  "' || chr(13) || CHR(10) ||'");
+                                auxScripts = auxScripts.replaceAll(QUEBRA_LINHA, "' || chr(13) || CHR(10) ||'");
                                 //auxScripts = auxScripts.replaceAll("|| '' ||",  "||");
 
-                                if (contador == 0){
+                                if (contador == 0) {
                                     strOutScripts.append("('" + rsArquivosExternos.getString("NOME_ARQUIVO") + "'");
                                     strOutScripts.append(",");
-                                    if(rsArquivosExternos.getString("NOME_ARQUIVO") == null){
+                                    if (rsArquivosExternos.getString("NOME_ARQUIVO") == null) {
                                         strOutScripts.append("'" + (descricao.length() > 50 ? descricao.substring(0, 50) : descricao.trim()) + "'");
-                                    }else{
+                                    } else {
                                         strOutScripts.append("'" + rsArquivosExternos.getString("NOME_ARQUIVO") + "'");
                                     }
                                     strOutScripts.append(",");
@@ -1285,10 +1257,10 @@ public class CVSStructure {
                                     strOutScripts.append("'" + auxScripts + "'");
                                     strOutScripts.append(" || CHR(13) || CHR(10)");
                                     strOutScripts.append(");");
-                                }else{
+                                } else {
                                     //if(maxLin == 0){
-                                        //strOutScripts.append(sQuebraLinha + "" + sQuebraLinha);
-                                        //strOutScripts.append(sQuebraLinha);
+                                    //strOutScripts.append(sQuebraLinha + "" + sQuebraLinha);
+                                    //strOutScripts.append(sQuebraLinha);
                                     //	strOutScripts.append("exec CONCATENA_CONTEUDO ('" + rsArquivosExternos.getString("NOME_ARQUIVO") + "',");
                                     //}
 
@@ -1300,13 +1272,13 @@ public class CVSStructure {
                                     //	maxLin += auxScripts.length();
                                     //}
                                     //if(!auxScripts.equals("")){
-                                        strOutScripts.append(quebraLinha + quebraLinha);
-                                        strOutScripts.append("exec CONCATENA_CONTEUDO (");
-                                        strOutScripts.append("'" + rsArquivosExternos.getString("NOME_ARQUIVO") + "'");
-                                        strOutScripts.append(",");
-                                        strOutScripts.append("'" + auxScripts + "'");
-                                        strOutScripts.append(" || CHR(13) || CHR(10)");
-                                        strOutScripts.append(");");
+                                    strOutScripts.append(QUEBRA_LINHA + QUEBRA_LINHA);
+                                    strOutScripts.append("exec CONCATENA_CONTEUDO (");
+                                    strOutScripts.append("'" + rsArquivosExternos.getString("NOME_ARQUIVO") + "'");
+                                    strOutScripts.append(",");
+                                    strOutScripts.append("'" + auxScripts + "'");
+                                    strOutScripts.append(" || CHR(13) || CHR(10)");
+                                    strOutScripts.append(");");
 
                                     //}
 
@@ -1319,88 +1291,88 @@ public class CVSStructure {
                             //	strOutScripts.append("');");
                             //}
 
-                            strOutScripts.append(quebraLinha + quebraLinha);
+                            strOutScripts.append(QUEBRA_LINHA + QUEBRA_LINHA);
                             strOutScripts.append("commit;");
-                            strOutScripts.append(quebraLinha + quebraLinha + quebraLinha + quebraLinha);
+                            strOutScripts.append(QUEBRA_LINHA + QUEBRA_LINHA + QUEBRA_LINHA + QUEBRA_LINHA);
                             strOutScripts.append("set define on");
-                            strOutScripts.append(quebraLinha + quebraLinha);
-                            strOutScripts.append("-- //////" + quebraLinha);
-                            strOutScripts.append("-- //////  Fim do Script" + quebraLinha);
+                            strOutScripts.append(QUEBRA_LINHA + QUEBRA_LINHA);
+                            strOutScripts.append("-- //////" + QUEBRA_LINHA);
+                            strOutScripts.append("-- //////  Fim do Script" + QUEBRA_LINHA);
                             strOutScripts.append("-- //////");
 
-                            if(strOutScripts != null ){
-                                fwScripts.write(strOutScripts.toString(),0,strOutScripts.length());
+                            if (strOutScripts != null) {
+                                fwScripts.write(strOutScripts.toString(), 0, strOutScripts.length());
                             }
                             fwScripts.close();
                         }
 
                         logMessage("File " + fileNameScripts + " was succesfull generated.");
-                    }catch(IOException ioex){
+                    } catch (IOException ioex) {
                         CVSStructure.logMessage("File " + fileNameScripts + " was error generated.");
                         SfwLogger.saveLog(ioex.getClass().toString(), ioex.getStackTrace());
                         ioex.printStackTrace();
                     }
-                }else{
+                } else {
                     logMessage("No data are being generated");
                     logMessage("File " + fileName + " wasn't generated.");
                     logMessage("Error in the implementation of the interface with Id_Importação " + idInterface);
                 }
             }
-        }catch(Exception ex){
+        } catch (Exception ex) {
             logMessage("Error generating " + fileName);
             logMessage(ex.getLocalizedMessage());
             SfwLogger.saveLog(ex.getClass().toString(), ex.getStackTrace());
-        }finally{
+        } finally {
             rsCountInterface.close();
         }
-	}
+    }
 
     /**************************************************************************
-	 * <b>Gerar scripts dos arquivos externos</b>
-	 **************************************************************************/
-	private void arquivosExternosNaoGerados() throws Exception{
-		File fileScripts;
-		FileWriter fwScripts;
-		StringBuffer strOutScripts;
-		BufferedReader brScripts;
+     * <b>Gerar scripts dos arquivos externos</b>
+     **************************************************************************/
+    private void arquivosExternosNaoGerados() throws Exception {
+        File fileScripts;
+        FileWriter fwScripts;
+        StringBuffer strOutScripts;
+        BufferedReader brScripts;
 
-        try{
+        try {
 
-            try{
+            try {
                 logMessage("*** Drop table TMP_CVS_STRUCTURE ");
                 psDropTableIT = ConnectionInout.getConnection().prepareStatement("drop table TMP_CVS_STRUCTURE");
                 psDropTableIT.executeQuery();
-            }catch(Exception ex){
+            } catch (Exception ex) {
                 //logMessage("Error drop table TMP_CVS_STRUCTURE ");
                 //logMessage(ex.getLocalizedMessage());
                 //SfwLogger.saveLog(ex.getClass().toString(), ex.getStackTrace());
             }
 
-            try{
+            try {
                 logMessage("*** Create table TMP_CVS_STRUCTURE ");
                 psCreateTable.executeQuery();
                 psInsertReferencesObjects.setString(1, s_User.toUpperCase());
                 psInsertReferencesObjects.executeUpdate();
                 ConnectionInout.getConnection().commit();
-            }catch(Exception ex){
+            } catch (Exception ex) {
                 //logMessage("Error create table TMP_CVS_STRUCTURE ");
                 //logMessage(ex.getLocalizedMessage());
                 //SfwLogger.saveLog(ex.getClass().toString(), ex.getStackTrace());
             }
 
             rsGerarArquivosExternosNaoGerados = psGerarArquivosExternosNaoGerados.executeQuery();
-            while(rsGerarArquivosExternosNaoGerados.next()){
+            while (rsGerarArquivosExternosNaoGerados.next()) {
 
-                for(int i = 1; i <= 2; i++){
+                for (int i = 1; i <= 2; i++) {
 
                     psCountArquivosExternosNaoGerados = ConnectionInout.getConnection().prepareStatement(PrepararConsultas.getCountArquivosExternos().toString());
                     String tipoArquivo;
-                    if(i == 1){
+                    if (i == 1) {
                         psCountArquivosExternosNaoGerados.setString(1, rsGerarArquivosExternosNaoGerados.getString("CONTEM"));
-                         tipoArquivo = rsGerarArquivosExternosNaoGerados.getString("TIPO").toLowerCase();
-                    }else{
+                        tipoArquivo = rsGerarArquivosExternosNaoGerados.getString("TIPO").toLowerCase();
+                    } else {
                         psCountArquivosExternosNaoGerados.setString(1, rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO"));
-                        tipoArquivo = rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO").toLowerCase().substring(rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO").indexOf(".")+1, rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO").length());
+                        tipoArquivo = rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO").toLowerCase().substring(rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO").indexOf(".") + 1, rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO").length());
                     }
                     //psCountArquivosExternosNaoGerados.setString(2, rsGerarArquivosExternosNaoGerados.getString("CONTEM"));
                     rsCountArquivosExternosNaoGerados = psCountArquivosExternosNaoGerados.executeQuery();
@@ -1413,58 +1385,58 @@ public class CVSStructure {
                     //    String b = rsGerarArquivosExternosNaoGerados.getString("CONTEM").toLowerCase();
                     //}
 
-                    if(nTotalArquivos > 1 || nTotalArquivos == 0){
-                        if(i == 1){
-                            if(tipoArquivo.equals("bat")){
+                    if (nTotalArquivos > 1 || nTotalArquivos == 0) {
+                        if (i == 1) {
+                            if (tipoArquivo.equals("bat")) {
                                 fileName = rsGerarArquivosExternosNaoGerados.getString("CONTEM").toLowerCase() + "." + rsGerarArquivosExternosNaoGerados.getString("TIPO").toLowerCase() + ".sql";
-                                fileNameScripts = path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT\\ArquivosExternos\\" + fileName;
-                            }else if (tipoArquivo.equals("sql")){
+                                fileNameScripts = path + "\\" + userNameSys + "\\Scripts\\comum\\INOUT\\ArquivosExternos\\" + fileName;
+                            } else if (tipoArquivo.equals("sql")) {
                                 fileName = rsGerarArquivosExternosNaoGerados.getString("CONTEM").toLowerCase() + "." + tipoArquivo;
-                                fileNameScripts = path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT\\ArquivosExternos\\" + fileName;
-                            }else if (tipoArquivo.equals("function")){
+                                fileNameScripts = path + "\\" + userNameSys + "\\Scripts\\comum\\INOUT\\ArquivosExternos\\" + fileName;
+                            } else if (tipoArquivo.equals("function")) {
                                 fileName = rsGerarArquivosExternosNaoGerados.getString("CONTEM").toLowerCase() + ".sql";
-                                fileNameScripts = path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT\\Function\\" + fileName;
-                            }else if (tipoArquivo.equals("procedure")){
+                                fileNameScripts = path + "\\" + userNameSys + "\\Scripts\\comum\\INOUT\\Function\\" + fileName;
+                            } else if (tipoArquivo.equals("procedure")) {
                                 fileName = rsGerarArquivosExternosNaoGerados.getString("CONTEM").toLowerCase() + ".sql";
-                                fileNameScripts = path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT\\Procedure\\" + fileName;
-                            }else if (tipoArquivo.equals("package")){
+                                fileNameScripts = path + "\\" + userNameSys + "\\Scripts\\comum\\INOUT\\Procedure\\" + fileName;
+                            } else if (tipoArquivo.equals("package")) {
                                 fileName = rsGerarArquivosExternosNaoGerados.getString("CONTEM").toLowerCase() + ".sql";
-                                fileNameScripts = path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT\\Package\\" + fileName;
+                                fileNameScripts = path + "\\" + userNameSys + "\\Scripts\\comum\\INOUT\\Package\\" + fileName;
                             }
-                        }else{
-                            
-                            if(tipoArquivo.equals("bat")){
+                        } else {
+
+                            if (tipoArquivo.equals("bat")) {
                                 fileName = rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO").toLowerCase() + "." + tipoArquivo + ".sql";
-                                fileNameScripts = path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT\\ArquivosExternos\\" + fileName;
-                            }else if (tipoArquivo.equals("sql")){
+                                fileNameScripts = path + "\\" + userNameSys + "\\Scripts\\comum\\INOUT\\ArquivosExternos\\" + fileName;
+                            } else if (tipoArquivo.equals("sql")) {
                                 fileName = rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO").toLowerCase() + "." + tipoArquivo;
-                                fileNameScripts = path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT\\ArquivosExternos\\" + fileName;
-                            }else if (tipoArquivo.equals("function")){
+                                fileNameScripts = path + "\\" + userNameSys + "\\Scripts\\comum\\INOUT\\ArquivosExternos\\" + fileName;
+                            } else if (tipoArquivo.equals("function")) {
                                 fileName = rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO").toLowerCase() + ".sql";
-                                fileNameScripts = path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT\\Function\\" + fileName;
-                            }else if (tipoArquivo.equals("procedure")){
+                                fileNameScripts = path + "\\" + userNameSys + "\\Scripts\\comum\\INOUT\\Function\\" + fileName;
+                            } else if (tipoArquivo.equals("procedure")) {
                                 fileName = rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO").toLowerCase() + ".sql";
-                                fileNameScripts = path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT\\Procedure\\" + fileName;
-                            }else if (tipoArquivo.equals("package")){
+                                fileNameScripts = path + "\\" + userNameSys + "\\Scripts\\comum\\INOUT\\Procedure\\" + fileName;
+                            } else if (tipoArquivo.equals("package")) {
                                 fileName = rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO").toLowerCase() + ".sql";
-                                fileNameScripts = path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT\\Package\\" + fileName;
+                                fileNameScripts = path + "\\" + userNameSys + "\\Scripts\\comum\\INOUT\\Package\\" + fileName;
                             }
                         }
-                    }else{
-                        if(rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO").substring(rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO").indexOf(".")+1, rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO").length()).equals("SQL") ){
+                    } else {
+                        if (rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO").substring(rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO").indexOf(".") + 1, rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO").length()).equals("SQL")) {
                             rsSqlInterface = PrepararConsultas.getSqlInterface(rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO"));
-                            while(rsSqlInterface.next()){
+                            while (rsSqlInterface.next()) {
                                 idInterface = rsSqlInterface.getString("ID_INTERFACE");
                             }
-                        }else{
+                        } else {
                             rsBatInterface = PrepararConsultas.getBatInterface(rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO"));
-                            while(rsBatInterface.next()){
+                            while (rsBatInterface.next()) {
                                 idInterface = rsBatInterface.getString("ID_INTERFACE");
                             }
                         }
 
                         rsDadosInterface = PrepararConsultas.getDadosInterface(idInterface);
-                        while(rsDadosInterface.next()){
+                        while (rsDadosInterface.next()) {
                             executavel = rsDadosInterface.getString("EXECUTAVEL");
                             tipoInterface = rsDadosInterface.getString("TIPO_INTERFACE");
                             idSistema = rsDadosInterface.getString("ID_SISTEMA").toLowerCase();
@@ -1475,63 +1447,63 @@ public class CVSStructure {
                         }
 
                         String nomeArquivo = "";
-                        if(i == 1){
+                        if (i == 1) {
                             nomeArquivo = rsGerarArquivosExternosNaoGerados.getString("CONTEM").toLowerCase();
-                        }else{
-                            nomeArquivo = rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO").toLowerCase().substring(0, rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO").indexOf(".")-1);
+                        } else {
+                            nomeArquivo = rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO").toLowerCase().substring(0, rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO").indexOf(".") - 1);
                         }
 
-                        if(tipoInterface.trim().equals("S")){
-                            if(tipoArquivo.equals("bat")){
+                        if (tipoInterface.trim().equals("S")) {
+                            if (tipoArquivo.equals("bat")) {
                                 fileName = nomeArquivo + "." + tipoArquivo + ".sql";
-                                fileNameScripts = path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("OUT") + "\\INOUT\\ArquivosExternos\\" + fileName;
-                            }else if (tipoArquivo.equals("sql")){
+                                fileNameScripts = path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("OUT") + "\\INOUT\\ArquivosExternos\\" + fileName;
+                            } else if (tipoArquivo.equals("sql")) {
                                 fileName = nomeArquivo + "." + tipoArquivo;
-                                fileNameScripts = path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("OUT") + "\\INOUT\\ArquivosExternos\\" + fileName;
-                            }else if (tipoArquivo.equals("function")){
+                                fileNameScripts = path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("OUT") + "\\INOUT\\ArquivosExternos\\" + fileName;
+                            } else if (tipoArquivo.equals("function")) {
                                 fileName = nomeArquivo + ".sql";
-                                fileNameScripts = path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("OUT") + "\\INTEGRACAO\\Function\\" + fileName;
-                            }else if (tipoArquivo.equals("procedure")){
+                                fileNameScripts = path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("OUT") + "\\INTEGRACAO\\Function\\" + fileName;
+                            } else if (tipoArquivo.equals("procedure")) {
                                 fileName = nomeArquivo + ".sql";
-                                fileNameScripts = path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("OUT") + "\\INTEGRACAO\\Procedure\\" + fileName;
-                            }else if (tipoArquivo.equals("package")){
+                                fileNameScripts = path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("OUT") + "\\INTEGRACAO\\Procedure\\" + fileName;
+                            } else if (tipoArquivo.equals("package")) {
                                 fileName = nomeArquivo + ".sql";
-                                fileNameScripts = path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("OUT") + "\\INTEGRACAO\\Package\\" + fileName;
+                                fileNameScripts = path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("OUT") + "\\INTEGRACAO\\Package\\" + fileName;
                             }
-                        }else if(tipoInterface.trim().equals("E")){
-                            if(tipoArquivo.equals("bat")){
+                        } else if (tipoInterface.trim().equals("E")) {
+                            if (tipoArquivo.equals("bat")) {
                                 fileName = nomeArquivo + "." + tipoArquivo + ".sql";
-                                fileNameScripts = path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("IN") + "\\INOUT\\ArquivosExternos\\" + fileName;
-                            }else if (tipoArquivo.equals("sql")){
+                                fileNameScripts = path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("IN") + "\\INOUT\\ArquivosExternos\\" + fileName;
+                            } else if (tipoArquivo.equals("sql")) {
                                 fileName = nomeArquivo + "." + tipoArquivo;
-                                fileNameScripts = path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("IN") + "\\INOUT\\ArquivosExternos\\" + fileName;
-                            }else if (tipoArquivo.equals("function")){
+                                fileNameScripts = path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("IN") + "\\INOUT\\ArquivosExternos\\" + fileName;
+                            } else if (tipoArquivo.equals("function")) {
                                 fileName = nomeArquivo + ".sql";
-                                fileNameScripts = path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("IN") + "\\INOUT\\Function\\" + fileName;
-                            }else if (tipoArquivo.equals("procedure")){
+                                fileNameScripts = path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("IN") + "\\INOUT\\Function\\" + fileName;
+                            } else if (tipoArquivo.equals("procedure")) {
                                 fileName = nomeArquivo + ".sql";
-                                fileNameScripts = path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("IN") + "\\INOUT\\Procedure\\" + fileName;
-                            }else if (tipoArquivo.equals("package")){
+                                fileNameScripts = path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("IN") + "\\INOUT\\Procedure\\" + fileName;
+                            } else if (tipoArquivo.equals("package")) {
                                 fileName = nomeArquivo + ".sql";
-                                fileNameScripts = path + "\\"+userNameSys+"\\Scripts\\" + getNomePasta("IN") + "\\INOUT\\Package\\" + fileName;
+                                fileNameScripts = path + "\\" + userNameSys + "\\Scripts\\" + getNomePasta("IN") + "\\INOUT\\Package\\" + fileName;
                             }
-                        }else{
+                        } else {
                             //fileNameScripts = ".\\"+sUserName+"\\Scripts\\" + this.getIDInterface() + "\\INOUT\\ArquivosExternos\\" + fileName;
-                            if(tipoArquivo.equals("bat")){
+                            if (tipoArquivo.equals("bat")) {
                                 fileName = nomeArquivo + "." + tipoArquivo + ".sql";
-                                fileNameScripts = path + "\\"+userNameSys+"\\Scripts\\" + this.getIdInterface() + "\\INOUT\\ArquivosExternos\\" + fileName;
-                            }else if (tipoArquivo.equals("sql")){
+                                fileNameScripts = path + "\\" + userNameSys + "\\Scripts\\" + this.getIdInterface() + "\\INOUT\\ArquivosExternos\\" + fileName;
+                            } else if (tipoArquivo.equals("sql")) {
                                 fileName = nomeArquivo + "." + tipoArquivo;
-                                fileNameScripts = path + "\\"+userNameSys+"\\Scripts\\" + this.getIdInterface() + "\\INOUT\\ArquivosExternos\\" + fileName;
-                            }else if (tipoArquivo.equals("function")){
+                                fileNameScripts = path + "\\" + userNameSys + "\\Scripts\\" + this.getIdInterface() + "\\INOUT\\ArquivosExternos\\" + fileName;
+                            } else if (tipoArquivo.equals("function")) {
                                 fileName = nomeArquivo + ".sql";
-                                fileNameScripts = path + "\\"+userNameSys+"\\Scripts\\" + this.getIdInterface() + "\\INOUT\\Function\\" + fileName;
-                            }else if (tipoArquivo.equals("procedure")){
+                                fileNameScripts = path + "\\" + userNameSys + "\\Scripts\\" + this.getIdInterface() + "\\INOUT\\Function\\" + fileName;
+                            } else if (tipoArquivo.equals("procedure")) {
                                 fileName = nomeArquivo + ".sql";
-                                fileNameScripts = path + "\\"+userNameSys+"\\Scripts\\" + this.getIdInterface() + "\\INOUT\\Procedure\\" + fileName;
-                            }else if (tipoArquivo.equals("package")){
+                                fileNameScripts = path + "\\" + userNameSys + "\\Scripts\\" + this.getIdInterface() + "\\INOUT\\Procedure\\" + fileName;
+                            } else if (tipoArquivo.equals("package")) {
                                 fileName = nomeArquivo + ".sql";
-                                fileNameScripts = path + "\\"+userNameSys+"\\Scripts\\" + this.getIdInterface() + "\\INOUT\\Package\\" + fileName;
+                                fileNameScripts = path + "\\" + userNameSys + "\\Scripts\\" + this.getIdInterface() + "\\INOUT\\Package\\" + fileName;
                             }
                         }
                     }
@@ -1541,58 +1513,57 @@ public class CVSStructure {
                     strOutScripts = new StringBuffer();
                     String auxScripts;
 
-                    if(tipoArquivo.equals("bat") || tipoArquivo.equals("sql")){
+                    if (tipoArquivo.equals("bat") || tipoArquivo.equals("sql")) {
                         psGerarArquivosExternos.setString(1, rsGerarArquivosExternosNaoGerados.getString("CONTEM") + "." + rsGerarArquivosExternosNaoGerados.getString("TIPO"));
                         rsArquivosExternos = psGerarArquivosExternos.executeQuery();
 
-                        try{
+                        try {
                             fileScripts = new File(fileNameScripts);
-                            if(!fileScripts.exists()){
+                            if (!fileScripts.exists()) {
                                 fileScripts.createNewFile();
 
                                 fwScripts = new FileWriter(fileScripts, false);
 
-                                while(rsArquivosExternos.next()){
+                                while (rsArquivosExternos.next()) {
                                     clob = rsArquivosExternos.getClob("CONTEUDO");
 
-                                    if(clob!=null){
+                                    if (clob != null) {
                                         /******************************************
                                          * Gerando arquivos na pasta de Scripts
                                          ******************************************/
-
-                                        if(chConexaoPorArquivos.equals("S")){
-                                            strOutScripts.append("conn &&INOUT_USER/&&INOUT_PASS@&&TNS" + quebraLinha + quebraLinha);
+                                        if (chConexaoPorArquivos.equals("S")) {
+                                            strOutScripts.append("conn &&INOUT_USER/&&INOUT_PASS@&&TNS" + QUEBRA_LINHA + QUEBRA_LINHA);
                                         }
 
-                                        strOutScripts.append("--  ///////" + quebraLinha);
-                                        strOutScripts.append("--  ///////     Script Gerado a partir do Sistema Gerenciador de Interfaces IN-OUT" + quebraLinha);
-                                        strOutScripts.append("--  ///////     Arquivo Externo: " + rsArquivosExternos.getString("NOME_ARQUIVO") + quebraLinha );
-                                        strOutScripts.append("--  ///////" + quebraLinha + quebraLinha);
-                                        strOutScripts.append("set define off" + quebraLinha + quebraLinha + quebraLinha + quebraLinha);
-                                        strOutScripts.append("delete from ARQUIVO_EXTERNO where NOME_ARQUIVO = '" + rsArquivosExternos.getString("NOME_ARQUIVO") + "';" + quebraLinha + quebraLinha);
-                                        strOutScripts.append("insert into ARQUIVO_EXTERNO" + quebraLinha);
-                                        strOutScripts.append("(NOME_ARQUIVO, DESCRICAO, PATH_RELATIVO, CONTEUDO)" + quebraLinha);
-                                        strOutScripts.append("values" + quebraLinha);
+                                        strOutScripts.append("--  ///////" + QUEBRA_LINHA);
+                                        strOutScripts.append("--  ///////     Script Gerado a partir do Sistema Gerenciador de Interfaces IN-OUT" + QUEBRA_LINHA);
+                                        strOutScripts.append("--  ///////     Arquivo Externo: " + rsArquivosExternos.getString("NOME_ARQUIVO") + QUEBRA_LINHA);
+                                        strOutScripts.append("--  ///////" + QUEBRA_LINHA + QUEBRA_LINHA);
+                                        strOutScripts.append("set define off" + QUEBRA_LINHA + QUEBRA_LINHA + QUEBRA_LINHA + QUEBRA_LINHA);
+                                        strOutScripts.append("delete from ARQUIVO_EXTERNO where NOME_ARQUIVO = '" + rsArquivosExternos.getString("NOME_ARQUIVO") + "';" + QUEBRA_LINHA + QUEBRA_LINHA);
+                                        strOutScripts.append("insert into ARQUIVO_EXTERNO" + QUEBRA_LINHA);
+                                        strOutScripts.append("(NOME_ARQUIVO, DESCRICAO, PATH_RELATIVO, CONTEUDO)" + QUEBRA_LINHA);
+                                        strOutScripts.append("values" + QUEBRA_LINHA);
 
                                         // We access to stream, as this way we don't have to use the CLOB.length() which is slower...
                                         brScripts = new BufferedReader(clob.getCharacterStream());
                                         int contador = 0;
                                         int maxLin = 0;
-                                        while ((auxScripts=brScripts.readLine())!=null){
+                                        while ((auxScripts = brScripts.readLine()) != null) {
 
-                                            auxScripts = auxScripts.replaceAll("'",  "' || chr(27) || '");
-                                            auxScripts = auxScripts.replaceAll("@",  "' || chr(64) || '");
-                                            auxScripts = auxScripts.replaceAll("\t",  "' '");
+                                            auxScripts = auxScripts.replaceAll("'", "' || chr(27) || '");
+                                            auxScripts = auxScripts.replaceAll("@", "' || chr(64) || '");
+                                            auxScripts = auxScripts.replaceAll("\t", "' '");
                                             //auxScripts = auxScripts.replaceAll(sQuebraLinha,  "' || chr(13) || '");
-                                            auxScripts = auxScripts.replaceAll(quebraLinha,  "' || chr(13) || CHR(10) ||'");
+                                            auxScripts = auxScripts.replaceAll(QUEBRA_LINHA, "' || chr(13) || CHR(10) ||'");
                                             //auxScripts = auxScripts.replaceAll("|| '' ||",  "||");
 
-                                            if (contador == 0){
+                                            if (contador == 0) {
                                                 strOutScripts.append("('" + rsArquivosExternos.getString("NOME_ARQUIVO") + "'");
                                                 strOutScripts.append(",");
-                                                if(rsArquivosExternos.getString("NOME_ARQUIVO") == null){
+                                                if (rsArquivosExternos.getString("NOME_ARQUIVO") == null) {
                                                     strOutScripts.append("'" + (descricao.length() > 50 ? descricao.substring(0, 50) : descricao.trim()) + "'");
-                                                }else{
+                                                } else {
                                                     strOutScripts.append("'" + rsArquivosExternos.getString("NOME_ARQUIVO") + "'");
                                                 }
                                                 strOutScripts.append(",");
@@ -1601,29 +1572,29 @@ public class CVSStructure {
                                                 strOutScripts.append("'" + auxScripts + "'");
                                                 strOutScripts.append(" || CHR(13) || CHR(10)");
                                                 strOutScripts.append(");");
-                                            }else{
+                                            } else {
                                                 //if(!auxScripts.equals("")){
-                                                    strOutScripts.append(quebraLinha + "" + quebraLinha);
-                                                    strOutScripts.append("exec CONCATENA_CONTEUDO (");
-                                                    strOutScripts.append("'" + rsArquivosExternos.getString("NOME_ARQUIVO") + "'");
-                                                    strOutScripts.append(",");
-                                                    strOutScripts.append("'" + auxScripts + "'");
-                                                    strOutScripts.append(" || CHR(13) || CHR(10)");
-                                                    strOutScripts.append(");");
+                                                strOutScripts.append(QUEBRA_LINHA + "" + QUEBRA_LINHA);
+                                                strOutScripts.append("exec CONCATENA_CONTEUDO (");
+                                                strOutScripts.append("'" + rsArquivosExternos.getString("NOME_ARQUIVO") + "'");
+                                                strOutScripts.append(",");
+                                                strOutScripts.append("'" + auxScripts + "'");
+                                                strOutScripts.append(" || CHR(13) || CHR(10)");
+                                                strOutScripts.append(");");
                                                 //}
 
                                             }
                                             contador += 1;
                                         }
-                                        strOutScripts.append(quebraLinha + "" + quebraLinha);
+                                        strOutScripts.append(QUEBRA_LINHA + "" + QUEBRA_LINHA);
                                         strOutScripts.append("commit;");
-                                        strOutScripts.append(quebraLinha + quebraLinha + quebraLinha + quebraLinha);
+                                        strOutScripts.append(QUEBRA_LINHA + QUEBRA_LINHA + QUEBRA_LINHA + QUEBRA_LINHA);
                                         strOutScripts.append("set define on");
-                                        strOutScripts.append(quebraLinha + "" + quebraLinha);
-                                        strOutScripts.append("-- //////" + quebraLinha);
-                                        strOutScripts.append("-- //////  Fim do Script" + quebraLinha);
+                                        strOutScripts.append(QUEBRA_LINHA + "" + QUEBRA_LINHA);
+                                        strOutScripts.append("-- //////" + QUEBRA_LINHA);
+                                        strOutScripts.append("-- //////  Fim do Script" + QUEBRA_LINHA);
                                         strOutScripts.append("-- //////");
-                                    }else{
+                                    } else {
                                         logMessage("No data are being generated");
                                         logMessage("File " + fileName + " wasn't generated.");
                                         logMessage("Error in the implementation of the interface with Id_Importação " + idInterface);
@@ -1631,66 +1602,64 @@ public class CVSStructure {
                                     }
                                 }
 
-                                if(strOutScripts != null ){
-                                    fwScripts.write(strOutScripts.toString(),0,strOutScripts.length());
+                                if (strOutScripts != null) {
+                                    fwScripts.write(strOutScripts.toString(), 0, strOutScripts.length());
                                 }
                                 fwScripts.close();
 
                                 logMessage("File " + fileNameScripts + " was succesfull generated.");
                             }
-                        }catch(IOException ioex){
+                        } catch (IOException ioex) {
                             CVSStructure.logMessage("File " + fileNameScripts + " was error generated.");
                             SfwLogger.saveLog(ioex.getClass().toString(), ioex.getStackTrace());
                             ioex.printStackTrace();
                         }
 
-                    }else if (tipoArquivo.equals("function") ||
-                            tipoArquivo.equals("procedure")){
+                    } else if (tipoArquivo.equals("function")
+                            || tipoArquivo.equals("procedure")) {
 
                         //
                         new FunctionProcedure("INOUT",
-                                                  rsGerarArquivosExternosNaoGerados.getString("TIPO"),
-                                                  rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO"),
-                                                  fileName,
-                                                  fileNameScripts);
+                                rsGerarArquivosExternosNaoGerados.getString("TIPO"),
+                                rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO"),
+                                fileName,
+                                fileNameScripts);
 
-                    }else if ( tipoArquivo.equals("package") ||
-                              tipoArquivo.equals("package body")){
+                    } else if (tipoArquivo.equals("package")
+                            || tipoArquivo.equals("package body")) {
 
                         //
                         new Packages("INOUT",
-                                     rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO"),
-                                     fileName,
-                                     fileNameScripts);
+                                rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO"),
+                                fileName,
+                                fileNameScripts);
                     }
                 }
             }
-        }catch(Exception ex){
+        } catch (Exception ex) {
             logMessage("Error generating " + fileName);
             logMessage(ex.getLocalizedMessage());
             SfwLogger.saveLog(ex.getClass().toString(), ex.getStackTrace());
-        }finally{
+        } finally {
             psDropTableIT = ConnectionInout.getConnection().prepareStatement("drop table TMP_CVS_STRUCTURE");
             psDropTableIT.executeQuery();
         }
-	}
-
-
+    }
 
     /**************************************************************************
-	 * <b>Gerar scripts dos arquivos externos</b>
-	 **************************************************************************/
-	private void gerarObjetosIntegracao() throws Exception{
-		File fileScripts;
-		FileWriter fwScripts;
-		StringBuffer strOutScripts;
-		BufferedReader brScripts;
+     * <b>Gerar scripts dos arquivos externos</b>
+     **************************************************************************/
+    private void gerarObjetosIntegracao() throws Exception {
+        File fileScripts;
+        FileWriter fwScripts;
+        StringBuffer strOutScripts;
+        BufferedReader brScripts;
 
-		try{
-            try{
+        try {
+            try {
                 psCreateTableIT.executeQuery();
                 ConnectionIntegracao.getConnection().commit();
-            }catch(Exception ex){
+            } catch (Exception ex) {
                 logMessage("Creando tabela caso não exista");
                 logMessage(ex.getLocalizedMessage());
                 SfwLogger.saveLog(ex.getClass().toString(), ex.getStackTrace());
@@ -1701,7 +1670,7 @@ public class CVSStructure {
             ConnectionIntegracao.getConnection().commit();
 
             rsFoundObjectsIT = psFoundObjectsIT.executeQuery();
-            while(rsFoundObjectsIT.next()){
+            while (rsFoundObjectsIT.next()) {
                 //psCountArquivosExternosNaoGerados = ConnectionInout.getConnection().prepareStatement(this.countArquivosSynonyms);
                 //psCountArquivosExternosNaoGerados.setString(1, rsGerarArquivosExternosNaoGerados.getString("CONTEM"));
                 //rsCountArquivosExternosNaoGerados = psCountArquivosExternosNaoGerados.executeQuery();
@@ -1709,186 +1678,185 @@ public class CVSStructure {
                 //int nTotalArquivos = rsCountArquivosExternosNaoGerados.getInt("TOTAL_ARQUIVOS");
 
                 //if(nTotalArquivos > 1){
-                    if(rsFoundObjectsIT.getString("TIPO").toLowerCase().equals("bat")){
-                        fileName = rsFoundObjectsIT.getString("OBJECT_NAME").toLowerCase() + "." + rsFoundObjectsIT.getString("TIPO").toLowerCase() + ".sql";
-                        fileNameScripts = path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT\\ArquivosExternos\\" + fileName;
-                    }else if (rsFoundObjectsIT.getString("TIPO").toLowerCase().equals("sql")){
-                        fileName = rsFoundObjectsIT.getString("OBJECT_NAME").toLowerCase() + "." + rsFoundObjectsIT.getString("TIPO").toLowerCase();
-                        fileNameScripts = path + "\\"+userNameSys+"\\Scripts\\comum\\INOUT\\ArquivosExternos\\" + fileName;
-                    }else if (rsFoundObjectsIT.getString("TIPO").toLowerCase().equals("function")){
-                        fileName = rsFoundObjectsIT.getString("OBJECT_NAME").toLowerCase() + ".sql";
-                        fileNameScripts = path + "\\"+userNameSys+"\\Scripts\\comum\\INTEGRACAO\\Function\\" + fileName;
-                    }else if (rsFoundObjectsIT.getString("TIPO").toLowerCase().equals("procedure")){
-                        fileName = rsFoundObjectsIT.getString("OBJECT_NAME").toLowerCase() + ".sql";
-                        fileNameScripts = path + "\\"+userNameSys+"\\Scripts\\comum\\INTEGRACAO\\Procedure\\" + fileName;
-                    }else if (rsFoundObjectsIT.getString("TIPO").toLowerCase().equals("package")){
-                        fileName = rsFoundObjectsIT.getString("OBJECT_NAME").toLowerCase() + ".sql";
-                        fileNameScripts = path + "\\"+userNameSys+"\\Scripts\\comum\\INTEGRACAO\\Package\\" + fileName;
-                    }else if (rsFoundObjectsIT.getString("TIPO").toLowerCase().equals("table")){
-                        fileName = rsFoundObjectsIT.getString("OBJECT_NAME").toLowerCase() + ".sql";
-                        fileNameScripts = path + "\\"+userNameSys+"\\Scripts\\comum\\INTEGRACAO\\Table\\" + fileName;
-                    }
-                 /*
-                }else{
-                    if(rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO").substring(rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO").indexOf(".")+1, rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO").length()).equals("SQL") ){
-                        psFoundSQLInterface.setString(1, rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO"));
-                        rsSqlInterface = psFoundSQLInterface.executeQuery();
-                        while(rsSqlInterface.next()){
-                            IDInterface = rsSqlInterface.getString("ID_INTERFACE");
-                        }
-                    }else{
-                        psBatInterface.setString(1, rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO"));
-                        rsBatInterface = psBatInterface.executeQuery();
-                        while(rsBatInterface.next()){
-                            IDInterface = rsBatInterface.getString("ID_INTERFACE");
-                        }
-                    }
-
-                    psFoundDadosInterface.setString(1, IDInterface);
-                    rsDadosInterface = psFoundDadosInterface.executeQuery();
-                    while(rsDadosInterface.next()){
-                        sExecutavel = rsDadosInterface.getString("EXECUTAVEL");
-                        sTipoInterface = rsDadosInterface.getString("TIPO_INTERFACE");
-                        sIdSistema = rsDadosInterface.getString("ID_SISTEMA").toLowerCase();
-                        sDescricao = rsDadosInterface.getString("DESCRICAO");
-                        sUserName = rsDadosInterface.getString("USERNAME");
-                        sTempoMedio = rsDadosInterface.getString("TEMPO_MEDIO");
-                        sExecutavelCompl = rsDadosInterface.getString("EXECUTAVELCOMPL");
-                    }
-
-                    if(sTipoInterface.trim().equals("S")){
-                        if(rsGerarArquivosExternosNaoGerados.getString("TIPO").toLowerCase().equals("bat")){
-                            fileName = rsGerarArquivosExternosNaoGerados.getString("CONTEM").toLowerCase() + "." + rsGerarArquivosExternosNaoGerados.getString("TIPO").toLowerCase() + ".sql";
-                            fileNameScripts = path + "\\"+sUserName+"\\Scripts\\" + this.getIdSistema() + "_out_" + this.getIDInterface() + "\\INOUT\\ArquivosExternos\\" + fileName;
-                        }else if (rsGerarArquivosExternosNaoGerados.getString("TIPO").toLowerCase().equals("sql")){
-                            fileName = rsGerarArquivosExternosNaoGerados.getString("CONTEM").toLowerCase() + "." + rsGerarArquivosExternosNaoGerados.getString("TIPO").toLowerCase();
-                            fileNameScripts = path + "\\"+sUserName+"\\Scripts\\" + this.getIdSistema() + "_out_" + this.getIDInterface() + "\\INOUT\\ArquivosExternos\\" + fileName;
-                        }else if (rsGerarArquivosExternosNaoGerados.getString("TIPO").toLowerCase().equals("function")){
-                            fileName = rsGerarArquivosExternosNaoGerados.getString("CONTEM").toLowerCase() + ".sql";
-                            fileNameScripts = path + "\\"+sUserName+"\\Scripts\\" + this.getIdSistema() + "_out_" + this.getIDInterface() + "\\INTEGRACAO\\Function\\" + fileName;
-                        }else if (rsGerarArquivosExternosNaoGerados.getString("TIPO").toLowerCase().equals("procedure")){
-                            fileName = rsGerarArquivosExternosNaoGerados.getString("CONTEM").toLowerCase() + ".sql";
-                            fileNameScripts = path + "\\"+sUserName+"\\Scripts\\" + this.getIdSistema() + "_out_" + this.getIDInterface() + "\\INTEGRACAO\\Procedure\\" + fileName;
-                        }else if (rsGerarArquivosExternosNaoGerados.getString("TIPO").toLowerCase().equals("package")){
-                            fileName = rsGerarArquivosExternosNaoGerados.getString("CONTEM").toLowerCase() + ".sql";
-                            fileNameScripts = path + "\\"+sUserName+"\\Scripts\\" + this.getIdSistema() + "_out_" + this.getIDInterface() + "\\INTEGRACAO\\Package\\" + fileName;
-                        }
-                    }else if(sTipoInterface.trim().equals("E")){
-                        if(rsGerarArquivosExternosNaoGerados.getString("TIPO").toLowerCase().equals("bat")){
-                            fileName = rsGerarArquivosExternosNaoGerados.getString("CONTEM").toLowerCase() + "." + rsGerarArquivosExternosNaoGerados.getString("TIPO").toLowerCase() + ".sql";
-                            fileNameScripts = path + "\\"+sUserName+"\\Scripts\\" + this.getIdSistema() + "_in_" + this.getIDInterface() + "\\INOUT\\ArquivosExternos\\" + fileName;
-                        }else if (rsGerarArquivosExternosNaoGerados.getString("TIPO").toLowerCase().equals("sql")){
-                            fileName = rsGerarArquivosExternosNaoGerados.getString("CONTEM").toLowerCase() + "." + rsGerarArquivosExternosNaoGerados.getString("TIPO").toLowerCase();
-                            fileNameScripts = path + "\\"+sUserName+"\\Scripts\\" + this.getIdSistema() + "_in_" + this.getIDInterface() + "\\INOUT\\ArquivosExternos\\" + fileName;
-                        }else if (rsGerarArquivosExternosNaoGerados.getString("TIPO").toLowerCase().equals("function")){
-                            fileName = rsGerarArquivosExternosNaoGerados.getString("CONTEM").toLowerCase() + ".sql";
-                            fileNameScripts = path + "\\"+sUserName+"\\Scripts\\" + this.getIdSistema() + "_in_" + this.getIDInterface() + "\\INTEGRACAO\\Function\\" + fileName;
-                        }else if (rsGerarArquivosExternosNaoGerados.getString("TIPO").toLowerCase().equals("procedure")){
-                            fileName = rsGerarArquivosExternosNaoGerados.getString("CONTEM").toLowerCase() + ".sql";
-                            fileNameScripts = path + "\\"+sUserName+"\\Scripts\\" + this.getIdSistema() + "_in_" + this.getIDInterface() + "\\INTEGRACAO\\Procedure\\" + fileName;
-                        }else if (rsGerarArquivosExternosNaoGerados.getString("TIPO").toLowerCase().equals("package")){
-                            fileName = rsGerarArquivosExternosNaoGerados.getString("CONTEM").toLowerCase() + ".sql";
-                            fileNameScripts = path + "\\"+sUserName+"\\Scripts\\" + this.getIdSistema() + "_in_" + this.getIDInterface() + "\\INTEGRACAO\\Package\\" + fileName;
-                        }
-                    }else{
-                        //fileNameScripts = ".\\"+sUserName+"\\Scripts\\" + this.getIDInterface() + "\\INOUT\\ArquivosExternos\\" + fileName;
-                        if(rsGerarArquivosExternosNaoGerados.getString("TIPO").toLowerCase().equals("bat")){
-                            fileName = rsGerarArquivosExternosNaoGerados.getString("CONTEM").toLowerCase() + "." + rsGerarArquivosExternosNaoGerados.getString("TIPO").toLowerCase() + ".sql";
-                            fileNameScripts = path + "\\"+sUserName+"\\Scripts\\" + this.getIDInterface() + "\\INOUT\\ArquivosExternos\\" + fileName;
-                        }else if (rsGerarArquivosExternosNaoGerados.getString("TIPO").toLowerCase().equals("sql")){
-                            fileName = rsGerarArquivosExternosNaoGerados.getString("CONTEM").toLowerCase() + "." + rsGerarArquivosExternosNaoGerados.getString("TIPO").toLowerCase();
-                            fileNameScripts = path + "\\"+sUserName+"\\Scripts\\" + this.getIDInterface() + "\\INOUT\\ArquivosExternos\\" + fileName;
-                        }else if (rsGerarArquivosExternosNaoGerados.getString("TIPO").toLowerCase().equals("function")){
-                            fileName = rsGerarArquivosExternosNaoGerados.getString("CONTEM").toLowerCase() + ".sql";
-                            fileNameScripts = path + "\\"+sUserName+"\\Scripts\\" + this.getIDInterface() + "\\INTEGRACAO\\Function\\" + fileName;
-                        }else if (rsGerarArquivosExternosNaoGerados.getString("TIPO").toLowerCase().equals("procedure")){
-                            fileName = rsGerarArquivosExternosNaoGerados.getString("CONTEM").toLowerCase() + ".sql";
-                            fileNameScripts = path + "\\"+sUserName+"\\Scripts\\" + this.getIDInterface() + "\\INTEGRACAO\\Procedure\\" + fileName;
-                        }else if (rsGerarArquivosExternosNaoGerados.getString("TIPO").toLowerCase().equals("package")){
-                            fileName = rsGerarArquivosExternosNaoGerados.getString("CONTEM").toLowerCase() + ".sql";
-                            fileNameScripts = path + "\\"+sUserName+"\\Scripts\\" + this.getIDInterface() + "\\INTEGRACAO\\Package\\" + fileName;
-                        }
-                    }
+                if (rsFoundObjectsIT.getString("TIPO").toLowerCase().equals("bat")) {
+                    fileName = rsFoundObjectsIT.getString("OBJECT_NAME").toLowerCase() + "." + rsFoundObjectsIT.getString("TIPO").toLowerCase() + ".sql";
+                    fileNameScripts = path + "\\" + userNameSys + "\\Scripts\\comum\\INOUT\\ArquivosExternos\\" + fileName;
+                } else if (rsFoundObjectsIT.getString("TIPO").toLowerCase().equals("sql")) {
+                    fileName = rsFoundObjectsIT.getString("OBJECT_NAME").toLowerCase() + "." + rsFoundObjectsIT.getString("TIPO").toLowerCase();
+                    fileNameScripts = path + "\\" + userNameSys + "\\Scripts\\comum\\INOUT\\ArquivosExternos\\" + fileName;
+                } else if (rsFoundObjectsIT.getString("TIPO").toLowerCase().equals("function")) {
+                    fileName = rsFoundObjectsIT.getString("OBJECT_NAME").toLowerCase() + ".sql";
+                    fileNameScripts = path + "\\" + userNameSys + "\\Scripts\\comum\\INTEGRACAO\\Function\\" + fileName;
+                } else if (rsFoundObjectsIT.getString("TIPO").toLowerCase().equals("procedure")) {
+                    fileName = rsFoundObjectsIT.getString("OBJECT_NAME").toLowerCase() + ".sql";
+                    fileNameScripts = path + "\\" + userNameSys + "\\Scripts\\comum\\INTEGRACAO\\Procedure\\" + fileName;
+                } else if (rsFoundObjectsIT.getString("TIPO").toLowerCase().equals("package")) {
+                    fileName = rsFoundObjectsIT.getString("OBJECT_NAME").toLowerCase() + ".sql";
+                    fileNameScripts = path + "\\" + userNameSys + "\\Scripts\\comum\\INTEGRACAO\\Package\\" + fileName;
+                } else if (rsFoundObjectsIT.getString("TIPO").toLowerCase().equals("table")) {
+                    fileName = rsFoundObjectsIT.getString("OBJECT_NAME").toLowerCase() + ".sql";
+                    fileNameScripts = path + "\\" + userNameSys + "\\Scripts\\comum\\INTEGRACAO\\Table\\" + fileName;
                 }
-                */
-                try{
+                /*
+                }else{
+                if(rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO").substring(rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO").indexOf(".")+1, rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO").length()).equals("SQL") ){
+                psFoundSQLInterface.setString(1, rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO"));
+                rsSqlInterface = psFoundSQLInterface.executeQuery();
+                while(rsSqlInterface.next()){
+                IDInterface = rsSqlInterface.getString("ID_INTERFACE");
+                }
+                }else{
+                psBatInterface.setString(1, rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO"));
+                rsBatInterface = psBatInterface.executeQuery();
+                while(rsBatInterface.next()){
+                IDInterface = rsBatInterface.getString("ID_INTERFACE");
+                }
+                }
+
+                psFoundDadosInterface.setString(1, IDInterface);
+                rsDadosInterface = psFoundDadosInterface.executeQuery();
+                while(rsDadosInterface.next()){
+                sExecutavel = rsDadosInterface.getString("EXECUTAVEL");
+                sTipoInterface = rsDadosInterface.getString("TIPO_INTERFACE");
+                sIdSistema = rsDadosInterface.getString("ID_SISTEMA").toLowerCase();
+                sDescricao = rsDadosInterface.getString("DESCRICAO");
+                sUserName = rsDadosInterface.getString("USERNAME");
+                sTempoMedio = rsDadosInterface.getString("TEMPO_MEDIO");
+                sExecutavelCompl = rsDadosInterface.getString("EXECUTAVELCOMPL");
+                }
+
+                if(sTipoInterface.trim().equals("S")){
+                if(rsGerarArquivosExternosNaoGerados.getString("TIPO").toLowerCase().equals("bat")){
+                fileName = rsGerarArquivosExternosNaoGerados.getString("CONTEM").toLowerCase() + "." + rsGerarArquivosExternosNaoGerados.getString("TIPO").toLowerCase() + ".sql";
+                fileNameScripts = path + "\\"+sUserName+"\\Scripts\\" + this.getIdSistema() + "_out_" + this.getIDInterface() + "\\INOUT\\ArquivosExternos\\" + fileName;
+                }else if (rsGerarArquivosExternosNaoGerados.getString("TIPO").toLowerCase().equals("sql")){
+                fileName = rsGerarArquivosExternosNaoGerados.getString("CONTEM").toLowerCase() + "." + rsGerarArquivosExternosNaoGerados.getString("TIPO").toLowerCase();
+                fileNameScripts = path + "\\"+sUserName+"\\Scripts\\" + this.getIdSistema() + "_out_" + this.getIDInterface() + "\\INOUT\\ArquivosExternos\\" + fileName;
+                }else if (rsGerarArquivosExternosNaoGerados.getString("TIPO").toLowerCase().equals("function")){
+                fileName = rsGerarArquivosExternosNaoGerados.getString("CONTEM").toLowerCase() + ".sql";
+                fileNameScripts = path + "\\"+sUserName+"\\Scripts\\" + this.getIdSistema() + "_out_" + this.getIDInterface() + "\\INTEGRACAO\\Function\\" + fileName;
+                }else if (rsGerarArquivosExternosNaoGerados.getString("TIPO").toLowerCase().equals("procedure")){
+                fileName = rsGerarArquivosExternosNaoGerados.getString("CONTEM").toLowerCase() + ".sql";
+                fileNameScripts = path + "\\"+sUserName+"\\Scripts\\" + this.getIdSistema() + "_out_" + this.getIDInterface() + "\\INTEGRACAO\\Procedure\\" + fileName;
+                }else if (rsGerarArquivosExternosNaoGerados.getString("TIPO").toLowerCase().equals("package")){
+                fileName = rsGerarArquivosExternosNaoGerados.getString("CONTEM").toLowerCase() + ".sql";
+                fileNameScripts = path + "\\"+sUserName+"\\Scripts\\" + this.getIdSistema() + "_out_" + this.getIDInterface() + "\\INTEGRACAO\\Package\\" + fileName;
+                }
+                }else if(sTipoInterface.trim().equals("E")){
+                if(rsGerarArquivosExternosNaoGerados.getString("TIPO").toLowerCase().equals("bat")){
+                fileName = rsGerarArquivosExternosNaoGerados.getString("CONTEM").toLowerCase() + "." + rsGerarArquivosExternosNaoGerados.getString("TIPO").toLowerCase() + ".sql";
+                fileNameScripts = path + "\\"+sUserName+"\\Scripts\\" + this.getIdSistema() + "_in_" + this.getIDInterface() + "\\INOUT\\ArquivosExternos\\" + fileName;
+                }else if (rsGerarArquivosExternosNaoGerados.getString("TIPO").toLowerCase().equals("sql")){
+                fileName = rsGerarArquivosExternosNaoGerados.getString("CONTEM").toLowerCase() + "." + rsGerarArquivosExternosNaoGerados.getString("TIPO").toLowerCase();
+                fileNameScripts = path + "\\"+sUserName+"\\Scripts\\" + this.getIdSistema() + "_in_" + this.getIDInterface() + "\\INOUT\\ArquivosExternos\\" + fileName;
+                }else if (rsGerarArquivosExternosNaoGerados.getString("TIPO").toLowerCase().equals("function")){
+                fileName = rsGerarArquivosExternosNaoGerados.getString("CONTEM").toLowerCase() + ".sql";
+                fileNameScripts = path + "\\"+sUserName+"\\Scripts\\" + this.getIdSistema() + "_in_" + this.getIDInterface() + "\\INTEGRACAO\\Function\\" + fileName;
+                }else if (rsGerarArquivosExternosNaoGerados.getString("TIPO").toLowerCase().equals("procedure")){
+                fileName = rsGerarArquivosExternosNaoGerados.getString("CONTEM").toLowerCase() + ".sql";
+                fileNameScripts = path + "\\"+sUserName+"\\Scripts\\" + this.getIdSistema() + "_in_" + this.getIDInterface() + "\\INTEGRACAO\\Procedure\\" + fileName;
+                }else if (rsGerarArquivosExternosNaoGerados.getString("TIPO").toLowerCase().equals("package")){
+                fileName = rsGerarArquivosExternosNaoGerados.getString("CONTEM").toLowerCase() + ".sql";
+                fileNameScripts = path + "\\"+sUserName+"\\Scripts\\" + this.getIdSistema() + "_in_" + this.getIDInterface() + "\\INTEGRACAO\\Package\\" + fileName;
+                }
+                }else{
+                //fileNameScripts = ".\\"+sUserName+"\\Scripts\\" + this.getIDInterface() + "\\INOUT\\ArquivosExternos\\" + fileName;
+                if(rsGerarArquivosExternosNaoGerados.getString("TIPO").toLowerCase().equals("bat")){
+                fileName = rsGerarArquivosExternosNaoGerados.getString("CONTEM").toLowerCase() + "." + rsGerarArquivosExternosNaoGerados.getString("TIPO").toLowerCase() + ".sql";
+                fileNameScripts = path + "\\"+sUserName+"\\Scripts\\" + this.getIDInterface() + "\\INOUT\\ArquivosExternos\\" + fileName;
+                }else if (rsGerarArquivosExternosNaoGerados.getString("TIPO").toLowerCase().equals("sql")){
+                fileName = rsGerarArquivosExternosNaoGerados.getString("CONTEM").toLowerCase() + "." + rsGerarArquivosExternosNaoGerados.getString("TIPO").toLowerCase();
+                fileNameScripts = path + "\\"+sUserName+"\\Scripts\\" + this.getIDInterface() + "\\INOUT\\ArquivosExternos\\" + fileName;
+                }else if (rsGerarArquivosExternosNaoGerados.getString("TIPO").toLowerCase().equals("function")){
+                fileName = rsGerarArquivosExternosNaoGerados.getString("CONTEM").toLowerCase() + ".sql";
+                fileNameScripts = path + "\\"+sUserName+"\\Scripts\\" + this.getIDInterface() + "\\INTEGRACAO\\Function\\" + fileName;
+                }else if (rsGerarArquivosExternosNaoGerados.getString("TIPO").toLowerCase().equals("procedure")){
+                fileName = rsGerarArquivosExternosNaoGerados.getString("CONTEM").toLowerCase() + ".sql";
+                fileNameScripts = path + "\\"+sUserName+"\\Scripts\\" + this.getIDInterface() + "\\INTEGRACAO\\Procedure\\" + fileName;
+                }else if (rsGerarArquivosExternosNaoGerados.getString("TIPO").toLowerCase().equals("package")){
+                fileName = rsGerarArquivosExternosNaoGerados.getString("CONTEM").toLowerCase() + ".sql";
+                fileNameScripts = path + "\\"+sUserName+"\\Scripts\\" + this.getIDInterface() + "\\INTEGRACAO\\Package\\" + fileName;
+                }
+                }
+                }
+                 */
+                try {
                     fileScripts = new File(fileNameScripts);
-                    if(!fileScripts.exists()){
+                    if (!fileScripts.exists()) {
 
                         logMessage("Creating or appending to file " + fileNameScripts);
 
-                        if (rsFoundObjectsIT.getString("TIPO").toLowerCase().equals("function") ||
-                                rsFoundObjectsIT.getString("TIPO").toLowerCase().equals("procedure")){
+                        if (rsFoundObjectsIT.getString("TIPO").toLowerCase().equals("function")
+                                || rsFoundObjectsIT.getString("TIPO").toLowerCase().equals("procedure")) {
 
                             //
                             new FunctionProcedure("INTEGRACAO",
-                                              rsFoundObjectsIT.getString("TIPO"),
-                                              rsFoundObjectsIT.getString("OBJECT_NAME"),
-                                              fileName,
-                                              fileNameScripts);
+                                    rsFoundObjectsIT.getString("TIPO"),
+                                    rsFoundObjectsIT.getString("OBJECT_NAME"),
+                                    fileName,
+                                    fileNameScripts);
 
-                        }else if(rsFoundObjectsIT.getString("TIPO").toLowerCase().equals("table")){
+                        } else if (rsFoundObjectsIT.getString("TIPO").toLowerCase().equals("table")) {
 
                             //
                             new Tables("INTEGRACAO",
-                                        rsFoundObjectsIT.getString("OBJECT_NAME"),
-                                        fileName,
-                                        fileNameScripts);
+                                    rsFoundObjectsIT.getString("OBJECT_NAME"),
+                                    fileName,
+                                    fileNameScripts);
 
-                        }else if ( rsFoundObjectsIT.getString("TIPO").toLowerCase().equals("package") ||
-                                  rsFoundObjectsIT.getString("TIPO").toLowerCase().equals("package body")){
+                        } else if (rsFoundObjectsIT.getString("TIPO").toLowerCase().equals("package")
+                                || rsFoundObjectsIT.getString("TIPO").toLowerCase().equals("package body")) {
 
                             //
                             new Packages("INTEGRACAO",
-                                         rsFoundObjectsIT.getString("OBJECT_NAME"),
-                                         fileName,
-                                         fileNameScripts);
+                                    rsFoundObjectsIT.getString("OBJECT_NAME"),
+                                    fileName,
+                                    fileNameScripts);
                         }
 
                     }
-                }catch(IOException ioex){
+                } catch (IOException ioex) {
                     CVSStructure.logMessage("File " + fileNameScripts + " was error generated.");
                     SfwLogger.saveLog(ioex.getClass().toString(), ioex.getStackTrace());
                     ioex.printStackTrace();
                 }
             }
-        }catch(Exception ex){
+        } catch (Exception ex) {
             logMessage("Error generating " + fileName);
             logMessage(ex.getLocalizedMessage());
             SfwLogger.saveLog(ex.getClass().toString(), ex.getStackTrace());
-        }finally{
+        } finally {
             psDropTableIT = ConnectionIntegracao.getConnection().prepareStatement("drop table TMP_CVS_STRUCTURE");
             psDropTableIT.execute();
         }
 
-	}
+    }
 
-
-	/**************************************************************************
-	 * <b>Gerar arquivos externos</b>
-	 **************************************************************************/
-	private void exportarArquivosExternos() throws Exception{
+    /**************************************************************************
+     * <b>Gerar arquivos externos</b>
+     **************************************************************************/
+    private void exportarArquivosExternos() throws Exception {
 
         //psArquivosExternos = ConnectionInout.getConnection().prepareStatement(this.selectExportarArquivosExternos);
-        try{
+        try {
             psExportarArquivosExternos.setString(1, executavel);
             rsArquivosExternos = psExportarArquivosExternos.executeQuery();
 
-            while(rsArquivosExternos.next()){
+            while (rsArquivosExternos.next()) {
 
                 fileName = rsArquivosExternos.getString("NOME_ARQUIVO").toLowerCase();
-                if(tipoInterface.trim().equals("S")){
-                    fileName = path + "\\"+userNameSys+"\\Arquivos\\" + getNomePasta("OUT") + "\\INOUT\\ArquivosExternos\\" + fileName;
-                }else if(tipoInterface.trim().equals("E")){
-                    fileName = path + "\\"+userNameSys+"\\Arquivos\\" + getNomePasta("IN") + "\\INOUT\\ArquivosExternos\\" + fileName;
-                }else{
-                    fileName = path + "\\"+userNameSys+"\\Arquivos\\" + this.getIdInterface() + "\\INOUT\\ArquivosExternos\\" + fileName;
+                if (tipoInterface.trim().equals("S")) {
+                    fileName = path + "\\" + userNameSys + "\\Arquivos\\" + getNomePasta("OUT") + "\\INOUT\\ArquivosExternos\\" + fileName;
+                } else if (tipoInterface.trim().equals("E")) {
+                    fileName = path + "\\" + userNameSys + "\\Arquivos\\" + getNomePasta("IN") + "\\INOUT\\ArquivosExternos\\" + fileName;
+                } else {
+                    fileName = path + "\\" + userNameSys + "\\Arquivos\\" + this.getIdInterface() + "\\INOUT\\ArquivosExternos\\" + fileName;
                 }
                 logMessage("Creating or appending to file " + fileName);
                 //fileName = ".\\"+sUserName+"\\Scripts\\" + IDInterface + " \\" fileName;
 
                 clob = rsArquivosExternos.getClob("CONTEUDO");
-                if(clob!=null){
+                if (clob != null) {
                     /******************************************
                      * Gerando arquivos na pasta de Arquivos
                      ******************************************/
@@ -1898,113 +1866,117 @@ public class CVSStructure {
                     // We access to stream, as this way we don't have to use the CLOB.length() which is slower...
                     BufferedReader br = new BufferedReader(clob.getCharacterStream());
 
-                    while ((aux=br.readLine())!=null){
+                    while ((aux = br.readLine()) != null) {
                         strOut.append(aux);
-                        strOut.append(quebraLinha);
+                        strOut.append(QUEBRA_LINHA);
                     }
 
-                    try{
+                    try {
                         File file = new File(fileName);
-                        if(!file.exists())
+                        if (!file.exists()) {
                             file.createNewFile();
+                        }
 
                         FileWriter fw = new FileWriter(file, false);
 
-                        fw.write(strOut.toString(),0,strOut.length());
+                        fw.write(strOut.toString(), 0, strOut.length());
                         fw.close();
 
                         logMessage("File " + fileName + " was succesfull generated.");
 
-                    }catch(IOException ioex){
+                    } catch (IOException ioex) {
                         CVSStructure.logMessage("File " + fileNameScripts + " was error generated.");
                         SfwLogger.saveLog(ioex.getClass().toString(), ioex.getStackTrace());
                         ioex.printStackTrace();
                     }
-                }else{
+                } else {
                     logMessage("No data are being generated");
                     logMessage("File " + fileName + " wasn't generated.");
                 }
             }
-        }catch(Exception ex){
+        } catch (Exception ex) {
             logMessage("Error generating " + fileName);
             logMessage(ex.getLocalizedMessage());
             SfwLogger.saveLog(ex.getClass().toString(), ex.getStackTrace());
         }
-	}
+    }
 
-	/**************************************************************************
-	 * <b>Exportar Tabelas sem vinculo com alguma interface</b>
-	 **************************************************************************/
-	private void tabInterfaceSemPermissao() throws Exception{
+    /**************************************************************************
+     * <b>Exportar Tabelas sem vinculo com alguma interface</b>
+     **************************************************************************/
+    private void tabInterfaceSemPermissao() throws Exception {
         String sSelectTabsSemPermissao = "select table_name from tab_interface tab where tab.table_name not in (select table_name from permissao_tabela)";
         PreparedStatement psTabsSemPermissao = ConnectionInout.getConnection().prepareStatement(sSelectTabsSemPermissao);
-		ResultSet rsTabsSemPermissao = psTabsSemPermissao.executeQuery();
+        ResultSet rsTabsSemPermissao = psTabsSemPermissao.executeQuery();
 
-        try{
-            while(rsTabsSemPermissao.next()){
+        try {
+            while (rsTabsSemPermissao.next()) {
                 new TabInterfaces(rsTabsSemPermissao.getString("TABLE_NAME"), idInterface, idSistema, this);
             }
-        }catch(Exception ex){
+        } catch (Exception ex) {
             logMessage(ex.getLocalizedMessage());
             SfwLogger.saveLog(ex.getClass().toString(), ex.getStackTrace());
         }
-	}
+    }
 
     // Valida linha de commando
-    public void validateCommandLine(String args[]) throws Exception{
-      String sChave = null;
+    public void validateCommandLine(String args[]) throws Exception {
+        String sChave = null;
 
-      for (int i=0; i<args.length ;i++)
-      {
-        // valida parâmetro importacao
-        //armazena o usuário e senha a utilizar durante o processamento
-        sChave = "-user=";
-        if (args[i].startsWith(sChave)) {
-            String s_Usuario_Senha = args[i].substring(sChave.length(),args[i].length());
-            s_User = s_Usuario_Senha.substring(0, s_Usuario_Senha.indexOf("/"));
-            s_Pass = s_Usuario_Senha.substring(s_Usuario_Senha.indexOf("/")+1);
+        for (int i = 0; i < args.length; i++) {
+            // valida parâmetro importacao
+            //armazena o usuário e senha a utilizar durante o processamento
+            sChave = "-user=";
+            if (args[i].startsWith(sChave)) {
+                String s_Usuario_Senha = args[i].substring(sChave.length(), args[i].length());
+                s_User = s_Usuario_Senha.substring(0, s_Usuario_Senha.indexOf("/"));
+                s_Pass = s_Usuario_Senha.substring(s_Usuario_Senha.indexOf("/") + 1);
+            }
+            // Valida parametro CONN
+            //armazena dados sobre o TNS
+            sChave = "-conn=";
+            if (args[i].startsWith(sChave)) {
+                s_Conn = args[i].substring(sChave.length(), args[i].length());
+            }
+
+            //armazena o schema a utilizar durante o processamento corrente
+            sChave = "-sessionschema=";
+            if (args[i].startsWith(sChave)) {
+                sessionSchema = args[i].substring(sChave.length(), args[i].length());
+            }
+
+            //armazena a ROLE utilizada durante o processamento
+            sChave = "-role=";
+            if (args[i].startsWith(sChave)) {
+                role = args[i].substring(sChave.length(), args[i].length());
+            }
         }
-        // Valida parametro CONN
-        //armazena dados sobre o TNS
-        sChave = "-conn=";
-        if (args[i].startsWith(sChave))
-            s_Conn = args[i].substring(sChave.length(),args[i].length());
 
-        //armazena o schema a utilizar durante o processamento corrente
-        sChave = "-sessionschema=";
-        if (args[i].startsWith(sChave))
-        	sessionSchema = args[i].substring(sChave.length(),args[i].length());
-
-        //armazena a ROLE utilizada durante o processamento
-        sChave = "-role=";
-        if (args[i].startsWith(sChave))
-        	role = args[i].substring(sChave.length(),args[i].length());
+        // Parametros recusados
+        if ((s_User == null) || (s_User.equals(""))) {
+            throw new Exception("ERROR: Parameter missing [-user] ex: -user=USER/PASSWORD");
+        } else if ((s_Conn == null) || (s_Conn.equals(""))) {
+            throw new Exception("ERROR: Parameter missing [-conn] ex: -conn=jdbc:oracle:thin:@HOST:PORT:SERVICE_NAME");
         }
-
-      // Parametros recusados
-      if ((s_User == null ) || (s_User.equals("")))
-    	  throw new Exception("ERROR: Parameter missing [-user] ex: -user=USER/PASSWORD");
-      else if ((s_Conn == null ) || (s_Conn.equals("")))
-    	  throw new Exception("ERROR: Parameter missing [-conn] ex: -conn=jdbc:oracle:thin:@HOST:PORT:SERVICE_NAME");
 
     }
 
-	public static void main(String[] args){
+    public static void main(String[] args) {
         // foi utilizado somente para teste
-		try{
-			//System.setErr(System.out);
-			ArrayList arr = new ArrayList();
-			arr.add("T");
+        try {
+            //System.setErr(System.out);
+            ArrayList arr = new ArrayList();
+            arr.add("T");
 
-			CVSStructure spool = new CVSStructure();
-			spool.validateCommandLine(args);
-			//spool.connectOracle(args[0], args[1]);
-			spool.spoolCVSStruture(arr, null);
-		}catch(Exception e){
-			e.printStackTrace(System.out);
-			e.printStackTrace(System.err);
-		}
-	}
+            CVSStructure spool = new CVSStructure();
+            spool.validateCommandLine(args);
+            //spool.connectOracle(args[0], args[1]);
+            spool.spoolCVSStruture(arr, null);
+        } catch (Exception e) {
+            e.printStackTrace(System.out);
+            e.printStackTrace(System.err);
+        }
+    }
 
     /**
      * @return the selectInterfaces
@@ -2201,7 +2173,4 @@ public class CVSStructure {
     public void setDbLinkApps(String dbLinkApps) {
         this.dbLinkApps = dbLinkApps;
     }
-
-
-
 }
