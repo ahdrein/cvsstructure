@@ -61,9 +61,9 @@ public class Packages {
 
                     if(CVSStructure.chConexaoPorArquivos.equals("S")){
                         if(system.equals("INOUT")){
-                            strOutScripts.append("conn &&INOUT_USER/&&INOUT_PASS@&&TNS" + CVSStructure.quebraLinha + CVSStructure.quebraLinha);
+                            strOutScripts.append("conn &&INOUT_USER/&&INOUT_PASS@&&TNS" + CVSStructure.QUEBRA_LINHA + CVSStructure.QUEBRA_LINHA);
                         }else{
-                            strOutScripts.append("conn &&INTEGRACAO_USER/&&INTEGRACAO_PASS@&&TNS" + CVSStructure.quebraLinha + CVSStructure.quebraLinha);
+                            strOutScripts.append("conn &&INTEGRACAO_USER/&&INTEGRACAO_PASS@&&TNS" + CVSStructure.QUEBRA_LINHA + CVSStructure.QUEBRA_LINHA);
                         }
                     }
 
@@ -76,10 +76,10 @@ public class Packages {
                             strOutScripts.append(rsUserSource.getString("TEXT"));
                         }
                     }
-                    strOutScripts.append(CVSStructure.quebraLinha);
+                    strOutScripts.append(CVSStructure.QUEBRA_LINHA);
                     strOutScripts.append("/");
 
-                    if(strOutScripts != null && !strOutScripts.equals("")){
+                    if(strOutScripts != null && !strOutScripts.toString().equals("")){
                         fileScripts.createNewFile();
 
                         fwScripts = new FileWriter(fileScripts, false);

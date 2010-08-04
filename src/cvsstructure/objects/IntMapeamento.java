@@ -177,38 +177,39 @@ public class IntMapeamento {
                             ******************************************/
                             if(CVSStructure.chConexaoPorArquivos.equals("S")){
                                 if(system.toUpperCase().equals("INOUT")){
-                                    strOutScripts.append("conn &&INOUT_USER/&&INOUT_PASS@&&TNS" + CVSStructure.quebraLinha + CVSStructure.quebraLinha);
+                                    strOutScripts.append("conn &&INOUT_USER/&&INOUT_PASS@&&TNS" + CVSStructure.QUEBRA_LINHA + CVSStructure.QUEBRA_LINHA);
                                 }else{
-                                    strOutScripts.append("conn &&INTEGRACAO_USER/&&INTEGRACAO_PASS@&&TNS" + CVSStructure.quebraLinha + CVSStructure.quebraLinha);
+                                    strOutScripts.append("conn &&INTEGRACAO_USER/&&INTEGRACAO_PASS@&&TNS" + CVSStructure.QUEBRA_LINHA + CVSStructure.QUEBRA_LINHA);
                                 }
                             }
 
-                            strOutScripts.append(CVSStructure.quebraLinha);
-                            strOutScripts.append("/*###############################" + CVSStructure.quebraLinha);
-                            strOutScripts.append(rsIntMapeamento.getString("LAYOUT") + CVSStructure.quebraLinha);
-                            strOutScripts.append("###############################*/" + CVSStructure.quebraLinha);
-                            strOutScripts.append("--garante que não existirão registros duplicados" + CVSStructure.quebraLinha);
-                            strOutScripts.append("declare" + CVSStructure.quebraLinha);
-                            strOutScripts.append("    n_id   number := null;" + CVSStructure.quebraLinha);
-                            strOutScripts.append("begin" + CVSStructure.quebraLinha);
-                            strOutScripts.append("    select l.id into n_id" + CVSStructure.quebraLinha);
-                            strOutScripts.append("      from int_mapeamento_layout l " + CVSStructure.quebraLinha);
-                            strOutScripts.append("     where layout = '" + rsIntMapeamento.getString("LAYOUT") + "' " + CVSStructure.quebraLinha);
-                            strOutScripts.append("       and api = '" + rsIntMapeamento.getString("API") + "'; " + CVSStructure.quebraLinha);
-                            strOutScripts.append(CVSStructure.quebraLinha);
-                            strOutScripts.append("    delete from int_mapeamento_coluna c where c.id = n_id;" + CVSStructure.quebraLinha);
-                            strOutScripts.append("    delete from int_mapeamento_layout l where l.id = n_id;" + CVSStructure.quebraLinha);
-                            strOutScripts.append(CVSStructure.quebraLinha);
-                            strOutScripts.append("    EXCEPTION" + CVSStructure.quebraLinha);
-                            strOutScripts.append("        WHEN NO_DATA_FOUND THEN" + CVSStructure.quebraLinha);
-                            strOutScripts.append("             null;" + CVSStructure.quebraLinha);
-                            strOutScripts.append("end;" + CVSStructure.quebraLinha);
-                            strOutScripts.append("/" + CVSStructure.quebraLinha);
-                            strOutScripts.append("insert into int_mapeamento_layout (id, layout, api, processa, ordem_processamento, tipo)" + CVSStructure.quebraLinha);
-                            strOutScripts.append("values ( seq_int_mapeamento_layout.nextval, '" + rsIntMapeamento.getString("LAYOUT") + "', '" + rsIntMapeamento.getString("API") + "', '" + rsIntMapeamento.getString("PROCESSA") + "', 1, 'LOADER');" + CVSStructure.quebraLinha);
-                            strOutScripts.append(CVSStructure.quebraLinha);
-                            strOutScripts.append("--inserções de relacionamento das tags contidas dentro da tag " + rsIntMapeamento.getString("API") + CVSStructure.quebraLinha);
-                            strOutScripts.append("--relacionam a tag com uma coluna da tabela temporário do INOUT" + CVSStructure.quebraLinha);
+                            strOutScripts.append(CVSStructure.QUEBRA_LINHA);
+                            strOutScripts.append("/*###############################" + CVSStructure.QUEBRA_LINHA);
+                            strOutScripts.append(rsIntMapeamento.getString("LAYOUT") + CVSStructure.QUEBRA_LINHA);
+                            strOutScripts.append("###############################*/" + CVSStructure.QUEBRA_LINHA);
+                            strOutScripts.append("--garante que não existirão registros duplicados" + CVSStructure.QUEBRA_LINHA);
+                            strOutScripts.append("declare" + CVSStructure.QUEBRA_LINHA);
+                            strOutScripts.append("    n_id   number := null;" + CVSStructure.QUEBRA_LINHA);
+                            strOutScripts.append("begin" + CVSStructure.QUEBRA_LINHA);
+                            strOutScripts.append("    select l.id into n_id" + CVSStructure.QUEBRA_LINHA);
+                            strOutScripts.append("      from int_mapeamento_layout l " + CVSStructure.QUEBRA_LINHA);
+                            strOutScripts.append("     where layout = '" + rsIntMapeamento.getString("LAYOUT") + "' " + CVSStructure.QUEBRA_LINHA);
+                            strOutScripts.append("       and api = '" + rsIntMapeamento.getString("API") + "'; " + CVSStructure.QUEBRA_LINHA);
+                            strOutScripts.append(CVSStructure.QUEBRA_LINHA);
+                            strOutScripts.append("    delete from int_mapeamento_coluna c where c.id = n_id;" + CVSStructure.QUEBRA_LINHA);
+                            strOutScripts.append("    delete from int_mapeamento_layout l where l.id = n_id;" + CVSStructure.QUEBRA_LINHA);
+                            strOutScripts.append(CVSStructure.QUEBRA_LINHA);
+                            strOutScripts.append("    EXCEPTION" + CVSStructure.QUEBRA_LINHA);
+                            strOutScripts.append("        WHEN NO_DATA_FOUND THEN" + CVSStructure.QUEBRA_LINHA);
+                            strOutScripts.append("             null;" + CVSStructure.QUEBRA_LINHA);
+                            strOutScripts.append("end;" + CVSStructure.QUEBRA_LINHA);
+                            strOutScripts.append("/" + CVSStructure.QUEBRA_LINHA);
+                            strOutScripts.append("insert into int_mapeamento_layout (id, layout, api, processa, ordem_processamento, tipo)" + CVSStructure.QUEBRA_LINHA);
+                            //strOutScripts.append("values ( seq_int_mapeamento_layout.nextval, '" + rsIntMapeamento.getString("LAYOUT") + "', '" + rsIntMapeamento.getString("API") + "', '" + rsIntMapeamento.getString("PROCESSA") + "', "+rsIntMapeamento.getString("ORDEM_PROCESSAMENTO")+", '"+rsIntMapeamento.getString("TIPO")+"');" + CVSStructure.QUEBRA_LINHA);
+                            strOutScripts.append("values ( "+rsIntMapeamento.getString("ID")+", '" + rsIntMapeamento.getString("LAYOUT") + "', '" + rsIntMapeamento.getString("API") + "', '" + rsIntMapeamento.getString("PROCESSA") + "', "+rsIntMapeamento.getString("ORDEM_PROCESSAMENTO")+", '"+rsIntMapeamento.getString("TIPO")+"');" + CVSStructure.QUEBRA_LINHA);
+                            strOutScripts.append(CVSStructure.QUEBRA_LINHA);
+                            strOutScripts.append("--inserções de relacionamento das tags contidas dentro da tag " + rsIntMapeamento.getString("API") + CVSStructure.QUEBRA_LINHA);
+                            strOutScripts.append("--relacionam a tag com uma coluna da tabela temporário do INOUT" + CVSStructure.QUEBRA_LINHA);
 
                             if(psIntMapeamentoColuna == null){
                                 if(system.toUpperCase().equals("INOUT")){
@@ -220,12 +221,12 @@ public class IntMapeamento {
                             psIntMapeamentoColuna.setObject(1, rsIntMapeamento.getString("ID"));
                             //rsIntMapeamentoColuna = psIntMapeamentoColuna.executeQuery();
                             //while(rsIntMapeamentoColuna.next()){
-                            //    strOutScripts.append(CVSStructure.quebraLinha);
-                            //    strOutScripts.append("insert into int_mapeamento_coluna (id, api_coluna, layout_coluna,layout_formula)" + CVSStructure.quebraLinha);
+                            //    strOutScripts.append(CVSStructure.QUEBRA_LINHA);
+                            //    strOutScripts.append("insert into int_mapeamento_coluna (id, api_coluna, layout_coluna,layout_formula)" + CVSStructure.QUEBRA_LINHA);
                             //    if(rsIntMapeamentoColuna.getString("LAYOUT_FORMULA")==null || rsIntMapeamentoColuna.getString("LAYOUT_FORMULA").equals("") || rsIntMapeamentoColuna.getString("LAYOUT_FORMULA").equals("null")){
-                           //         strOutScripts.append("values (seq_int_mapeamento_layout.currval, '" + rsIntMapeamentoColuna.getString("API_COLUNA") + "', '" + rsIntMapeamentoColuna.getString("LAYOUT_COLUNA") + "', '');      " + CVSStructure.quebraLinha);
+                           //         strOutScripts.append("values (seq_int_mapeamento_layout.currval, '" + rsIntMapeamentoColuna.getString("API_COLUNA") + "', '" + rsIntMapeamentoColuna.getString("LAYOUT_COLUNA") + "', '');      " + CVSStructure.QUEBRA_LINHA);
                            //     }else{
-                           //         strOutScripts.append("values (seq_int_mapeamento_layout.currval, '" + rsIntMapeamentoColuna.getString("API_COLUNA") + "', '" + rsIntMapeamentoColuna.getString("LAYOUT_COLUNA") + "', '" + rsIntMapeamentoColuna.getString("LAYOUT_FORMULA") + "');      " + CVSStructure.quebraLinha);
+                           //         strOutScripts.append("values (seq_int_mapeamento_layout.currval, '" + rsIntMapeamentoColuna.getString("API_COLUNA") + "', '" + rsIntMapeamentoColuna.getString("LAYOUT_COLUNA") + "', '" + rsIntMapeamentoColuna.getString("LAYOUT_FORMULA") + "');      " + CVSStructure.QUEBRA_LINHA);
                            //     }
                            // }
 
@@ -233,8 +234,8 @@ public class IntMapeamento {
                                                                     "int_mapeamento_coluna",
                                                                      psIntMapeamentoColuna).create());
 
-                            strOutScripts.append(CVSStructure.quebraLinha);
-                            strOutScripts.append("commit;" + CVSStructure.quebraLinha);
+                            strOutScripts.append(CVSStructure.QUEBRA_LINHA);
+                            strOutScripts.append("commit;" + CVSStructure.QUEBRA_LINHA);
 
 
                             if(strOutScripts != null && !strOutScripts.toString().equals("")){
