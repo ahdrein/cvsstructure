@@ -151,7 +151,6 @@ public class SfwMapeamento extends javax.swing.JFrame {
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
         jToggleButton1 = new javax.swing.JToggleButton();
         jProgressBar1 = new javax.swing.JProgressBar();
         jLabel18 = new javax.swing.JLabel();
@@ -697,13 +696,6 @@ public class SfwMapeamento extends javax.swing.JFrame {
             }
         });
 
-        jButton5.setText("Comparar campos do Excel como os campos da Int_Mapeamento");
-        jButton5.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton5ActionPerformed(evt);
-            }
-        });
-
         jToggleButton1.setText("...");
         jToggleButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -732,7 +724,6 @@ public class SfwMapeamento extends javax.swing.JFrame {
                         .addComponent(txLocalXLS, javax.swing.GroupLayout.PREFERRED_SIZE, 552, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jToggleButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jButton5)
                     .addComponent(jButton4)
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(jButton3)
@@ -762,8 +753,6 @@ public class SfwMapeamento extends javax.swing.JFrame {
                     .addComponent(jToggleButton2))
                 .addGap(26, 26, 26)
                 .addComponent(jButton4)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel18)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -843,14 +832,11 @@ public class SfwMapeamento extends javax.swing.JFrame {
                         .addContainerGap())
                     .addGroup(jPanel17Layout.createSequentialGroup()
                         .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel17Layout.createSequentialGroup()
-                                .addComponent(jLabel19)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 512, Short.MAX_VALUE))
+                            .addComponent(jLabel19)
                             .addGroup(jPanel17Layout.createSequentialGroup()
                                 .addComponent(txLocalTXT, javax.swing.GroupLayout.PREFERRED_SIZE, 570, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jToggleButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                .addComponent(jToggleButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(5, 5, 5))
                     .addGroup(jPanel17Layout.createSequentialGroup()
                         .addComponent(jToggleButton3)
@@ -959,26 +945,6 @@ public class SfwMapeamento extends javax.swing.JFrame {
     private void rbSShActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbSShActionPerformed
         // TODO add your handling code here:
 }//GEN-LAST:event_rbSShActionPerformed
-
-    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        ReadExcel readExcel = new ReadExcel();
-        readExcel.setInputFile(txLocalXLS.getText().toString());
-        //readExcel.setTagExcel(txTagExcel.getText().toString());
-        try {
-
-            Object[] sSelectedUser = jList1.getSelectedValues();
-            if(sSelectedUser.length != 0){
-                // Obtendo as bases selecionadas
-                for(int j=0; j < sSelectedUser.length; j++){
-                    jLabel18.setText("Comparando Aba da Planilha: " + (String)sSelectedUser[j]);
-                    readExcel.setTagExcel( (String)sSelectedUser[j]);
-                    readExcel.comparaCamposIntMapeamento();
-                }
-            }
-        } catch (IOException ex) {
-            Logger.getLogger(SfwMapeamento.class.getName()).log(Level.SEVERE, null, ex);
-        }
-}//GEN-LAST:event_jButton5ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         jProgressBar1.setIndeterminate(true);
@@ -2106,7 +2072,6 @@ public class SfwMapeamento extends javax.swing.JFrame {
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;

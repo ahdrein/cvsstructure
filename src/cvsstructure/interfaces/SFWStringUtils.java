@@ -1,27 +1,26 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-package sfw.structure.interfaces;
+package cvsstructure.interfaces;
 
 /**
  *
  * @author andrein
  */
 public class SFWStringUtils {
-	public static String lpad(String valueToPad, String filler, int size) {
+    public static String lpad(String valueToPad, String filler, int size) {
+         StringBuffer strValueToPad = new StringBuffer();
          while (valueToPad.length() < size) {
-             valueToPad = filler + valueToPad;
+             strValueToPad.append(filler);
+             strValueToPad.append(valueToPad);
          }
-         return valueToPad;
+         return strValueToPad.toString();
      }
 
      public static String rpad(String valueToPad, String filler, int size) {
+         StringBuffer strValueToPad = new StringBuffer();
          while (valueToPad.length() < size) {
-             valueToPad = valueToPad+filler;
+             strValueToPad.append(valueToPad);
+             strValueToPad.append(filler);
          }
-         return valueToPad;
+         return strValueToPad.toString();
      }
 
 }
