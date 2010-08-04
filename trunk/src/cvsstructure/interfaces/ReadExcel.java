@@ -14,69 +14,67 @@ import jxl.CellType;
 import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
-import sfw.structure.interfaces.SFWStringUtils;
 
 public class ReadExcel {
 
-	private String inputFile;
+    private String inputFile;
     private String tag;
 
-	public void setTagExcel(String tag) {
-		this.tag = tag;
-	}
+    public void setTagExcel(String tag) {
+        this.tag = tag;
+    }
 
-	public void setInputFile(String inputFile) {
-		this.inputFile = inputFile;
-	}
+    public void setInputFile(String inputFile) {
+        this.inputFile = inputFile;
+    }
 
-	public void read() throws IOException  {
-		File inputWorkbook = new File(inputFile);
-		Workbook w;
-		try {
-			w = Workbook.getWorkbook(inputWorkbook);
-			// Get the first sheet
-			Sheet sheet = w.getSheet(0);
-			// Loop over first 10 column and lines
+    public void read() throws IOException {
+        File inputWorkbook = new File(inputFile);
+        Workbook w;
+        try {
+            w = Workbook.getWorkbook(inputWorkbook);
+            // Get the first sheet
+            Sheet sheet = w.getSheet(0);
+            // Loop over first 10 column and lines
 
-			for (int j = 0; j < sheet.getColumns(); j++) {
-				for (int i = 0; i < sheet.getRows(); i++) {
-					Cell cell = sheet.getCell(j, i);
-					CellType type = cell.getType();
-					if (cell.getType() == CellType.LABEL) {
-						System.out.println("I got a label "
-								+ cell.getContents());
-					}
+            for (int j = 0; j < sheet.getColumns(); j++) {
+                for (int i = 0; i < sheet.getRows(); i++) {
+                    Cell cell = sheet.getCell(j, i);
+                    CellType type = cell.getType();
+                    if (cell.getType() == CellType.LABEL) {
+                        System.out.println("I got a label "
+                                + cell.getContents());
+                    }
 
-					if (cell.getType() == CellType.NUMBER) {
-						System.out.println("I got a number "
-								+ cell.getContents());
-					}
+                    if (cell.getType() == CellType.NUMBER) {
+                        System.out.println("I got a number "
+                                + cell.getContents());
+                    }
 
-				}
-			}
-		} catch (BiffException e) {
-			e.printStackTrace();
-		}
-	}
+                }
+            }
+        } catch (BiffException e) {
+            e.printStackTrace();
+        }
+    }
 
-	public String[] readTagsOfExcel() throws IOException  {
-		File inputWorkbook = new File(inputFile);
-		Workbook w;
+    public String[] readTagsOfExcel() throws IOException {
+        File inputWorkbook = new File(inputFile);
+        Workbook w;
         String[] sheets = null;
-		try {
-			w = Workbook.getWorkbook(inputWorkbook);
-			
-			sheets = w.getSheetNames();
-		} catch (BiffException e) {
-			e.printStackTrace();
-		}
+        try {
+            w = Workbook.getWorkbook(inputWorkbook);
+
+            sheets = w.getSheetNames();
+        } catch (BiffException e) {
+            e.printStackTrace();
+        }
         return sheets;
-	}
+    }
 
-
-    public void gerarArquivoTXT() throws IOException  {
-		File inputWorkbook = new File(inputFile);
-		Workbook w;
+    public void gerarArquivoTXT() throws IOException {
+        File inputWorkbook = new File(inputFile);
+        Workbook w;
         StringBuffer strOutScripts = new StringBuffer();
         File fileScripts;
         FileWriter fwScripts;
@@ -88,52 +86,52 @@ public class ReadExcel {
         int e = 1;
         char[] tabela = new char[128];
         char[] tabelaNumero = new char[128];
-		try {
-			w = Workbook.getWorkbook(inputWorkbook);
-			// Get the first sheet
-			Sheet sheet = w.getSheet(tag);
-			// Loop over first 10 column and lines
+        try {
+            w = Workbook.getWorkbook(inputWorkbook);
+            // Get the first sheet
+            Sheet sheet = w.getSheet(tag);
+            // Loop over first 10 column and lines
 
-			System.out.println("Numero de linha: " + sheet.getColumns());
+            System.out.println("Numero de linha: " + sheet.getColumns());
             //for (int j = 0; j < sheet.getColumns(); j++) {
             for (int j = 0; j < 600; j++) {
-                try{
+                try {
                     // Tabela
                     Cell cellCampo = sheet.getCell(0, j);
-                    if(cellCampo.getContents().toString().equals("Tabela IN-OUT")){
+                    if (cellCampo.getContents().toString().equals("Tabela IN-OUT")) {
                         Cell cellTabela = sheet.getCell(1, j);
                         System.out.println("Tabela " + cellTabela.getContents());
                     }
 
                     // Arquivo a ser gerado
                     Cell cellNomeArquivo = null;
-                    if(cellCampo.getContents().toString().equals("Arquivo Texto")){
+                    if (cellCampo.getContents().toString().equals("Arquivo Texto")) {
                         cellNomeArquivo = sheet.getCell(1, j);
                         System.out.println("Arquivo " + cellNomeArquivo.getContents());
                         nomeArquivoNovo = cellNomeArquivo.getContents().toString().trim();
-                        if(nomeArquivo.equals("")){
+                        if (nomeArquivo.equals("")) {
                             nomeArquivo = cellNomeArquivo.getContents().toString().trim();
                         }
                     }
 
                     // Identifica final da tabela
-                    if(cellCampo.getContents().toString().contains("Controle de Revisão da Interface de")){
+                    if (cellCampo.getContents().toString().contains("Controle de Revisão da Interface de")) {
                         flag = true;
                         flagCampos = false;
                     }
 
                     // Buscando campo do excel
-                    if(flagCampos){
+                    if (flagCampos) {
                         Cell cellTamanho = sheet.getCell(2, j);
                         Cell cellTipo = sheet.getCell(1, j);
-                        if(!cellTamanho.getContents().trim().equals("")){
-                           if (cellTamanho.getType() == CellType.NUMBER) {
+                        if (!cellTamanho.getContents().trim().equals("")) {
+                            if (cellTamanho.getType() == CellType.NUMBER) {
 
-                               //
-                               // Caso for ENTER ou TAB
-                               if(i == 10 || i == 13){
-                                   i = i+1;
-                               }
+                                //
+                                // Caso for ENTER ou TAB
+                                if (i == 10 || i == 13) {
+                                    i = i + 1;
+                                }
 
                                 // Exemplo
                                 //sNfeSefazNewChNfe = SFWStringUtils.rpad(NfeSefazNewChNfe, " ", 44);
@@ -141,97 +139,97 @@ public class ReadExcel {
 
                                 //strOutScripts.append( SFWStringUtils.rpad(cellCampo.getContents().toString().trim(), " ", Integer.parseInt( cellTamanho.getContents().toString().trim() )) );
                                 // Tipo AlpahNumérico
-                                if(cellTipo.getContents().toString().trim().equals("A")){
-                                    tabela[i] = (char)i ;
+                                if (cellTipo.getContents().toString().trim().equals("A")) {
+                                    tabela[i] = (char) i;
 
-                                    strOutScripts.append( SFWStringUtils.rpad( String.valueOf( tabela[i] ), String.valueOf( tabela[i] ), Integer.parseInt( cellTamanho.getContents().toString().trim() )) );
+                                    strOutScripts.append(SFWStringUtils.rpad(String.valueOf(tabela[i]), String.valueOf(tabela[i]), Integer.parseInt(cellTamanho.getContents().toString().trim())));
 
-                                    if(i >= 128){
+                                    if (i >= 128) {
                                         i = 33;
-                                    }else{
+                                    } else {
                                         i = i + 1;
                                     }
-                                // Tipo Numérico
-                                }else{
+                                    // Tipo Numérico
+                                } else {
                                     tabelaNumero[e] = Character.forDigit(e, 10);
-                                    if(e >= 9){
+                                    if (e >= 9) {
                                         e = 1;
-                                    }else{
-                                        e = e+1;
+                                    } else {
+                                        e = e + 1;
                                     }
 
-                                    strOutScripts.append( SFWStringUtils.rpad( String.valueOf( tabelaNumero[e] ), String.valueOf( tabelaNumero[e] ), Integer.parseInt( cellTamanho.getContents().toString().trim() )) );
+                                    strOutScripts.append(SFWStringUtils.rpad(String.valueOf(tabelaNumero[e]), String.valueOf(tabelaNumero[e]), Integer.parseInt(cellTamanho.getContents().toString().trim())));
                                 }
-                            }else{
+                            } else {
                                 System.out.println("O Tamanho do Campo:" + cellCampo.getContents() + " não está como númérico");
                                 //strOutScripts.append( "Campo:" + cellCampo.getContents() + " não é númérico" );
                             }
-                        }else{
+                        } else {
                             System.out.println("O Tamanho do campo:" + cellCampo.getContents() + " está vazio");
                             //strOutScripts.append( "O Tamanho do campo:" + cellCampo.getContents() + " está vazio" );
                         }
                     }
 
                     // Gerando arquivo
-                    if( flag ){
+                    if (flag) {
                         fileScripts = new File("c:\\" + nomeArquivoNovo);
-                        if(!fileScripts.exists()){
+                        if (!fileScripts.exists()) {
                             fileScripts.createNewFile();
 
                             fwScripts = new FileWriter(fileScripts, false);
                             nomeArquivo = nomeArquivoNovo;
 
-                            if(strOutScripts != null ){
-                                fwScripts.write(strOutScripts.toString(),0,strOutScripts.length());
+                            if (strOutScripts != null) {
+                                fwScripts.write(strOutScripts.toString(), 0, strOutScripts.length());
                             }
                             fwScripts.close();
                         }
                         strOutScripts = new StringBuffer();
-                        if(i >= 128){
+                        if (i >= 128) {
                             i = 33;
                         }
                         flag = false;
                     }
                     // Identifica inicio dos campos
-                    if(cellCampo.getContents().toString().trim().equals("Destino - SFW")){
+                    if (cellCampo.getContents().toString().trim().equals("Destino - SFW")) {
                         flagCampos = true;
                         flag = false;
                     }
-                }catch(ArrayIndexOutOfBoundsException ex){
+                } catch (ArrayIndexOutOfBoundsException ex) {
                     fileScripts = new File("c:\\" + nomeArquivoNovo);
-                    if(!fileScripts.exists()){
+                    if (!fileScripts.exists()) {
                         fileScripts.createNewFile();
 
                         fwScripts = new FileWriter(fileScripts, false);
                         nomeArquivo = nomeArquivoNovo;
 
-                        if(strOutScripts != null ){
-                            fwScripts.write(strOutScripts.toString(),0,strOutScripts.length());
+                        if (strOutScripts != null) {
+                            fwScripts.write(strOutScripts.toString(), 0, strOutScripts.length());
                         }
                         fwScripts.close();
                     }
-                    strOutScripts = new StringBuffer();
-                    if(i >= 128){
+                    //strOutScripts = new StringBuffer();
+                    if (i >= 128) {
                         i = 0;
                     }
                     j = 500;
                     System.out.println("Final");
                     break;
                 }
-			}
+            }
 
 
 
-		} catch (BiffException ex) {
-			ex.printStackTrace();
+        } catch (BiffException ex) {
+            ex.printStackTrace();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-	}
+    }
 
-public void gerarArquivoXML() throws IOException  {
-		File inputWorkbook = new File(inputFile);
-		Workbook w;
+    public void gerarArquivoXML() throws IOException {
+        File inputWorkbook = new File(inputFile);
+        Workbook w;
         StringBuffer strOutScripts = new StringBuffer();
         File fileScripts;
         FileWriter fwScripts;
@@ -243,54 +241,54 @@ public void gerarArquivoXML() throws IOException  {
         int e = 1;
         char[] tabela = new char[128];
         char[] tabelaNumero = new char[128];
-		try {
-			w = Workbook.getWorkbook(inputWorkbook);
-			// Get the first sheet
-			Sheet sheet = w.getSheet(tag);
-			// Loop over first 10 column and lines
+        try {
+            w = Workbook.getWorkbook(inputWorkbook);
+            // Get the first sheet
+            Sheet sheet = w.getSheet(tag);
+            // Loop over first 10 column and lines
 
-			System.out.println("Numero de linha: " + sheet.getColumns());
+            System.out.println("Numero de linha: " + sheet.getColumns());
             //for (int j = 0; j < sheet.getColumns(); j++) {
             int contador = 0;
             for (int j = 0; j < 600; j++) {
-                try{
+                try {
                     // Tabela
                     Cell cellCampo = sheet.getCell(0, j);
-                    if(cellCampo.getContents().toString().equals("Tabela IN-OUT")){
+                    if (cellCampo.getContents().toString().equals("Tabela IN-OUT")) {
                         Cell cellTabela = sheet.getCell(1, j);
                         System.out.println("Tabela " + cellTabela.getContents());
                     }
 
                     // Arquivo a ser gerado
                     Cell cellNomeArquivo = null;
-                    if(cellCampo.getContents().toString().equals("Arquivo Texto")){
+                    if (cellCampo.getContents().toString().equals("Arquivo Texto")) {
                         cellNomeArquivo = sheet.getCell(1, j);
                         System.out.println("Arquivo " + cellNomeArquivo.getContents());
                         nomeArquivoNovo = cellNomeArquivo.getContents().toString().trim();
-                        if(nomeArquivo.equals("")){
+                        if (nomeArquivo.equals("")) {
                             nomeArquivo = cellNomeArquivo.getContents().toString().trim();
                         }
                     }
 
                     // Identifica final da tabela
-                    if(cellCampo.getContents().toString().contains("Controle de Revisão da Interface de")){
+                    if (cellCampo.getContents().toString().contains("Controle de Revisão da Interface de")) {
                         flag = true;
                         flagCampos = false;
                         contador = 0;
                     }
 
                     // Buscando campo do excel
-                    if(flagCampos){
+                    if (flagCampos) {
                         Cell cellTamanho = sheet.getCell(2, j);
                         Cell cellTipo = sheet.getCell(1, j);
-                        if(!cellTamanho.getContents().trim().equals("")){
-                           if (cellTamanho.getType() == CellType.NUMBER) {
+                        if (!cellTamanho.getContents().trim().equals("")) {
+                            if (cellTamanho.getType() == CellType.NUMBER) {
                                 contador += 1;
-                               //
-                               // Caso for ENTER ou TAB
-                               if(i == 10 || i == 13){
-                                   i = i+1;
-                               }
+                                //
+                                // Caso for ENTER ou TAB
+                                if (i == 10 || i == 13) {
+                                    i = i + 1;
+                                }
 
                                 // Exemplo
                                 //sNfeSefazNewChNfe = SFWStringUtils.rpad(NfeSefazNewChNfe, " ", 44);
@@ -298,99 +296,99 @@ public void gerarArquivoXML() throws IOException  {
 
                                 //strOutScripts.append( SFWStringUtils.rpad(cellCampo.getContents().toString().trim(), " ", Integer.parseInt( cellTamanho.getContents().toString().trim() )) );
                                 // Tipo AlpahNumérico
-                                if(cellTipo.getContents().toString().trim().equals("A")){
-                                    tabela[i] = (char)i ;
+                                if (cellTipo.getContents().toString().trim().equals("A")) {
+                                    tabela[i] = (char) i;
 
                                     strOutScripts.append("<" + cellCampo.getContents() + ">");
-                                    strOutScripts.append( SFWStringUtils.rpad( String.valueOf( tabela[i] ), String.valueOf( tabela[i] ), Integer.parseInt( cellTamanho.getContents().toString().trim() )) );
+                                    strOutScripts.append(SFWStringUtils.rpad(String.valueOf(tabela[i]), String.valueOf(tabela[i]), Integer.parseInt(cellTamanho.getContents().toString().trim())));
                                     strOutScripts.append("<" + cellCampo.getContents() + "/>");
                                     strOutScripts.append("\r\n");
 
-                                    if(i >= 128){
+                                    if (i >= 128) {
                                         i = 33;
                                     }
                                     i = i + 1;
-                                // Tipo Numérico
-                                }else{
+                                    // Tipo Numérico
+                                } else {
                                     tabelaNumero[e] = Character.forDigit(e, 10);
-                                    if(e >= 9){
+                                    if (e >= 9) {
                                         e = 1;
                                     }
-                                    e = e+1;
+                                    e = e + 1;
 
                                     strOutScripts.append("<" + cellCampo.getContents() + ">");
-                                    strOutScripts.append( SFWStringUtils.rpad( String.valueOf( tabelaNumero[e] ), String.valueOf( tabelaNumero[e] ), Integer.parseInt( cellTamanho.getContents().toString().trim() )) );
+                                    strOutScripts.append(SFWStringUtils.rpad(String.valueOf(tabelaNumero[e]), String.valueOf(tabelaNumero[e]), Integer.parseInt(cellTamanho.getContents().toString().trim())));
                                     strOutScripts.append("<" + cellCampo.getContents() + "/>");
                                     strOutScripts.append("\r\n");
                                 }
-                            }else{
+                            } else {
                                 System.out.println("O Tamanho do Campo:" + cellCampo.getContents() + " não está como númérico");
                                 //strOutScripts.append( "Campo:" + cellCampo.getContents() + " não é númérico" );
                             }
-                        }else{
+                        } else {
                             System.out.println("O Tamanho do campo:" + cellCampo.getContents() + " está vazio");
                             //strOutScripts.append( "O Tamanho do campo:" + cellCampo.getContents() + " está vazio" );
                         }
                     }
 
                     // Gerando arquivo
-                    if( flag ){
+                    if (flag) {
                         fileScripts = new File("c:\\" + nomeArquivoNovo);
-                        if(!fileScripts.exists()){
+                        if (!fileScripts.exists()) {
                             fileScripts.createNewFile();
 
                             fwScripts = new FileWriter(fileScripts, false);
                             nomeArquivo = nomeArquivoNovo;
 
-                            if(strOutScripts != null ){
-                                fwScripts.write(strOutScripts.toString(),0,strOutScripts.length());
+                            if (strOutScripts != null) {
+                                fwScripts.write(strOutScripts.toString(), 0, strOutScripts.length());
                             }
                             fwScripts.close();
                         }
                         strOutScripts = new StringBuffer();
-                        if(i >= 128){
+                        if (i >= 128) {
                             i = 33;
                         }
                         flag = false;
                     }
                     // Identifica inicio dos campos
-                    if(cellCampo.getContents().toString().trim().equals("Destino - SFW")){
+                    if (cellCampo.getContents().toString().trim().equals("Destino - SFW")) {
                         flagCampos = true;
                         flag = false;
                     }
-                }catch(ArrayIndexOutOfBoundsException ex){
+                } catch (ArrayIndexOutOfBoundsException ex) {
                     fileScripts = new File("c:\\" + nomeArquivoNovo);
-                    if(!fileScripts.exists()){
+                    if (!fileScripts.exists()) {
                         fileScripts.createNewFile();
 
                         fwScripts = new FileWriter(fileScripts, false);
                         nomeArquivo = nomeArquivoNovo;
 
-                        if(strOutScripts != null ){
-                            fwScripts.write(strOutScripts.toString(),0,strOutScripts.length());
+                        if (strOutScripts != null) {
+                            fwScripts.write(strOutScripts.toString(), 0, strOutScripts.length());
                         }
                         fwScripts.close();
                     }
-                    strOutScripts = new StringBuffer();
-                    if(i >= 128){
+                    //strOutScripts = new StringBuffer();
+                    if (i >= 128) {
                         i = 0;
                     }
                     j = 500;
                     System.out.println("Final");
                     break;
                 }
-			}
+            }
 
-		} catch (BiffException ex) {
-			ex.printStackTrace();
+        } catch (BiffException ex) {
+            ex.printStackTrace();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-	}
+    }
 
-    public void gerarScriptsTabelasTMP() throws IOException  {
-		File inputWorkbook = new File(inputFile);
-		Workbook w;
+    public void gerarScriptsTabelasTMP() throws IOException {
+        File inputWorkbook = new File(inputFile);
+        Workbook w;
         StringBuffer strOutScripts = new StringBuffer();
         File fileScripts;
         FileWriter fwScripts;
@@ -399,25 +397,25 @@ public void gerarArquivoXML() throws IOException  {
         boolean flag = false;
         boolean flagCampos = false;
         int contador = 0;
-		try {
-			w = Workbook.getWorkbook(inputWorkbook);
-			// Get the first sheet
-			Sheet sheet = w.getSheet(tag);
-			// Loop over first 10 column and lines
+        try {
+            w = Workbook.getWorkbook(inputWorkbook);
+            // Get the first sheet
+            Sheet sheet = w.getSheet(tag);
+            // Loop over first 10 column and lines
 
-			System.out.println("Numero de linha: " + sheet.getColumns());
+            System.out.println("Numero de linha: " + sheet.getColumns());
             //for (int j = 0; j < sheet.getColumns(); j++) {
-            String sTabela = "" ;
+            String sTabela = "";
             String sTabelaNova = "";
             for (int j = 0; j < 600; j++) {
-                try{
+                try {
                     // Tabela
                     Cell cellCampo = sheet.getCell(0, j);
-                    if(cellCampo.getContents().toString().equals("Tabela IN-OUT")){
+                    if (cellCampo.getContents().toString().equals("Tabela IN-OUT")) {
                         //flag = true;
                         Cell cellTabela = sheet.getCell(1, j);
                         sTabelaNova = cellTabela.getContents().toString().trim();
-                        if(sTabela.equals("")){
+                        if (sTabela.equals("")) {
                             sTabela = cellTabela.getContents().toString().trim();
                         }
                         System.out.println("Tabela " + cellTabela.getContents());
@@ -429,58 +427,58 @@ public void gerarArquivoXML() throws IOException  {
 
                     // Arquivo a ser gerado
                     Cell cellNomeArquivo = null;
-                    if(cellCampo.getContents().toString().equals("Arquivo Texto")){
+                    if (cellCampo.getContents().toString().equals("Arquivo Texto")) {
                         cellNomeArquivo = sheet.getCell(1, j);
                         System.out.println("Arquivo " + cellNomeArquivo.getContents());
                         nomeArquivoNovo = cellNomeArquivo.getContents().toString().trim();
-                        if(nomeArquivo.equals("")){
+                        if (nomeArquivo.equals("")) {
                             nomeArquivo = cellNomeArquivo.getContents().toString().trim();
                         }
                     }
 
                     // Identifica final da tabela
-                    if(cellCampo.getContents().toString().contains("Controle de Revisão da Interface de")){
+                    if (cellCampo.getContents().toString().contains("Controle de Revisão da Interface de")) {
                         flag = true;
                         flagCampos = false;
                         contador = 0;
                     }
 
                     // Buscando campo do excel
-                    if(flagCampos){
+                    if (flagCampos) {
                         Cell cellTamanho = sheet.getCell(2, j);
                         Cell cellTipo = sheet.getCell(1, j);
-                        if(!cellTamanho.getContents().trim().equals("")){
-                           if (cellTamanho.getType() == CellType.NUMBER) {
+                        if (!cellTamanho.getContents().trim().equals("")) {
+                            if (cellTamanho.getType() == CellType.NUMBER) {
                                 contador += 1;
                                 // Exemplo
                                 //sNfeSefazNewChNfe = SFWStringUtils.rpad(NfeSefazNewChNfe, " ", 44);
                                 System.out.println("Campo " + cellCampo.getContents() + " Tam." + cellTamanho.getContents() + " Tipo: " + cellTipo.getContents());
 
                                 strOutScripts.append("insert into colunas_tab_interface (table_name, column_name, tipo_loader, tamanho, ordem, arg_name, descricao) ");
-                                strOutScripts.append("values ('"+sTabela+"', '"+cellCampo.getContents().toUpperCase().toString() +"', 'CHAR', '"+cellTamanho.getContents().toString()+"', '"+contador+"', '', '' );");
+                                strOutScripts.append("values ('" + sTabela + "', '" + cellCampo.getContents().toUpperCase().toString() + "', 'CHAR', '" + cellTamanho.getContents().toString() + "', '" + contador + "', '', '' );");
                                 strOutScripts.append("\r\n");
 
-                           }else{
+                            } else {
                                 System.out.println("O Tamanho do Campo:" + cellCampo.getContents() + " não está como númérico");
                                 //strOutScripts.append( SFWStringUtils.rpad("CELULA VAZIA", " ", 12 ) );
                             }
-                        }else{
+                        } else {
                             System.out.println("O Tamanho do campo:" + cellCampo.getContents() + " está vazio");
                             //strOutScripts.append( SFWStringUtils.rpad("CELULA VAZIA", " ", 12 ) );
                         }
                     }
 
                     // Gerando arquivo
-                    if( flag ){
+                    if (flag) {
                         fileScripts = new File("c:\\" + sTabelaNova + ".sql");
-                        if(!fileScripts.exists()){
+                        if (!fileScripts.exists()) {
                             fileScripts.createNewFile();
 
                             fwScripts = new FileWriter(fileScripts, false);
                             sTabela = sTabelaNova;
 
-                            if(strOutScripts != null ){
-                                fwScripts.write(strOutScripts.toString(),0,strOutScripts.length());
+                            if (strOutScripts != null) {
+                                fwScripts.write(strOutScripts.toString(), 0, strOutScripts.length());
                             }
                             fwScripts.close();
                         }
@@ -489,20 +487,20 @@ public void gerarArquivoXML() throws IOException  {
                     }
 
                     // Identifica inicio dos campos
-                    if(cellCampo.getContents().toString().trim().equals("Destino - SFW")){
+                    if (cellCampo.getContents().toString().trim().equals("Destino - SFW")) {
                         flagCampos = true;
                         flag = false;
                     }
-                }catch(ArrayIndexOutOfBoundsException ex){
+                } catch (ArrayIndexOutOfBoundsException ex) {
                     fileScripts = new File("c:\\" + sTabela + ".sql");
-                    if(!fileScripts.exists()){
+                    if (!fileScripts.exists()) {
                         fileScripts.createNewFile();
 
                         fwScripts = new FileWriter(fileScripts, false);
                         sTabela = sTabelaNova;
 
-                        if(strOutScripts != null ){
-                            fwScripts.write(strOutScripts.toString(),0,strOutScripts.length());
+                        if (strOutScripts != null) {
+                            fwScripts.write(strOutScripts.toString(), 0, strOutScripts.length());
                         }
                         fwScripts.close();
                     }
@@ -511,20 +509,20 @@ public void gerarArquivoXML() throws IOException  {
                     System.out.println("Final");
 
                 }
-			}
+            }
 
 
 
-		} catch (BiffException ex) {
-			ex.printStackTrace();
+        } catch (BiffException ex) {
+            ex.printStackTrace();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-	}
+    }
 
-    public void corrigirCampos() throws IOException  {
-		File inputWorkbook = new File(inputFile);
-		Workbook w;
+    public void corrigirCampos() throws IOException {
+        File inputWorkbook = new File(inputFile);
+        Workbook w;
         StringBuffer strOutScripts = new StringBuffer();
         File fileScripts;
         FileWriter fwScripts;
@@ -549,9 +547,9 @@ public void gerarArquivoXML() throws IOException  {
 
         PreparedStatement update_pstmt;
 
-		try {
+        try {
 
-        //String conn = "jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=192.168.61.9)(PORT=1510)))(CONNECT_DATA=(SERVICE_NAME=DESENV10)))";
+            //String conn = "jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=192.168.61.9)(PORT=1510)))(CONNECT_DATA=(SERVICE_NAME=DESENV10)))";
             String conn = "192.168.61.9";
             String user = "sfwio2010";
             String pass = "sfwio2010";
@@ -583,31 +581,31 @@ public void gerarArquivoXML() throws IOException  {
             psSqlCountFieldPackage = ConnectionInout.getConnection().prepareStatement(sbSqlCountFieldsPackage.toString());
 
             w = Workbook.getWorkbook(inputWorkbook);
-			// Get the first sheet
-			Sheet sheet = w.getSheet(tag);
-			// Loop over first 10 column and lines
+            // Get the first sheet
+            Sheet sheet = w.getSheet(tag);
+            // Loop over first 10 column and lines
 
-			strOutScripts.append("Numero de linha: " + sheet.getColumns() + "\r\n");
+            strOutScripts.append("Numero de linha: " + sheet.getColumns() + "\r\n");
             //for (int j = 0; j < sheet.getColumns(); j++) {
-            String sTabela = "" ;
+            String sTabela = "";
             String sTabelaNova = "";
             String sPackage = "";
             for (int j = 0; j < 600; j++) {
-                try{
+                try {
                     // Tabela
                     Cell cellCampo = sheet.getCell(0, j);
-                    if(cellCampo.getContents().toString().equals("Tabela IN-OUT")){
+                    if (cellCampo.getContents().toString().equals("Tabela IN-OUT")) {
                         //flag = true;
                         Cell cellTabela = sheet.getCell(1, j);
                         sTabelaNova = cellTabela.getContents().toString().trim();
-                        if(sTabela.equals("")){
+                        if (sTabela.equals("")) {
                             sTabela = cellTabela.getContents().toString().trim();
                         }
                         strOutScripts.append("Tabela " + cellTabela.getContents() + "\r\n");
 
                     }
 
-                    if(cellCampo.getContents().toString().equals("Package")){
+                    if (cellCampo.getContents().toString().equals("Package")) {
                         //flag = true;
                         Cell cellPackage = sheet.getCell(1, j);
                         sPackage = cellPackage.getContents().toString().trim();
@@ -618,24 +616,24 @@ public void gerarArquivoXML() throws IOException  {
 
                     // Arquivo a ser gerado
                     Cell cellNomeArquivo = null;
-                    if(cellCampo.getContents().toString().equals("Arquivo Texto")){
+                    if (cellCampo.getContents().toString().equals("Arquivo Texto")) {
                         cellNomeArquivo = sheet.getCell(1, j);
                         strOutScripts.append("Arquivo " + cellNomeArquivo.getContents() + "\r\n");
                         nomeArquivoNovo = cellNomeArquivo.getContents().toString().trim();
-                        if(nomeArquivo.equals("")){
+                        if (nomeArquivo.equals("")) {
                             nomeArquivo = cellNomeArquivo.getContents().toString().trim();
                         }
                     }
 
                     // Identifica final da tabela
-                    if(cellCampo.getContents().toString().contains("Controle de Revisão da Interface de")){
+                    if (cellCampo.getContents().toString().contains("Controle de Revisão da Interface de")) {
 
                         psSqlCountInterface.setString(1, sTabelaNova);
                         rsSqlCountInterface = psSqlCountInterface.executeQuery();
                         rsSqlCountInterface.next();
 
 
-                        psSqlCountFieldPackage.setString(1, sPackage.substring(sPackage.indexOf(".")+1, sPackage.length()));
+                        psSqlCountFieldPackage.setString(1, sPackage.substring(sPackage.indexOf(".") + 1, sPackage.length()));
                         rsSqlCountFieldPackage = psSqlCountFieldPackage.executeQuery();
                         rsSqlCountFieldPackage.next();
 
@@ -649,11 +647,11 @@ public void gerarArquivoXML() throws IOException  {
                     }
 
                     // Buscando campo do excel
-                    if(flagCampos){
+                    if (flagCampos) {
                         Cell cellTamanho = sheet.getCell(2, j);
                         Cell cellTipo = sheet.getCell(1, j);
-                        if(!cellTamanho.getContents().trim().equals("")){
-                           if (cellTamanho.getType() == CellType.NUMBER) {
+                        if (!cellTamanho.getContents().trim().equals("")) {
+                            if (cellTamanho.getType() == CellType.NUMBER) {
                                 contador += 1;
                                 // Exemplo
                                 //sNfeSefazNewChNfe = SFWStringUtils.rpad(NfeSefazNewChNfe, " ", 44);
@@ -665,27 +663,27 @@ public void gerarArquivoXML() throws IOException  {
                                 rsSqlInterface = psSqlInterface.executeQuery();
                                 rsSqlInterface.next();
 
-                                try{
-                                    if( rsSqlInterface.getString("TABLE_NAME") != null && !rsSqlInterface.getString("TABLE_NAME").equals("") ){
+                                try {
+                                    if (rsSqlInterface.getString("TABLE_NAME") != null && !rsSqlInterface.getString("TABLE_NAME").equals("")) {
 
 
 
                                         //while(rsSqlInterface.next()){
-                                        if( !rsSqlInterface.getString("TAMANHO").equals( cellTamanho.getContents().trim() ) ){
+                                        if (!rsSqlInterface.getString("TAMANHO").equals(cellTamanho.getContents().trim())) {
                                             strOutScripts.append("Tam. Campo " + cellCampo.getContents() + " não confere. Tam. EXCEL: " + cellTamanho.getContents() + " Tam. INOUT: " + rsSqlInterface.getString("TAMANHO") + "\r\n");
 
-                                            update_pstmt.setLong(1, Integer.valueOf( cellTamanho.getContents().trim() ) );
-                                            update_pstmt.setLong(2, Integer.valueOf( rsSqlInterface.getString("ORDEM") ) );
+                                            update_pstmt.setLong(1, Integer.valueOf(cellTamanho.getContents().trim()));
+                                            update_pstmt.setLong(2, Integer.valueOf(rsSqlInterface.getString("ORDEM")));
                                             update_pstmt.setString(3, rsSqlInterface.getString("TABLE_NAME"));
                                             update_pstmt.setString(4, rsSqlInterface.getString("COLUMN_NAME"));
                                             update_pstmt.executeUpdate();
                                         }
 
-                                        if( !rsSqlInterface.getString("ORDEM").equals( String.valueOf( contador ) ) ){
+                                        if (!rsSqlInterface.getString("ORDEM").equals(String.valueOf(contador))) {
                                             strOutScripts.append("Ordem Campo " + cellCampo.getContents() + " não confere. Ordem EXCEL: " + contador + " Ordem. INOUT: " + rsSqlInterface.getString("ORDEM") + "\r\n");
 
-                                            update_pstmt.setLong(1, Integer.valueOf( rsSqlInterface.getString("TAMANHO")  ) );
-                                            update_pstmt.setLong(2, contador );
+                                            update_pstmt.setLong(1, Integer.valueOf(rsSqlInterface.getString("TAMANHO")));
+                                            update_pstmt.setLong(2, contador);
                                             update_pstmt.setString(3, rsSqlInterface.getString("TABLE_NAME"));
                                             update_pstmt.setString(4, rsSqlInterface.getString("COLUMN_NAME"));
                                             update_pstmt.executeUpdate();
@@ -704,61 +702,60 @@ public void gerarArquivoXML() throws IOException  {
                                         //    }
                                         //}catch(Exception ex){
                                         //    strOutScripts.append("Argumento não encontrado " + cellCampo.getContents() + " não confere. \r\n");
-                                            //ex.printStackTrace();
+                                        //ex.printStackTrace();
                                         //}
-                                    }else{
-                                        strOutScripts.append( "Campo " + cellCampo.getContents() + " não encontrado no InOut"+ "\r\n");
+                                    } else {
+                                        strOutScripts.append("Campo " + cellCampo.getContents() + " não encontrado no InOut" + "\r\n");
                                     }
-                                }catch(Exception ex){
-                                    strOutScripts.append("Campo " + cellCampo.getContents() + " não encontrado no InOut"+ "\r\n");
+                                } catch (Exception ex) {
+                                    strOutScripts.append("Campo " + cellCampo.getContents() + " não encontrado no InOut" + "\r\n");
                                 }
 
-                           }else{
-                                strOutScripts.append("O Tamanho do Campo:" + cellCampo.getContents() + " não está como númérico"+ "\r\n");
+                            } else {
+                                strOutScripts.append("O Tamanho do Campo:" + cellCampo.getContents() + " não está como númérico" + "\r\n");
                                 //strOutScripts.append( SFWStringUtils.rpad("CELULA VAZIA", " ", 12 ) );
                             }
-                        }else{
-                            strOutScripts.append("O Tamanho do campo:" + cellCampo.getContents() + " está vazio"+ "\r\n");
+                        } else {
+                            strOutScripts.append("O Tamanho do campo:" + cellCampo.getContents() + " está vazio" + "\r\n");
                             //strOutScripts.append( SFWStringUtils.rpad("CELULA VAZIA", " ", 12 ) );
                         }
                     }
 
                     // Identifica inicio dos campos
-                    if(cellCampo.getContents().toString().trim().equals("Destino - SFW")){
+                    if (cellCampo.getContents().toString().trim().equals("Destino - SFW")) {
                         flagCampos = true;
                         flag = false;
                     }
-                }catch(ArrayIndexOutOfBoundsException ex){
-
+                } catch (ArrayIndexOutOfBoundsException ex) {
                 }
-			}
+            }
 
             // Gerando arquivo
             fileScripts = new File("c:\\" + this.tag + ".sql");
-            if(!fileScripts.exists()){
+            if (!fileScripts.exists()) {
                 fileScripts.createNewFile();
 
                 fwScripts = new FileWriter(fileScripts, false);
                 sTabela = sTabelaNova;
 
-                if(strOutScripts != null ){
-                    fwScripts.write(strOutScripts.toString(),0,strOutScripts.length());
+                if (strOutScripts != null) {
+                    fwScripts.write(strOutScripts.toString(), 0, strOutScripts.length());
                 }
                 fwScripts.close();
             }
             strOutScripts = new StringBuffer();
             flag = false;
 
-		} catch (BiffException ex) {
-			ex.printStackTrace();
+        } catch (BiffException ex) {
+            ex.printStackTrace();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-	}
+    }
 
-    public void comparaCamposTabColumn() throws IOException  {
-		File inputWorkbook = new File(inputFile);
-		Workbook w;
+    public void comparaCamposTabColumn() throws IOException {
+        File inputWorkbook = new File(inputFile);
+        Workbook w;
         StringBuffer strOutScripts = new StringBuffer();
         File fileScripts;
         FileWriter fwScripts;
@@ -771,17 +768,23 @@ public void gerarArquivoXML() throws IOException  {
         PreparedStatement psSqlInterface;
         ResultSet rsSqlInterface;
 
+        PreparedStatement psSqlInterfaceInt;
+        ResultSet rsSqlInterfaceInt;
+
         PreparedStatement psSqlCountInterface;
         ResultSet rsSqlCountInterface;
+
+        PreparedStatement psSqlCountInterfaceInt;
+        ResultSet rsSqlCountInterfaceInt;
 
         PreparedStatement psSqlFieldsPackage;
         ResultSet rsSqlFieldPackage;
 
         PreparedStatement psSqlCountFieldPackage;
         ResultSet rsSqlCountFieldPackage;
-		try {
+        try {
 
-        //String conn = "jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=192.168.61.9)(PORT=1510)))(CONNECT_DATA=(SERVICE_NAME=DESENV10)))";
+            //String conn = "jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=192.168.61.9)(PORT=1510)))(CONNECT_DATA=(SERVICE_NAME=DESENV10)))";
             String conn = "192.168.61.9";
             String user = "sfwio2010";
             String pass = "sfwio2010";
@@ -789,6 +792,16 @@ public void gerarArquivoXML() throws IOException  {
             String port = "1510";
 
             ConnectionInout.initialize(conn, user, pass, port, service);
+
+            ConnectionIntegracao.initialize("192.168.61.9", "sfwit2010", "sfwit2010", "1510", "desenv10.sfw.com.br");
+
+            StringBuffer sbSqlInterfaceInt = new StringBuffer();
+            sbSqlInterfaceInt.append("select * from int_mapeamento_coluna where id = ( select id from int_mapeamento_layout where layout = ? ) and layout_coluna = ?");
+            psSqlInterfaceInt = ConnectionIntegracao.getConnection().prepareStatement(sbSqlInterfaceInt.toString());
+
+            StringBuffer sbSqlCountInterfaceInt = new StringBuffer();
+            sbSqlCountInterfaceInt.append("select count(*) TOTAL from int_mapeamento_coluna where id = ( select id from int_mapeamento_layout where layout = ? )");
+            psSqlCountInterfaceInt = ConnectionIntegracao.getConnection().prepareStatement(sbSqlCountInterfaceInt.toString());
 
 
             StringBuffer sbSqlInterface = new StringBuffer();
@@ -810,31 +823,31 @@ public void gerarArquivoXML() throws IOException  {
             psSqlCountFieldPackage = ConnectionInout.getConnection().prepareStatement(sbSqlCountFieldsPackage.toString());
 
             w = Workbook.getWorkbook(inputWorkbook);
-			// Get the first sheet
-			Sheet sheet = w.getSheet(tag);
-			// Loop over first 10 column and lines
+            // Get the first sheet
+            Sheet sheet = w.getSheet(tag);
+            // Loop over first 10 column and lines
 
-			strOutScripts.append("Numero de linha: " + sheet.getColumns() + "\r\n");
+            strOutScripts.append("Numero de linha: " + sheet.getColumns() + "\r\n");
             //for (int j = 0; j < sheet.getColumns(); j++) {
-            String sTabela = "" ;
+            String sTabela = "";
             String sTabelaNova = "";
             String sPackage = "";
             for (int j = 0; j < 600; j++) {
-                try{
+                try {
                     // Tabela
                     Cell cellCampo = sheet.getCell(0, j);
-                    if(cellCampo.getContents().toString().equals("Tabela IN-OUT")){
+                    if (cellCampo.getContents().toString().equals("Tabela IN-OUT")) {
                         //flag = true;
                         Cell cellTabela = sheet.getCell(1, j);
                         sTabelaNova = cellTabela.getContents().toString().trim();
-                        if(sTabela.equals("")){
+                        if (sTabela.equals("")) {
                             sTabela = cellTabela.getContents().toString().trim();
                         }
                         strOutScripts.append("Tabela " + cellTabela.getContents() + "\r\n");
 
                     }
 
-                    if(cellCampo.getContents().toString().equals("Package")){
+                    if (cellCampo.getContents().toString().equals("Package")) {
                         //flag = true;
                         Cell cellPackage = sheet.getCell(1, j);
                         sPackage = cellPackage.getContents().toString().trim();
@@ -845,24 +858,27 @@ public void gerarArquivoXML() throws IOException  {
 
                     // Arquivo a ser gerado
                     Cell cellNomeArquivo = null;
-                    if(cellCampo.getContents().toString().equals("Arquivo Texto")){
+                    if (cellCampo.getContents().toString().equals("Arquivo Texto")) {
                         cellNomeArquivo = sheet.getCell(1, j);
                         strOutScripts.append("Arquivo " + cellNomeArquivo.getContents() + "\r\n");
                         nomeArquivoNovo = cellNomeArquivo.getContents().toString().trim();
-                        if(nomeArquivo.equals("")){
+                        if (nomeArquivo.equals("")) {
                             nomeArquivo = cellNomeArquivo.getContents().toString().trim();
                         }
                     }
 
                     // Identifica final da tabela
-                    if(cellCampo.getContents().toString().contains("Controle de Revisão da Interface de")){
+                    if (cellCampo.getContents().toString().contains("Controle de Revis")) {
 
                         psSqlCountInterface.setString(1, sTabelaNova);
                         rsSqlCountInterface = psSqlCountInterface.executeQuery();
                         rsSqlCountInterface.next();
 
+                        psSqlCountInterfaceInt.setString(1, sTabelaNova);
+                        rsSqlCountInterfaceInt = psSqlCountInterfaceInt.executeQuery();
+                        rsSqlCountInterfaceInt.next();
 
-                        psSqlCountFieldPackage.setString(1, sPackage.substring(sPackage.indexOf(".")+1, sPackage.length()));
+                        psSqlCountFieldPackage.setString(1, sPackage.substring(sPackage.indexOf(".") + 1, sPackage.length()));
                         rsSqlCountFieldPackage = psSqlCountFieldPackage.executeQuery();
                         rsSqlCountFieldPackage.next();
 
@@ -871,20 +887,21 @@ public void gerarArquivoXML() throws IOException  {
                         strOutScripts.append("*** Total Campos Excel: " + sTabelaNova + " = " + contador + "\r\n");
                         strOutScripts.append("*** Total Campos InOut: " + sTabelaNova + " = " + rsSqlCountInterface.getString("TOTAL") + "\r\n");
                         strOutScripts.append("*** Total Campos Package: " + sPackage + " = " + rsSqlCountFieldPackage.getString("TOTAL") + "\r\n");
+                        strOutScripts.append("*** Total Campos IntMapeamento: " + sTabelaNova + " = " + rsSqlCountInterfaceInt.getString("TOTAL") + "\r\n");
                         strOutScripts.append("\r\n");
                         contador = 0;
                     }
 
                     // Buscando campo do excel
-                    if(flagCampos){
+                    if (flagCampos) {
                         Cell cellTamanho = sheet.getCell(2, j);
                         Cell cellTipo = sheet.getCell(1, j);
-                        if(!cellTamanho.getContents().trim().equals("")){
-                           if (cellTamanho.getType() == CellType.NUMBER) {
+                        if (!cellTamanho.getContents().trim().equals("")) {
+                            if (cellTamanho.getType() == CellType.NUMBER) {
                                 contador += 1;
                                 // Exemplo
                                 //sNfeSefazNewChNfe = SFWStringUtils.rpad(NfeSefazNewChNfe, " ", 44);
-                                
+
                                 //System.out.println("Campo " + cellCampo.getContents() + " Tam." + cellTamanho.getContents() + " Tipo: " + cellTipo.getContents());
 
                                 psSqlInterface.setString(1, sTabelaNova);
@@ -892,263 +909,102 @@ public void gerarArquivoXML() throws IOException  {
                                 rsSqlInterface = psSqlInterface.executeQuery();
                                 rsSqlInterface.next();
 
-                                try{
-                                    if( rsSqlInterface.getString("TABLE_NAME") != null && !rsSqlInterface.getString("TABLE_NAME").equals("") ){
+                                psSqlInterfaceInt.setString(1, sTabelaNova);
+                                psSqlInterfaceInt.setString(2, cellCampo.getContents().toUpperCase().trim());
+                                rsSqlInterfaceInt = psSqlInterfaceInt.executeQuery();
+                                rsSqlInterfaceInt.next();
+
+                                try {
+                                    if (rsSqlInterface.getString("TABLE_NAME") != null && !rsSqlInterface.getString("TABLE_NAME").equals("")) {
 
                                         //while(rsSqlInterface.next()){
-                                        if( !rsSqlInterface.getString("TAMANHO").equals( cellTamanho.getContents().trim() ) ){
+                                        if (!rsSqlInterface.getString("TAMANHO").equals(cellTamanho.getContents().trim())) {
                                             strOutScripts.append("Tam. Campo " + cellCampo.getContents() + " não confere. Tam. EXCEL: " + cellTamanho.getContents() + " Tam. INOUT: " + rsSqlInterface.getString("TAMANHO") + "\r\n");
-                                        }else if( !rsSqlInterface.getString("ORDEM").equals( String.valueOf( contador ) ) ){
+                                        } else if (!rsSqlInterface.getString("ORDEM").equals(String.valueOf(contador))) {
                                             strOutScripts.append("Ordem Campo " + cellCampo.getContents() + " não confere. Ordem EXCEL: " + contador + " Ordem. INOUT: " + rsSqlInterface.getString("ORDEM") + "\r\n");
                                         }
 
-                                        try{
-                                            if(!sPackage.trim().equals(rsSqlInterface.getString("PROCEDURE_NAME").trim())){
+                                        try {
+                                            if (!sPackage.trim().equals(rsSqlInterface.getString("PROCEDURE_NAME").trim())) {
                                                 strOutScripts.append("Package: " + rsSqlInterface.getString("PROCEDURE_NAME") + " não confere com Excel. \r\n");
                                             }
 
-                                            psSqlFieldsPackage.setString(1, sPackage.substring(sPackage.indexOf(".")+1, sPackage.length()));
+                                            psSqlFieldsPackage.setString(1, sPackage.substring(sPackage.indexOf(".") + 1, sPackage.length()));
                                             psSqlFieldsPackage.setString(2, rsSqlInterface.getString("ARG_NAME"));
                                             rsSqlFieldPackage = psSqlFieldsPackage.executeQuery();
                                             rsSqlFieldPackage.next();
 
-                                            if(rsSqlInterface.getString("ARG_NAME").equals("")){
+                                            if (rsSqlInterface.getString("ARG_NAME").equals("")) {
                                                 strOutScripts.append("Argumento VAZIO  " + cellCampo.getContents() + " não confere. \r\n");
-                                            }else if(rsSqlFieldPackage.getString("ARGUMENT_NAME") == null || rsSqlFieldPackage.getString("ARGUMENT_NAME").equals("")){
+                                            } else if (rsSqlFieldPackage.getString("ARGUMENT_NAME") == null || rsSqlFieldPackage.getString("ARGUMENT_NAME").equals("")) {
                                                 strOutScripts.append("Argumento não encontrado " + cellCampo.getContents() + " não confere. NULO \r\n");
-                                            }else if(!rsSqlFieldPackage.getString("ARGUMENT_NAME").equals(rsSqlInterface.getString("ARG_NAME"))){
+                                            } else if (!rsSqlFieldPackage.getString("ARGUMENT_NAME").equals(rsSqlInterface.getString("ARG_NAME"))) {
                                                 strOutScripts.append("Argumento não encontrado " + cellCampo.getContents() + " não confere. " + rsSqlInterface.getString("ARG_NAME") + "\r\n");
                                             }
-                                        }catch(Exception ex){
+                                        } catch (Exception ex) {
                                             strOutScripts.append("Argumento não encontrado " + cellCampo.getContents() + " não confere. Exception \r\n");
                                             //ex.printStackTrace();
                                         }
-                                    }else{
-                                        strOutScripts.append( "Campo " + cellCampo.getContents() + " não encontrado no InOut"+ "\r\n");
+
+                                        try {
+                                            if (rsSqlInterfaceInt.getString("API_COLUNA") == null || rsSqlInterfaceInt.getString("API_COLUNA").equals("")) {
+                                                strOutScripts.append("Campo " + cellCampo.getContents() + " não encontrado no IntMapeamento" + "\r\n");
+                                            }
+                                        } catch (Exception ex) {
+                                            strOutScripts.append("Campo " + cellCampo.getContents() + " não encontrado no IntMapeamento" + "\r\n");
+                                        }
+                                    } else {
+                                        strOutScripts.append("Campo " + cellCampo.getContents() + " não encontrado no InOut" + "\r\n");
                                     }
-                                }catch(Exception ex){
-                                    strOutScripts.append("Campo " + cellCampo.getContents() + " não encontrado no InOut"+ "\r\n");
+                                } catch (Exception ex) {
+                                    strOutScripts.append("Campo " + cellCampo.getContents() + " não encontrado no InOut" + "\r\n");
                                 }
 
-                           }else{
-                                strOutScripts.append("O Tamanho do Campo:" + cellCampo.getContents() + " não está como númérico"+ "\r\n");
+                            } else {
+                                strOutScripts.append("O Tamanho do Campo:" + cellCampo.getContents() + " não está como númérico" + "\r\n");
                                 //strOutScripts.append( SFWStringUtils.rpad("CELULA VAZIA", " ", 12 ) );
                             }
-                        }else{
+                        } else {
                             //strOutScripts.append("O Tamanho do campo:" + cellCampo.getContents() + " está vazio"+ "\r\n");
                             //strOutScripts.append( SFWStringUtils.rpad("CELULA VAZIA", " ", 12 ) );
                         }
                     }
 
                     // Identifica inicio dos campos
-                    if(cellCampo.getContents().toString().trim().equals("Destino - SFW")){
+                    if (cellCampo.getContents().toString().trim().equals("Destino - SFW")) {
                         flagCampos = true;
                         flag = false;
                     }
-                }catch(ArrayIndexOutOfBoundsException ex){
-                    
+                } catch (ArrayIndexOutOfBoundsException ex) {
                 }
-			}
+            }
 
             // Gerando arquivo
             fileScripts = new File("c:\\" + this.tag + ".sql");
-            if(!fileScripts.exists()){
+            if (!fileScripts.exists()) {
                 fileScripts.createNewFile();
 
                 fwScripts = new FileWriter(fileScripts, false);
                 sTabela = sTabelaNova;
 
-                if(strOutScripts != null ){
-                    fwScripts.write(strOutScripts.toString(),0,strOutScripts.length());
+                if (strOutScripts != null) {
+                    fwScripts.write(strOutScripts.toString(), 0, strOutScripts.length());
                 }
                 fwScripts.close();
             }
             strOutScripts = new StringBuffer();
             flag = false;
 
-		} catch (BiffException ex) {
-			ex.printStackTrace();
+        } catch (BiffException ex) {
+            ex.printStackTrace();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-	}
-
-    public void comparaCamposIntMapeamento() throws IOException  {
-		File inputWorkbook = new File(inputFile);
-		Workbook w;
-        StringBuffer strOutScripts = new StringBuffer();
-        File fileScripts;
-        FileWriter fwScripts;
-        String nomeArquivo = "";
-        String nomeArquivoNovo = "";
-        boolean flag = false;
-        boolean flagCampos = false;
-        int contador = 0;
-
-        PreparedStatement psSqlInterface;
-        ResultSet rsSqlInterface;
-
-        PreparedStatement psSqlCountInterface;
-        ResultSet rsSqlCountInterface;
-		try {
-
-        //String conn = "jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=192.168.61.9)(PORT=1510)))(CONNECT_DATA=(SERVICE_NAME=DESENV10)))";
-            String conn = "192.168.61.9";
-            String user = "sfwit2010";
-            String pass = "sfwit2010";
-            String service = "desenv10.sfw.com.br";
-            String port = "1510";
-
-            ConnectionIntegracao.initialize(conn, user, pass, port, service);
-
-
-            StringBuffer sbSqlInterface = new StringBuffer();
-            sbSqlInterface.append("select * from int_mapeamento_coluna where id = ( select id from int_mapeamento_layout where layout = ? ) and layout_coluna = ?");
-            psSqlInterface = ConnectionIntegracao.getConnection().prepareStatement(sbSqlInterface.toString());
-
-            StringBuffer sbSqlCountInterface = new StringBuffer();
-            sbSqlCountInterface.append("select count(*) TOTAL from int_mapeamento_coluna where id = ( select id from int_mapeamento_layout where layout = ? )");
-            psSqlCountInterface = ConnectionIntegracao.getConnection().prepareStatement(sbSqlCountInterface.toString());
-
-            w = Workbook.getWorkbook(inputWorkbook);
-			// Get the first sheet
-			Sheet sheet = w.getSheet(tag);
-			// Loop over first 10 column and lines
-
-			System.out.println("Numero de linha: " + sheet.getColumns());
-            //for (int j = 0; j < sheet.getColumns(); j++) {
-            String sTabela = "" ;
-            String sTabelaNova = "";
-            for (int j = 0; j < 600; j++) {
-                try{
-                    // Tabela
-                    Cell cellCampo = sheet.getCell(0, j);
-                    if(cellCampo.getContents().toString().equals("Tabela IN-OUT")){
-                        //flag = true;
-                        Cell cellTabela = sheet.getCell(1, j);
-                        sTabelaNova = cellTabela.getContents().toString().trim();
-                        if(sTabela.equals("")){
-                            sTabela = cellTabela.getContents().toString().trim();
-                        }
-                        System.out.println("Tabela " + cellTabela.getContents());
-
-                    }
-
-                    // Arquivo a ser gerado
-                    Cell cellNomeArquivo = null;
-                    if(cellCampo.getContents().toString().equals("Arquivo Texto")){
-                        cellNomeArquivo = sheet.getCell(1, j);
-                        System.out.println("Arquivo " + cellNomeArquivo.getContents());
-                        nomeArquivoNovo = cellNomeArquivo.getContents().toString().trim();
-                        if(nomeArquivo.equals("")){
-                            nomeArquivo = cellNomeArquivo.getContents().toString().trim();
-                        }
-                    }
-
-                    // Identifica final da tabela
-                    if(cellCampo.getContents().toString().contains("Controle de Revisão da Interface de")){
-
-                        psSqlCountInterface.setString(1, sTabelaNova);
-                        rsSqlCountInterface = psSqlCountInterface.executeQuery();
-                        rsSqlCountInterface.next();
-
-                        flag = true;
-                        flagCampos = false;
-                        System.out.println("*** Total Campos Excel: " + sTabelaNova + " = " + contador);
-                        System.out.println("*** Total Campos InOut: " + sTabelaNova + " = " + rsSqlCountInterface.getString("TOTAL"));
-                        System.out.println("");
-                        contador = 0;
-                    }
-
-                    // Buscando campo do excel
-                    if(flagCampos){
-                        Cell cellTamanho = sheet.getCell(2, j);
-                        Cell cellTipo = sheet.getCell(1, j);
-                        if(!cellTamanho.getContents().trim().equals("")){
-                           if (cellTamanho.getType() == CellType.NUMBER) {
-                                contador += 1;
-                                // Exemplo
-                                //sNfeSefazNewChNfe = SFWStringUtils.rpad(NfeSefazNewChNfe, " ", 44);
-
-                                //System.out.println("Campo " + cellCampo.getContents() + " Tam." + cellTamanho.getContents() + " Tipo: " + cellTipo.getContents());
-
-                                psSqlInterface.setString(1, sTabelaNova);
-                                psSqlInterface.setString(2, cellCampo.getContents().toUpperCase().trim());
-                                rsSqlInterface = psSqlInterface.executeQuery();
-                                rsSqlInterface.next();
-                                try{
-                                    if( rsSqlInterface.getString("API_COLUNA") == null || rsSqlInterface.getString("API_COLUNA").equals("") ){
-                                        System.out.println("Campo " + cellCampo.getContents() + " não encontrado no InOut");
-                                    }
-                                }catch(Exception ex){
-                                    System.out.println("Campo " + cellCampo.getContents() + " não encontrado no InOut");
-                                }
-
-                           }else{
-                                System.out.println("O Tamanho do Campo:" + cellCampo.getContents() + " não está como númérico");
-                                //strOutScripts.append( SFWStringUtils.rpad("CELULA VAZIA", " ", 12 ) );
-                            }
-                        }else{
-                            System.out.println("O Tamanho do campo:" + cellCampo.getContents() + " está vazio");
-                            //strOutScripts.append( SFWStringUtils.rpad("CELULA VAZIA", " ", 12 ) );
-                        }
-                    }
-
-                    // Gerando arquivo
-                    if( flag ){
-                        fileScripts = new File("c:\\" + sTabelaNova + ".sql");
-                        if(!fileScripts.exists()){
-                            fileScripts.createNewFile();
-
-                            fwScripts = new FileWriter(fileScripts, false);
-                            sTabela = sTabelaNova;
-
-                            if(strOutScripts != null ){
-                                fwScripts.write(strOutScripts.toString(),0,strOutScripts.length());
-                            }
-                            fwScripts.close();
-                        }
-                        strOutScripts = new StringBuffer();
-                        flag = false;
-                    }
-
-                    // Identifica inicio dos campos
-                    if(cellCampo.getContents().toString().trim().equals("Destino - SFW")){
-                        flagCampos = true;
-                        flag = false;
-                    }
-                }catch(ArrayIndexOutOfBoundsException ex){
-                    fileScripts = new File("c:\\" + sTabela + ".sql");
-                    if(!fileScripts.exists()){
-                        fileScripts.createNewFile();
-
-                        fwScripts = new FileWriter(fileScripts, false);
-                        sTabela = sTabelaNova;
-
-                        if(strOutScripts != null ){
-                            fwScripts.write(strOutScripts.toString(),0,strOutScripts.length());
-                        }
-                        fwScripts.close();
-                    }
-                    strOutScripts = new StringBuffer();
-                    j = 600;
-                    System.out.println("Final");
-
-                }
-			}
-
-
-
-		} catch (BiffException ex) {
-			ex.printStackTrace();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-	}
+    }
 
     public ArrayList readTablesOfExcelAba() {
-		File inputWorkbook = new File(inputFile);
-		Workbook w;
+        File inputWorkbook = new File(inputFile);
+        Workbook w;
         File fileScripts;
         FileWriter fwScripts;
         boolean flag = false;
@@ -1156,38 +1012,36 @@ public void gerarArquivoXML() throws IOException  {
         //String[] sTabela = new String[]{};
         ArrayList sTabela = new ArrayList();
 
-		try {
+        try {
             w = Workbook.getWorkbook(inputWorkbook);
-			// Get the first sheet
-			Sheet sheet = w.getSheet(tag);
-			// Loop over first 10 column and lines
+            // Get the first sheet
+            Sheet sheet = w.getSheet(tag);
+            // Loop over first 10 column and lines
 
             for (int j = 0; j < 600; j++) {
-                try{
+                try {
                     // Tabela
                     Cell cellCampo = sheet.getCell(0, j);
-                    if(cellCampo.getContents().toString().equals("Tabela IN-OUT")){
+                    if (cellCampo.getContents().toString().equals("Tabela IN-OUT")) {
                         Cell cellTabela = sheet.getCell(1, j);
                         //sTabela[contador] = cellTabela.getContents().toString().trim();
-                        sTabela.add(cellTabela.getContents().toString().trim() );
+                        sTabela.add(cellTabela.getContents().toString().trim());
                         contador += 1;
                     }
-                 }catch(ArrayIndexOutOfBoundsException ex){
-
+                } catch (ArrayIndexOutOfBoundsException ex) {
                 }
-			}
-		} catch (BiffException ex) {
-			ex.printStackTrace();
+            }
+        } catch (BiffException ex) {
+            ex.printStackTrace();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
         return sTabela;
-	}
-
+    }
 
     public ArrayList<String> readWeigthFieldsOfTable(String sTabela, String sLinha) {
-		File inputWorkbook = new File(inputFile);
-		Workbook w;
+        File inputWorkbook = new File(inputFile);
+        Workbook w;
         File fileScripts;
         FileWriter fwScripts;
         boolean flag = false;
@@ -1196,61 +1050,60 @@ public void gerarArquivoXML() throws IOException  {
         int contador = 0;
         ArrayList sFieldsSeparated = new ArrayList();
 
-		try {
+        try {
             w = Workbook.getWorkbook(inputWorkbook);
-			Sheet sheet = w.getSheet(tag);
+            Sheet sheet = w.getSheet(tag);
             for (int j = 0; j < 600; j++) {
-                try{
+                try {
                     // Tabela
                     Cell cellCampo = sheet.getCell(0, j);
-                    if(cellCampo.getContents().toString().equals("Tabela IN-OUT")){
+                    if (cellCampo.getContents().toString().equals("Tabela IN-OUT")) {
                         Cell cellTabela = sheet.getCell(1, j);
 
-                        if(cellTabela.getContents().toString().trim().equals(sTabela)){
+                        if (cellTabela.getContents().toString().trim().equals(sTabela)) {
                             flagTabela = true;
-                        }else{
+                        } else {
                             flagTabela = false;
                         }
                     }
 
                     // Identifica final da tabela
-                    if(cellCampo.getContents().toString().contains("Controle de Revisão da Interface de")){
+                    if (cellCampo.getContents().toString().contains("Controle de Revisão da Interface de")) {
                         flag = true;
                         flagCampos = false;
                         contador = 0;
                     }
 
                     // Buscando campo do excel
-                    if(flagCampos && flagTabela){
+                    if (flagCampos && flagTabela) {
                         Cell cellTamanho = sheet.getCell(2, j);
-                        if(!cellTamanho.getContents().trim().equals("")){
-                            sFieldsSeparated.add( sLinha.substring(contador, Integer.parseInt( cellTamanho.getContents().toString().trim())+contador  )  );
-                            contador += Integer.parseInt( cellTamanho.getContents().toString().trim() );
-                        }else{
+                        if (!cellTamanho.getContents().trim().equals("")) {
+                            sFieldsSeparated.add(sLinha.substring(contador, Integer.parseInt(cellTamanho.getContents().toString().trim()) + contador));
+                            contador += Integer.parseInt(cellTamanho.getContents().toString().trim());
+                        } else {
                             System.out.println("O Tamanho do campo:" + cellCampo.getContents() + " está vazio");
                         }
                     }
 
                     // Identifica inicio dos campos
-                    if(cellCampo.getContents().toString().trim().equals("Destino - SFW")){
+                    if (cellCampo.getContents().toString().trim().equals("Destino - SFW")) {
                         flagCampos = true;
                         flag = false;
                     }
-                }catch(ArrayIndexOutOfBoundsException ex){
-
+                } catch (ArrayIndexOutOfBoundsException ex) {
                 }
-			}
-		} catch (BiffException ex) {
-			ex.printStackTrace();
+            }
+        } catch (BiffException ex) {
+            ex.printStackTrace();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
         return sFieldsSeparated;
-	}
+    }
 
     public ArrayList<String> readFieldsOfTable(String sTabela) {
-		File inputWorkbook = new File(inputFile);
-		Workbook w;
+        File inputWorkbook = new File(inputFile);
+        Workbook w;
         File fileScripts;
         FileWriter fwScripts;
         boolean flag = false;
@@ -1259,76 +1112,74 @@ public void gerarArquivoXML() throws IOException  {
         int contador = 0;
         ArrayList sFieldsSeparated = new ArrayList();
 
-		try {
+        try {
             w = Workbook.getWorkbook(inputWorkbook);
-			// Get the first sheet
-			Sheet sheet = w.getSheet(tag);
-			// Loop over first 10 column and lines
+            // Get the first sheet
+            Sheet sheet = w.getSheet(tag);
+            // Loop over first 10 column and lines
 
             for (int j = 0; j < 600; j++) {
-                try{
+                try {
                     // Tabela
                     Cell cellCampo = sheet.getCell(0, j);
-                    if(cellCampo.getContents().toString().equals("Tabela IN-OUT")){
+                    if (cellCampo.getContents().toString().equals("Tabela IN-OUT")) {
                         Cell cellTabela = sheet.getCell(1, j);
 
                         //sTabela[contador] = cellTabela.getContents().toString().trim();
                         //sFieldsSeparated.add(cellTabela.getContents().toString().trim() );
                         contador += 1;
-                        if(cellTabela.getContents().toString().trim().equals(sTabela)){
+                        if (cellTabela.getContents().toString().trim().equals(sTabela)) {
                             flagTabela = true;
-                        }else{
+                        } else {
                             flagTabela = false;
                         }
                     }
 
                     // Identifica final da tabela
-                    if(cellCampo.getContents().toString().contains("Controle de Revisão da Interface de")){
+                    if (cellCampo.getContents().toString().contains("Controle de Revisão da Interface de")) {
                         flag = true;
                         flagCampos = false;
                         contador = 0;
                     }
 
                     // Buscando campo do excel
-                    if(flagCampos && flagTabela){
+                    if (flagCampos && flagTabela) {
                         Cell cellTamanho = sheet.getCell(2, j);
-                        if(!cellTamanho.getContents().trim().equals("")){
+                        if (!cellTamanho.getContents().trim().equals("")) {
                             contador += 1;
                             System.out.println("Campo " + cellCampo.getContents() + " não encontrado no InOut");
 
                             //sFieldsSeparated.add(  SFWStringUtils.rpad( String.valueOf( tabela[i] ), String.valueOf( tabela[i] ), Integer.parseInt( cellTamanho.getContents().toString().trim() )) );
 
-                            sFieldsSeparated.add( cellCampo.getContents() );
+                            sFieldsSeparated.add(cellCampo.getContents());
 
                             //String[] s =  cellCampo.getContents().substring(contador, Integer.parseInt( cellTamanho.getContents().toString().trim()+contador)  )
 
-                            contador += Integer.parseInt( cellTamanho.getContents().toString().trim() );
-                        }else{
+                            contador += Integer.parseInt(cellTamanho.getContents().toString().trim());
+                        } else {
                             System.out.println("O Tamanho do campo:" + cellCampo.getContents() + " está vazio");
                         }
                     }
 
                     // Identifica inicio dos campos
-                    if(cellCampo.getContents().toString().trim().equals("Destino - SFW")){
+                    if (cellCampo.getContents().toString().trim().equals("Destino - SFW")) {
                         flagCampos = true;
                         flag = false;
                     }
-                }catch(ArrayIndexOutOfBoundsException ex){
-
+                } catch (ArrayIndexOutOfBoundsException ex) {
                 }
-			}
-		} catch (BiffException ex) {
-			ex.printStackTrace();
+            }
+        } catch (BiffException ex) {
+            ex.printStackTrace();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
         return sFieldsSeparated;
-	}
+    }
 
-	public static void main(String[] args) throws IOException {
-		ReadExcel test = new ReadExcel();
-		test.setInputFile("c:/temp/lars.xls");
-		test.read();
-	}
-
+    public static void main(String[] args) throws IOException {
+        ReadExcel test = new ReadExcel();
+        test.setInputFile("c:/temp/lars.xls");
+        test.read();
+    }
 }
