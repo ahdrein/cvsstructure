@@ -88,7 +88,7 @@ public class SfwInstalador extends javax.swing.JFrame {
          //Listen for when the selection changes.
         //jTree.addTreeSelectionListener((TreeSelectionListener) new NodeSelectionListener(jTree));
 
-        JScrollPane treeView = new JScrollPane(jTree);
+        //JScrollPane treeView = new JScrollPane(jTree);
         jTree.updateUI();
 
 
@@ -481,7 +481,7 @@ public class SfwInstalador extends javax.swing.JFrame {
 	 * @param subDir
 	 **************************************************************************/
     private void listaSubDir(File subDir, String pDirAtual, CheckNode ptop) {
-        ArrayList listaStrOut = new ArrayList();
+        //ArrayList listaStrOut = new ArrayList();
         File[] subdiretorios = subDir.listFiles();
 
         for(File subdir : subdiretorios){
