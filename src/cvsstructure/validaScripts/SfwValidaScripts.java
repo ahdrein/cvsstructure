@@ -471,7 +471,6 @@ public class SfwValidaScripts extends javax.swing.JFrame {
 	 **************************************************************************/
     private void listaSubDir(File subDir, String pDirAtual){
         int nArqs = 0;
-        ArrayList listaStrOut = new ArrayList();
         File[] subdiretorios = subDir.listFiles();
 
         //String tipoPasta = ""; // Tabela / Interface / ArquivosExternos
