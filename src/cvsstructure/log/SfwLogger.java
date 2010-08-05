@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Calendar;
 import java.util.TimeZone;
-import cvsstructure.cvsStructure.CVSStructure;
+import cvsstructure.CVSStructure;
 import java.util.logging.Logger;
 
 public class SfwLogger {
