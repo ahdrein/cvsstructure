@@ -1,6 +1,9 @@
 package cvsstructure.objects;
 
-import cvsstructure.cvsStructure.CVSStructure;
+import cvsstructure.util.Diretorio;
+import cvsstructure.util.DataTableLayout;
+import cvsstructure.CVSStructure;
+import cvsstructure.util.Estatisticas;
 import cvsstructure.database.ConnectionInout;
 import java.io.BufferedReader;
 import java.io.File;
@@ -10,48 +13,46 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import cvsstructure.log.SfwLogger;
+import cvsstructure.model.Cliente;
+import cvsstructure.model.Interface;
+import cvsstructure.util.Arquivo;
 
 /**
  *
  * @author andrein
  */
 public class TabInterfaces {
+
     private String idInterface;
     private String idSistema;
     private static PreparedStatement psTabInterface;
     private ResultSet rsTabInterface = null;
-
     private static PreparedStatement psColunasTabInterface;
     private ResultSet rsColunasTabInterface = null;
-
     private static PreparedStatement psDependHeaderItem;
     private static PreparedStatement psDependHeaderItemTrigger;
     private ResultSet rsDependHeaderItemTrigger = null;
-
     private static PreparedStatement psCountPermissaoTabela;
     private ResultSet rsCountPermissaoTabela = null;
-
     private static PreparedStatement psPermissaoTabela = null;
     private static ResultSet rsPermissaoTabela = null;
+    private static StringBuilder sbTabInterface;
+    private static StringBuilder sbColunasTabInterface;
+    private static StringBuilder sbDependHeaderItem;
+    private static StringBuilder sbDependHeaderItemTrigger;
+    private static StringBuilder sbCountPermissaoTabela;
 
-    private static StringBuffer sbTabInterface;
-    private static StringBuffer sbColunasTabInterface;
-    private static StringBuffer sbDependHeaderItem;
-    private static StringBuffer sbDependHeaderItemTrigger;
-    private static StringBuffer sbCountPermissaoTabela;
-
-    public TabInterfaces(String tableName, 
-                         String idInterface,
-                         String idSistema,
-                         CVSStructure cvsStructure) throws SQLException, IOException{
+    public TabInterfaces(String tableName,
+            Object[] selectInterfaces) throws SQLException, IOException {
         String fileName = "";
         String fileNameScripts = "";
-        StringBuffer strOut = new StringBuffer();
+        Interface interfaces = new Interface();
+        StringBuilder strOut = new StringBuilder();
 
         boolean flagSelectInterface = false;
 
-        if(sbTabInterface == null){
-            sbTabInterface = new StringBuffer();
+        if (sbTabInterface == null) {
+            sbTabInterface = new StringBuilder();
             sbTabInterface.append("select table_name table_name, nvl(ctl_name, '') ctl_name, ");
             sbTabInterface.append(" nvl(prefix_file, '') prefix_file, ctl_fixo ctl_fixo, ");
             sbTabInterface.append(" nvl(gerar_ctl, '') gerar_ctl, ");
@@ -79,40 +80,40 @@ public class TabInterfaces {
             psTabInterface = ConnectionInout.getConnection().prepareStatement(sbTabInterface.toString());
         }
 
-        if(sbColunasTabInterface == null){
-            sbColunasTabInterface = new StringBuffer();
+        if (sbColunasTabInterface == null) {
+            sbColunasTabInterface = new StringBuilder();
             sbColunasTabInterface.append("select * from colunas_tab_interface where table_name = ?");
 
             psColunasTabInterface = ConnectionInout.getConnection().prepareStatement(sbColunasTabInterface.toString());
         }
 
-        if(sbDependHeaderItem == null){
-            sbDependHeaderItem = new StringBuffer();
+        if (sbDependHeaderItem == null) {
+            sbDependHeaderItem = new StringBuilder();
             sbDependHeaderItem.append("select * from depend_header_item where table_name = ? and column_name = ?");
 
             psDependHeaderItem = ConnectionInout.getConnection().prepareStatement(sbDependHeaderItem.toString());
         }
 
-        if(sbDependHeaderItemTrigger == null){
-            sbDependHeaderItemTrigger = new StringBuffer();
+        if (sbDependHeaderItemTrigger == null) {
+            sbDependHeaderItemTrigger = new StringBuilder();
             sbDependHeaderItemTrigger.append("select * from depend_header_item where table_name = ?");
 
             psDependHeaderItemTrigger = ConnectionInout.getConnection().prepareStatement(sbDependHeaderItemTrigger.toString());
         }
 
-        if(sbCountPermissaoTabela == null){
-            sbCountPermissaoTabela = new StringBuffer();
+        if (sbCountPermissaoTabela == null) {
+            sbCountPermissaoTabela = new StringBuilder();
             sbCountPermissaoTabela.append("select count(*) total_interfaces from permissao_tabela where table_name = ?");
 
             psCountPermissaoTabela = ConnectionInout.getConnection().prepareStatement(sbCountPermissaoTabela.toString());
         }
 
-        StringBuffer sbPermissaoTabela = new StringBuffer();
+        StringBuilder sbPermissaoTabela = new StringBuilder();
         sbPermissaoTabela.append("select * from permissao_tabela where table_name = ?");
 
         fileName = tableName.toLowerCase() + ".sql";
 
-        try{
+        try {
             psCountPermissaoTabela.setString(1, tableName);
             rsCountPermissaoTabela = psCountPermissaoTabela.executeQuery();
             rsCountPermissaoTabela.next();
@@ -120,9 +121,9 @@ public class TabInterfaces {
             psTabInterface.setString(1, tableName);
             rsTabInterface = psTabInterface.executeQuery();
 
-            if(rsCountPermissaoTabela.getInt("TOTAL_INTERFACES") >= 1 ){
+            if (rsCountPermissaoTabela.getInt("TOTAL_INTERFACES") >= 1) {
                 //
-                if(psPermissaoTabela == null){
+                if (psPermissaoTabela == null) {
                     psPermissaoTabela = ConnectionInout.getConnection().prepareStatement(sbPermissaoTabela.toString());
                 }
                 psPermissaoTabela.setString(1, tableName.toUpperCase());
@@ -131,7 +132,7 @@ public class TabInterfaces {
                 fileNameScripts = "";
 
                 flagSelectInterface = false;
-                while(rsPermissaoTabela.next()){
+                while (rsPermissaoTabela.next()) {
                     idInterface = rsPermissaoTabela.getString("ID_INTERFACE");
 
 
@@ -140,73 +141,70 @@ public class TabInterfaces {
                     ResultSet rsInterfaceDaTabela = psInterfaceDaTabela.executeQuery();
                     rsInterfaceDaTabela.next();
 
-                    if(!flagSelectInterface){
+                    if (!flagSelectInterface) {
                         // Validando Interface selecionada
                         // Quando  for seleciona pelo menos uma interface
-                        if(cvsStructure.getSSelectInterfaces().length != 0){
-                            for(int j=0; j < cvsStructure.getSSelectInterfaces().length; j++){
-                                if(rsInterfaceDaTabela.getString("DESCRICAO").equals(cvsStructure.getSSelectInterfaces()[j])){
+                        if (selectInterfaces.length != 0) {
+                            for (int j = 0; j < selectInterfaces.length; j++) {
+                                if (rsInterfaceDaTabela.getString("DESCRICAO").equals(selectInterfaces[j])) {
                                     flagSelectInterface = true;
                                     break;
                                 }
                             }
-                        }else{
+                        } else {
                             // Quando nehuma interface for selecionada, gerar de todas
                             flagSelectInterface = true;
                             break;
                         }
                     }
                 }
-            // A tabela só é chamado por uma unica interface ou a Permissão tabela está com 0
-            }else if(rsCountPermissaoTabela.getInt("TOTAL_INTERFACES") == 0 ){
+                // A tabela só é chamado por uma unica interface ou a Permissão tabela está com 0
+            } else if (rsCountPermissaoTabela.getInt("TOTAL_INTERFACES") == 0) {
                 // Quando nehuma interface for selecionada, gerar de todas
                 flagSelectInterface = false;
             }
 
 
-            if(flagSelectInterface){
-                if(rsCountPermissaoTabela.getInt("TOTAL_INTERFACES") == 1){
-                    fileNameScripts = CVSStructure.path + "\\"+CVSStructure.userNameSys+"\\Scripts\\" + getNomePasta("IN", idInterface) + "\\INOUT\\Tabelas\\" + fileName;
-                }else{
-                    fileNameScripts = CVSStructure.path + "\\"+CVSStructure.userNameSys+"\\Scripts\\comum\\INOUT\\Tabelas\\" + fileName;
+            if (flagSelectInterface) {
+                if (rsCountPermissaoTabela.getInt("TOTAL_INTERFACES") == 1) {
+                    fileNameScripts = Diretorio.path + "\\" + Cliente.userNameSys + "\\Scripts\\" + getNomePasta("IN", idInterface) + "\\INOUT\\Tabelas\\" + fileName;
+                } else {
+                    fileNameScripts = Diretorio.path + "\\" + Cliente.userNameSys + "\\Scripts\\comum\\INOUT\\Tabelas\\" + fileName;
                 }
 
 
-                File fileScripts = new File(fileNameScripts);
-                if(!fileScripts.exists()){
- 
-
-
+                Arquivo fileScripts = new Arquivo(fileNameScripts);
+                if (!fileScripts.exists()) {
 
                     CVSStructure.logMessage("Creating or appending to file " + fileName);
 
-                    while(rsTabInterface.next()){
+                    while (rsTabInterface.next()) {
 
-                        StringBuffer strOutCltFixo = new StringBuffer();
+                        StringBuilder strOutCltFixo = new StringBuilder();
 
-                        if(rsTabInterface.getCharacterStream("CTL_FIXO") != null){
+                        if (rsTabInterface.getCharacterStream("CTL_FIXO") != null) {
                             BufferedReader brCtlFixo = new BufferedReader(rsTabInterface.getCharacterStream("CTL_FIXO"));
 
-                            if (brCtlFixo != null){
+                            if (brCtlFixo != null) {
                                 String aux;
 
-                                while ((aux=brCtlFixo.readLine())!=null){
+                                while ((aux = brCtlFixo.readLine()) != null) {
                                     strOutCltFixo.append("exec PRC_UPDATE_CONCATENA_LONG('TAB_INTERFACE','CTL_FIXO','TABLE_NAME','" + rsTabInterface.getString("TABLE_NAME") + "','" + aux.replace("'", "''") + "');");
-                                    strOutCltFixo.append( CVSStructure.QUEBRA_LINHA );
-                                    strOutCltFixo.append( CVSStructure.QUEBRA_LINHA );
+                                    strOutCltFixo.append(CVSStructure.QUEBRA_LINHA);
+                                    strOutCltFixo.append(CVSStructure.QUEBRA_LINHA);
                                 }
                             }
                         }
 
-                        if(CVSStructure.chConexaoPorArquivos.equals("S")){
+                        if (CVSStructure.chConexaoPorArquivos.equals("S")) {
                             strOut.append("conn &&INOUT_USER/&&INOUT_PASS@&&TNS");
                         }
 
-                        strOut.append( CVSStructure.QUEBRA_LINHA );
-                        strOut.append( CVSStructure.QUEBRA_LINHA );
+                        strOut.append(CVSStructure.QUEBRA_LINHA);
+                        strOut.append(CVSStructure.QUEBRA_LINHA);
                         strOut.append("--  ///////" + CVSStructure.QUEBRA_LINHA);
                         strOut.append("--  ///////     Script Gerado a partir do Sistema Gerenciador de Interfaces IN-OUT" + CVSStructure.QUEBRA_LINHA);
-                        strOut.append("--  ///////     TABELA: " + rsTabInterface.getString("TABLE_NAME")  + CVSStructure.QUEBRA_LINHA);
+                        strOut.append("--  ///////     TABELA: " + rsTabInterface.getString("TABLE_NAME") + CVSStructure.QUEBRA_LINHA);
                         strOut.append("--  ///////" + CVSStructure.QUEBRA_LINHA + CVSStructure.QUEBRA_LINHA);
                         strOut.append("delete from DEPEND_HEADER_ITEM_TMP;" + CVSStructure.QUEBRA_LINHA + CVSStructure.QUEBRA_LINHA);
                         strOut.append("delete from COLUNAS_TAB_INTERFACE where TABLE_NAME = '" + rsTabInterface.getString("TABLE_NAME") + "';" + CVSStructure.QUEBRA_LINHA + CVSStructure.QUEBRA_LINHA);
@@ -237,22 +235,22 @@ public class TabInterfaces {
                         strOut.append(CVSStructure.QUEBRA_LINHA);
                         strOut.append("        TRIGGER2 = null,");
                         strOut.append(CVSStructure.QUEBRA_LINHA);
-                        if(rsTabInterface.getString("COMANDO_EXTRA_LOADER") == null){
+                        if (rsTabInterface.getString("COMANDO_EXTRA_LOADER") == null) {
                             strOut.append("        COMANDO_EXTRA_LOADER = ''");
-                        }else{
-                            strOut.append("        COMANDO_EXTRA_LOADER = '"+rsTabInterface.getString("COMANDO_EXTRA_LOADER")+"'");
+                        } else {
+                            strOut.append("        COMANDO_EXTRA_LOADER = '" + rsTabInterface.getString("COMANDO_EXTRA_LOADER") + "'");
                         }
                         strOut.append(CVSStructure.QUEBRA_LINHA);
-                        strOut.append("  where TABLE_NAME = '"+rsTabInterface.getString("TABLE_NAME")+"';" + CVSStructure.QUEBRA_LINHA + CVSStructure.QUEBRA_LINHA);
+                        strOut.append("  where TABLE_NAME = '" + rsTabInterface.getString("TABLE_NAME") + "';" + CVSStructure.QUEBRA_LINHA + CVSStructure.QUEBRA_LINHA);
                         strOut.append("  if SQL%notfound then" + CVSStructure.QUEBRA_LINHA);
                         strOut.append("        insert into TAB_INTERFACE" + CVSStructure.QUEBRA_LINHA);
                         strOut.append("        (TABLE_NAME, " + CVSStructure.QUEBRA_LINHA + "        DESCRICAO, " + CVSStructure.QUEBRA_LINHA + "        CTL_NAME, " + CVSStructure.QUEBRA_LINHA + "        PREFIX_FILE, " + CVSStructure.QUEBRA_LINHA + "        GERAR_CTL, " + CVSStructure.QUEBRA_LINHA + "        PRIORIDADE, " + CVSStructure.QUEBRA_LINHA + "        ODBC_SOURCE_NAME, " + CVSStructure.QUEBRA_LINHA + "        ODBC_USER, " + CVSStructure.QUEBRA_LINHA + "        ODBC_PASSWORD, " + CVSStructure.QUEBRA_LINHA + "        ODBC_TABLE_NAME, " + CVSStructure.QUEBRA_LINHA + "        ODBC_WHERE, " + CVSStructure.QUEBRA_LINHA + "        ODBC_SELECT_ESPECIFICO, " + CVSStructure.QUEBRA_LINHA + "        TIPO_INTERFACE," + CVSStructure.QUEBRA_LINHA);
                         strOut.append("        ORACLE_INITIAL_EXTENT, " + CVSStructure.QUEBRA_LINHA + "        ORACLE_NEXT_EXTENT, " + CVSStructure.QUEBRA_LINHA + "        ORACLE_INDEX_TABLESPACE, " + CVSStructure.QUEBRA_LINHA + "        ELIMINAR_REG_EXECUCAO, " + CVSStructure.QUEBRA_LINHA + "        COMANDO_EXTRA_LOADER, " + CVSStructure.QUEBRA_LINHA + "        ID_SISTEMA, " + CVSStructure.QUEBRA_LINHA + "        PROCEDURE_NAME, " + CVSStructure.QUEBRA_LINHA + "        SEPARADOR)" + CVSStructure.QUEBRA_LINHA);
                         strOut.append("        values" + CVSStructure.QUEBRA_LINHA);
                         //strOut.append("        ('" + rsTabInterface.getString("TABLE_NAME") + "', '" + rsTabInterface.getString("CTL_NAME") + "', '" + rsTabInterface.getString("PREFIX_FILE") + "', '" + rsTabInterface.getString("GERAR_CTL") + "', " + rsTabInterface.getString("PRIORIDADE") + ", '" + rsTabInterface.getString("ODBC_SOURCE_NAME") + "', '" + rsTabInterface.getString("ODBC_USER") +"', '" + rsTabInterface.getString("ODBC_PASSWORD") + "', '" + rsTabInterface.getString("ODBC_TABLE_NAME") + "', '" + rsTabInterface.getString("ODBC_WHERE") + "', '" + rsTabInterface.getString("ODBC_SELECT_ESPECIFICO") + "', '" + rsTabInterface.getString("TIPO_INTERFACE") + "',");
-                        if(rsTabInterface.getString("TABLE_NAME") == null){
+                        if (rsTabInterface.getString("TABLE_NAME") == null) {
                             strOut.append("        ('', " + CVSStructure.QUEBRA_LINHA + "        '");
-                        }else{
+                        } else {
                             strOut.append("        ('" + rsTabInterface.getString("TABLE_NAME") + "', " + CVSStructure.QUEBRA_LINHA + "        '");
                         }
 
@@ -276,9 +274,9 @@ public class TabInterfaces {
                         strOut.append(trataCamposTabInterface(rsTabInterface.getString("ID_SISTEMA")));
                         strOut.append(trataCamposTabInterface(rsTabInterface.getString("PROCEDURE_NAME")));
 
-                        if(rsTabInterface.getString("SEPARADOR") == null){
+                        if (rsTabInterface.getString("SEPARADOR") == null) {
                             strOut.append("');");
-                        }else{
+                        } else {
                             strOut.append(rsTabInterface.getString("SEPARADOR") + "')");
                         }
 
@@ -292,22 +290,22 @@ public class TabInterfaces {
 
                         strOut.append(strOutCltFixo);
 
-                        if (rsTabInterface.getCharacterStream("TRIGGER1") != null){
+                        if (rsTabInterface.getCharacterStream("TRIGGER1") != null) {
                             String aux;
                             BufferedReader br2 = new BufferedReader(rsTabInterface.getCharacterStream("TRIGGER1"));
 
-                            while ((aux=br2.readLine())!=null){
+                            while ((aux = br2.readLine()) != null) {
                                 strOut.append("exec PRC_UPDATE_CONCATENA_LONG('TAB_INTERFACE','TRIGGER1','TABLE_NAME','" + rsTabInterface.getString("TABLE_NAME") + "','" + aux.replace("'", "''") + "');");
                                 strOut.append(CVSStructure.QUEBRA_LINHA + "" + CVSStructure.QUEBRA_LINHA);
                             }
                         }
 
 
-                        if (rsTabInterface.getCharacterStream("TRIGGER2") != null){
+                        if (rsTabInterface.getCharacterStream("TRIGGER2") != null) {
                             String aux;
                             BufferedReader br = new BufferedReader(rsTabInterface.getCharacterStream("TRIGGER2"));
 
-                            while ((aux=br.readLine())!=null){
+                            while ((aux = br.readLine()) != null) {
                                 strOut.append("exec PRC_UPDATE_CONCATENA_LONG('TAB_INTERFACE','TRIGGER2','TABLE_NAME','" + rsTabInterface.getString("TABLE_NAME") + "','" + aux.replace("'", "''") + "');");
                                 strOut.append(CVSStructure.QUEBRA_LINHA + "" + CVSStructure.QUEBRA_LINHA);
                             }
@@ -317,7 +315,7 @@ public class TabInterfaces {
                         psColunasTabInterface.setString(1, rsTabInterface.getString("TABLE_NAME"));
                         rsColunasTabInterface = psColunasTabInterface.executeQuery();
 
-                        while(rsColunasTabInterface.next()){
+                        while (rsColunasTabInterface.next()) {
                             strOut.append("insert into COLUNAS_TAB_INTERFACE");
                             strOut.append(CVSStructure.QUEBRA_LINHA);
                             strOut.append("(TABLE_NAME, COLUMN_NAME, TIPO_LOADER, FORMATO, COMANDO_EXTRA, TAMANHO, ORDEM, DESCRICAO, ARG_NAME, ARG_FUNCTION)");
@@ -325,9 +323,9 @@ public class TabInterfaces {
                             strOut.append("values");
                             strOut.append(CVSStructure.QUEBRA_LINHA);
 
-                            if(rsColunasTabInterface.getString("TABLE_NAME") == null){
+                            if (rsColunasTabInterface.getString("TABLE_NAME") == null) {
                                 strOut.append("('', '");
-                            }else{
+                            } else {
                                 strOut.append("('" + rsColunasTabInterface.getString("TABLE_NAME") + "', '");
                             }
 
@@ -340,9 +338,9 @@ public class TabInterfaces {
                             strOut.append(trataCamposColunasTabInterface(rsColunasTabInterface.getString("DESCRICAO")));
                             strOut.append(trataCamposColunasTabInterface(rsColunasTabInterface.getString("ARG_NAME")));
 
-                            if(rsColunasTabInterface.getString("ARG_FUNCTION") == null){
+                            if (rsColunasTabInterface.getString("ARG_FUNCTION") == null) {
                                 strOut.append("');");
-                            }else{
+                            } else {
                                 strOut.append(rsColunasTabInterface.getString("ARG_FUNCTION") + "');");
                             }
 
@@ -352,8 +350,8 @@ public class TabInterfaces {
                             psDependHeaderItem.setString(1, rsColunasTabInterface.getString("TABLE_NAME"));
                             psDependHeaderItem.setString(2, rsColunasTabInterface.getString("COLUMN_NAME"));
                             strOut.append(new DataTableLayout("INOUT",
-                                                                    "depend_header_item",
-                                                                     psDependHeaderItem).create());
+                                    "depend_header_item",
+                                    psDependHeaderItem).create());
 
                         }
 
@@ -361,15 +359,15 @@ public class TabInterfaces {
                         strOut.append(CVSStructure.QUEBRA_LINHA + "" + CVSStructure.QUEBRA_LINHA);
                         strOut.append("set serveroutput on");
                         strOut.append(CVSStructure.QUEBRA_LINHA);
-                        strOut.append("exec PRC_SINCRONIZA_TABELA('"+rsTabInterface.getString("TABLE_NAME")+"');");
+                        strOut.append("exec PRC_SINCRONIZA_TABELA('" + rsTabInterface.getString("TABLE_NAME") + "');");
                         strOut.append(CVSStructure.QUEBRA_LINHA + "" + CVSStructure.QUEBRA_LINHA);
 
 
-                        if (rsTabInterface.getCharacterStream("TRIGGER1") != null){
+                        if (rsTabInterface.getCharacterStream("TRIGGER1") != null) {
                             String aux;
                             BufferedReader br = new BufferedReader(rsTabInterface.getCharacterStream("TRIGGER1"));
 
-                            while ((aux=br.readLine())!=null){
+                            while ((aux = br.readLine()) != null) {
                                 strOut.append(aux);
                                 strOut.append(CVSStructure.QUEBRA_LINHA);
                             }
@@ -377,11 +375,11 @@ public class TabInterfaces {
                         }
 
 
-                        if (rsTabInterface.getCharacterStream("TRIGGER2") != null){
+                        if (rsTabInterface.getCharacterStream("TRIGGER2") != null) {
                             String aux;
                             BufferedReader br = new BufferedReader(rsTabInterface.getCharacterStream("TRIGGER2"));
 
-                            while ((aux=br.readLine())!=null){
+                            while ((aux = br.readLine()) != null) {
                                 strOut.append(aux);
                                 strOut.append(CVSStructure.QUEBRA_LINHA);
                             }
@@ -407,15 +405,15 @@ public class TabInterfaces {
 
                         psDependHeaderItemTrigger.setString(1, rsTabInterface.getString("TABLE_NAME"));
                         rsDependHeaderItemTrigger = psDependHeaderItemTrigger.executeQuery();
-                        if( rsDependHeaderItemTrigger.next() && rsDependHeaderItemTrigger.getString("TABLE_NAME") != null ){
+                        if (rsDependHeaderItemTrigger.next() && rsDependHeaderItemTrigger.getString("TABLE_NAME") != null) {
                             strOut.append(CVSStructure.QUEBRA_LINHA + CVSStructure.QUEBRA_LINHA);
                             strOut.append("  begin" + CVSStructure.QUEBRA_LINHA);
                             strOut.append("    select id" + CVSStructure.QUEBRA_LINHA);
                             strOut.append("    into :new.id_ref" + CVSStructure.QUEBRA_LINHA);
                             strOut.append("    from " + rsDependHeaderItemTrigger.getString("TABLE_NAME_HEADER") + CVSStructure.QUEBRA_LINHA);
                             strOut.append("    where id_importacao = :new.id_importacao" + CVSStructure.QUEBRA_LINHA);
-                            strOut.append("    and " + rsDependHeaderItemTrigger.getString("COLUMN_NAME") + " = :new." + rsDependHeaderItemTrigger.getString("COLUMN_NAME") );
-                            while(rsDependHeaderItemTrigger.next()){
+                            strOut.append("    and " + rsDependHeaderItemTrigger.getString("COLUMN_NAME") + " = :new." + rsDependHeaderItemTrigger.getString("COLUMN_NAME"));
+                            while (rsDependHeaderItemTrigger.next()) {
                                 strOut.append(CVSStructure.QUEBRA_LINHA);
                                 strOut.append("    and " + rsDependHeaderItemTrigger.getString("COLUMN_NAME") + " = :new." + rsDependHeaderItemTrigger.getString("COLUMN_NAME"));
                             }
@@ -483,23 +481,19 @@ public class TabInterfaces {
 
                     }
 
-                    if(strOut != null && !strOut.equals("")){
-                        fileScripts.createNewFile();
+                    if (strOut != null && !strOut.toString().equals("")) {
+                        fileScripts.saveArquivo(strOut);
 
-                        FileWriter fwScripts = new FileWriter(fileScripts, false);
-                        fwScripts.write(strOut.toString(),0,strOut.length());
-                        fwScripts.close();
-
-                        CVSStructure.nTotalTabelas++;
+                        Estatisticas.nTotalTabelas++;
                         CVSStructure.logMessage("File " + fileName + " was succesfull generated.");
                     }
                 }
             }
-        }catch(IOException ioex){
+        } catch (IOException ioex) {
             CVSStructure.logMessage("File " + fileNameScripts + " was error generated.");
             SfwLogger.saveLog(ioex.getClass().toString(), ioex.getStackTrace());
             ioex.printStackTrace();
-        }catch(Exception ex){
+        } catch (Exception ex) {
             CVSStructure.logMessage("Error generating " + fileName);
             CVSStructure.logMessage(ex.getLocalizedMessage());
             SfwLogger.saveLog(ex.getClass().toString(), ex.getStackTrace());
@@ -507,58 +501,56 @@ public class TabInterfaces {
         }
     }
 
-    public String getIdInterface(String idInterface){
-            return idInterface.trim().replace("(", "").replace(")", ")").replace(".", "").replace(" ", "").replace("[", "").replace("]", "").replace("{", "").replace("}", "").replace(">", "").replace("<", "").replace("-", "_").trim().toLowerCase();
+    public String getIdInterface(String idInterface) {
+        return idInterface.trim().replace("(", "").replace(")", ")").replace(".", "").replace(" ", "").replace("[", "").replace("]", "").replace("{", "").replace("}", "").replace(">", "").replace("<", "").replace("-", "_").trim().toLowerCase();
     }
 
-
-    private int getOrdemTable(String nameTable){
+    private int getOrdemTable(String nameTable) {
         int ordem;
- 
+
 
         return 1;
     }
 
-    public String getIdInterface(){
-            return idInterface.trim().replace("(", "").replace(")", ")").replace(".", "").replace(" ", "").replace("[", "").replace("]", "").replace("{", "").replace("}", "").replace(">", "").replace("<", "").replace("-", "_").trim().toLowerCase();
+    public String getIdInterface() {
+        return idInterface.trim().replace("(", "").replace(")", ")").replace(".", "").replace(" ", "").replace("[", "").replace("]", "").replace("{", "").replace("}", "").replace(">", "").replace("<", "").replace("-", "_").trim().toLowerCase();
     }
 
-    
-    public String getNomePasta(String tipo, String idInterface){
+    public String getNomePasta(String tipo, String idInterface) {
         String pasta = "";
 
-        if(tipo.equals("") || CVSStructure.chNomePasta.equals("N")){
+        if (tipo.equals("") || CVSStructure.chNomePasta.equals("N")) {
             pasta = getIdInterface(idInterface);
-        }else if (tipo.equals("IN")){
+        } else if (tipo.equals("IN")) {
             pasta = getIdSistema() + "_in_" + getIdInterface(idInterface);
-        }else if (tipo.equals("OUT")){
+        } else if (tipo.equals("OUT")) {
             pasta = getIdSistema() + "_out_" + getIdInterface(idInterface);
         }
 
         return pasta;
     }
 
-    public String trataCamposTabInterface(String campo){
-        if(campo == null){
+    public String trataCamposTabInterface(String campo) {
+        if (campo == null) {
             return "', " + CVSStructure.QUEBRA_LINHA + "        '";
-        }else{
-            return campo.replaceAll("'",  "' || chr(39) || '") + "', " + CVSStructure.QUEBRA_LINHA + "        '";
+        } else {
+            return campo.replaceAll("'", "' || chr(39) || '") + "', " + CVSStructure.QUEBRA_LINHA + "        '";
         }
     }
 
-    public String trataCamposColunasTabInterface(String campo){
-        if(campo == null){
+    public String trataCamposColunasTabInterface(String campo) {
+        if (campo == null) {
             return "', '";
-        }else{
-            return campo.replaceAll("'",  "' || chr(39) || '") + "', '";
+        } else {
+            return campo.replaceAll("'", "' || chr(39) || '") + "', '";
         }
     }
 
-    public String trataUpdateCamposTabInterface(String nomeCampo, String value){
-        if(value == null){
+    public String trataUpdateCamposTabInterface(String nomeCampo, String value) {
+        if (value == null) {
             return "        " + nomeCampo + " = '', " + CVSStructure.QUEBRA_LINHA;
-        }else{
-            return "        " + nomeCampo + " = '" + value.replaceAll("'",  "' || chr(39) || '") + "'," + CVSStructure.QUEBRA_LINHA;
+        } else {
+            return "        " + nomeCampo + " = '" + value.replaceAll("'", "' || chr(39) || '") + "'," + CVSStructure.QUEBRA_LINHA;
         }
     }
 
