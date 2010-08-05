@@ -5,7 +5,9 @@
 
 package cvsstructure.objects;
 
-import cvsstructure.cvsStructure.CVSStructure;
+import cvsstructure.util.PrepararConsultas;
+import cvsstructure.CVSStructure;
+import cvsstructure.util.Estatisticas;
 import cvsstructure.database.ConnectionInout;
 import cvsstructure.database.ConnectionIntegracao;
 import java.io.BufferedReader;
@@ -32,14 +34,14 @@ public class FunctionProcedure {
 
 		File fileScripts;
 		FileWriter fwScripts;
-		StringBuffer strOutScripts = null;
+		StringBuilder strOutScripts = null;
 		BufferedReader brScripts;
 
         try{
             fileScripts = new File(fileNameScripts);
             if(!fileScripts.exists()){
 
-                strOutScripts = new StringBuffer();
+                strOutScripts = new StringBuilder();
 
                 if(system.equals("INOUT")){
                     psUserSource = ConnectionInout.getConnection().prepareStatement(PrepararConsultas.getUserSurce().toString());
@@ -78,7 +80,7 @@ public class FunctionProcedure {
                     fwScripts.write(strOutScripts.toString(),0,strOutScripts.length());
                     fwScripts.close();
 
-                    CVSStructure.nTotalFunctionsProcedures++;
+                    Estatisticas.nTotalFunctionsProcedures++;
                     CVSStructure.logMessage("File " + fileNameScripts + " was succesfull generated.");
                 }
 
