@@ -17,12 +17,24 @@ import java.sql.SQLException;
 public class ArquivosExternosNaoGerados {
 
     private PreparedStatement psInsertReferencesObjects = null;
-    private PreparedStatement psGerarArquivosExternosNaoGerados = null;
-    
+    private PreparedStatement psArquivosExternosNaoGerados = null;
+
     private StringBuilder sbCreateTableCvsStructure = null;
     private StringBuilder sbInsertTableCvsStructure = null;
     private StringBuilder sbArquivosExternosNaoGerados = null;
 
+    private static ArquivosExternosNaoGerados instance;
+
+    static {
+            instance = new ArquivosExternosNaoGerados();
+    }
+
+    private ArquivosExternosNaoGerados(){
+    }
+
+    public static ArquivosExternosNaoGerados getInstance(){
+            return instance;
+    }
 
     public void createTableCvsStructure() throws SQLException{
         if(sbCreateTableCvsStructure == null){
@@ -134,10 +146,10 @@ public class ArquivosExternosNaoGerados {
             sbArquivosExternosNaoGerados.append("where i.executavel like '%' || p1.contem || '%' )");
         }
 
-        if(psGerarArquivosExternosNaoGerados == null){
-            psGerarArquivosExternosNaoGerados = ConnectionInout.getConnection().prepareStatement(sbArquivosExternosNaoGerados.toString());
+        if(psArquivosExternosNaoGerados == null){
+            psArquivosExternosNaoGerados = ConnectionInout.getConnection().prepareStatement(sbArquivosExternosNaoGerados.toString());
         }
 
-        return psGerarArquivosExternosNaoGerados.executeQuery();
+        return psArquivosExternosNaoGerados.executeQuery();
     }
 }

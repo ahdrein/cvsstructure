@@ -11,4 +11,16 @@ package cvsstructure.model;
  */
 public class ObjetosIntegracao {
 
+    private static ObjetosIntegracao instance;
+
+    static {
+            instance = new ObjetosIntegracao();
+    }
+
+    private ObjetosIntegracao(){
+    }
+
+    public static ObjetosIntegracao getInstance(){
+            return instance;
+    }
 }

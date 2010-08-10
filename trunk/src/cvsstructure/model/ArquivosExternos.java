@@ -17,19 +17,25 @@ import java.sql.SQLException;
 public class ArquivosExternos {
     private PreparedStatement psGerarArquivosExternos = null;
     private ResultSet rsArquivosExternos = null;
-    
-    private PreparedStatement psGerarArquivosExternosNaoGerados;
-    private ResultSet rsGerarArquivosExternosNaoGerados;
-    
-    private PreparedStatement psCountArquivosExternosNaoGerados;
-    private ResultSet rsCountArquivosExternosNaoGerados;
-    
+
     private PreparedStatement psPermissaoTabela = null;
     private ResultSet rsPermissaoTabela = null;
 
     StringBuilder sbArquivosExternos = null;
-    StringBuilder sbArquivosExternosNaoGerados = null;
+    StringBuilder sbExportarArquivosExternos = null;
 
+    private static ArquivosExternos instance;
+
+    static {
+            instance = new ArquivosExternos();
+    }
+
+    private ArquivosExternos(){
+    }
+
+    public static ArquivosExternos getInstance(){
+            return instance;
+    }
 
     public ResultSet getArquivosExternosByNomeArquivo(String nomeArquivo) throws SQLException {
 
@@ -74,12 +80,28 @@ public class ArquivosExternos {
 
         return psPermissaoTabela;
     }
+    private PreparedStatement psExportarArquivosExternos = null;
 
-    public void dropTableTmpCvsStructure() throws SQLException{
-        ConnectionInout.getConnection().prepareStatement("drop table TMP_CVS_STRUCTURE").executeQuery();
+    public PreparedStatement getExportarArquivosExternosByNomeArquivo() throws SQLException {
+        if(sbExportarArquivosExternos != null){
+            sbExportarArquivosExternos = new StringBuilder();
+            sbExportarArquivosExternos.append("select NOME_ARQUIVO,");
+            sbExportarArquivosExternos.append("PATH_RELATIVO,");
+            sbExportarArquivosExternos.append("DESCRICAO,");
+            sbExportarArquivosExternos.append("CONTEUDO");
+            sbExportarArquivosExternos.append(" from arquivo_externo");
+            sbExportarArquivosExternos.append(" where arquivo_externo.nome_arquivo like '%'|| ? || '%'");
+        }
+
+        if(psExportarArquivosExternos != null){
+            psExportarArquivosExternos = ConnectionInout.getConnection().prepareStatement(sbExportarArquivosExternos.toString());
+        }
+
+        return psExportarArquivosExternos;
     }
 
     public void dropTableTmpCvsStructure() throws SQLException{
         ConnectionInout.getConnection().prepareStatement("drop table TMP_CVS_STRUCTURE").executeQuery();
     }
+
 }

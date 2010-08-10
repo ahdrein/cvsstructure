@@ -32,6 +32,16 @@ public class Interface {
 
     private ResultSet rsCountInterface = null;
 
+    private static Interface instance;
+
+    static {
+            instance = new Interface();
+    }
+
+    public static Interface getInstance(){
+            return instance;
+    }
+
     public Interface(){
 
     }
@@ -198,6 +208,7 @@ public class Interface {
             psCountSistemaPorInterface = ConnectionInout.getConnection().prepareStatement(sbCountSistemaPorInterface.toString());
         }
 
+        psCountSistemaPorInterface.setString(1, idInterface);
         rsCountInterface = psCountSistemaPorInterface.executeQuery();
         rsCountInterface.next();
 
