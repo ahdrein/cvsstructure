@@ -35,7 +35,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author andrein
  */
-public class SfwMapeamento extends javax.swing.JFrame {
+public class SfwMapeamentoFrame extends javax.swing.JFrame {
     DefaultListModel model = new DefaultListModel();
     DefaultListModel modelTags = new DefaultListModel();
     DefaultListModel modelTabelas = new DefaultListModel();
@@ -46,7 +46,7 @@ public class SfwMapeamento extends javax.swing.JFrame {
     int contador=0;
 
     /** Creates new form Mapeamento */
-    public SfwMapeamento() {
+    public SfwMapeamentoFrame() {
         initComponents();
         //listViewTabela.setModel(model);
         jList1.setModel(modelTags);
@@ -966,7 +966,7 @@ public class SfwMapeamento extends javax.swing.JFrame {
                     }
                 }
             } catch (IOException ex) {
-                Logger.getLogger(SfwMapeamento.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(SfwMapeamentoFrame.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         });
@@ -993,7 +993,7 @@ public class SfwMapeamento extends javax.swing.JFrame {
                 }
                 jProgressBar1.setIndeterminate(false);
             } catch (IOException ex) {
-                Logger.getLogger(SfwMapeamento.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(SfwMapeamentoFrame.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         });
@@ -1014,7 +1014,7 @@ public class SfwMapeamento extends javax.swing.JFrame {
                 }
             }
         } catch (IOException ex) {
-            Logger.getLogger(SfwMapeamento.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SfwMapeamentoFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
 }//GEN-LAST:event_jButton2ActionPerformed
 
@@ -1032,7 +1032,7 @@ public class SfwMapeamento extends javax.swing.JFrame {
                 }
             }
         } catch (IOException ex) {
-            Logger.getLogger(SfwMapeamento.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SfwMapeamentoFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
 }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -1084,7 +1084,7 @@ public class SfwMapeamento extends javax.swing.JFrame {
                 modelTags.addElement(sheets[i]);
             }
         } catch (IOException ex) {
-            Logger.getLogger(SfwMapeamento.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SfwMapeamentoFrame.class.getName()).log(Level.SEVERE, null, ex);
         }catch(Exception ex){
             ex.printStackTrace();
         }
@@ -1127,7 +1127,7 @@ public class SfwMapeamento extends javax.swing.JFrame {
                 }
                 jProgressBar1.setIndeterminate(false);
             } catch (IOException ex) {
-                Logger.getLogger(SfwMapeamento.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(SfwMapeamentoFrame.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         });
@@ -1159,7 +1159,7 @@ public class SfwMapeamento extends javax.swing.JFrame {
         //        modelTags.addElement(sheets[i]);
         //    }
         //} catch (IOException ex) {
-        //    Logger.getLogger(SfwMapeamento.class.getName()).log(Level.SEVERE, null, ex);
+        //    Logger.getLogger(SfwMapeamentoFrame.class.getName()).log(Level.SEVERE, null, ex);
         //}catch(Exception ex){
         //    ex.printStackTrace();
         //}
@@ -1227,7 +1227,7 @@ public class SfwMapeamento extends javax.swing.JFrame {
                 }
             }
         } catch (Exception ex) {
-            Logger.getLogger(SfwMapeamento.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SfwMapeamentoFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
         
 
@@ -1260,9 +1260,9 @@ public class SfwMapeamento extends javax.swing.JFrame {
                     modelLinhas.addElement(readLine);
                 }
             } catch (FileNotFoundException ex) {
-                Logger.getLogger(SfwMapeamento.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(SfwMapeamentoFrame.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
-                Logger.getLogger(SfwMapeamento.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(SfwMapeamentoFrame.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         else
@@ -1315,9 +1315,9 @@ public class SfwMapeamento extends javax.swing.JFrame {
                         modelLinhas.addElement(readLine);
                     }
                 } catch (FileNotFoundException ex) {
-                    Logger.getLogger(SfwMapeamento.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(SfwMapeamentoFrame.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (IOException ex) {
-                    Logger.getLogger(SfwMapeamento.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(SfwMapeamentoFrame.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }else{
@@ -2050,7 +2050,7 @@ public class SfwMapeamento extends javax.swing.JFrame {
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new SfwMapeamento().setVisible(true);
+                new SfwMapeamentoFrame().setVisible(true);
             }
         });
     }

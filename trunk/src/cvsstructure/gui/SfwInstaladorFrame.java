@@ -39,7 +39,7 @@ import sfw.structure.instalador.CheckRenderer;
  *
  * @author andrein
  */
-public class SfwInstalador extends javax.swing.JFrame {
+public class SfwInstaladorFrame extends javax.swing.JFrame {
 
     private DefaultTreeModel model;
     private DefaultMutableTreeNode top;
@@ -51,9 +51,9 @@ public class SfwInstalador extends javax.swing.JFrame {
     private DefaultTableModel modelo;
 
     /** Creates new form Instalador */
-    public SfwInstalador() {
+    public SfwInstaladorFrame() {
         //ResourceMap resourceMap = ((SfwInstaladorScriptApp)Application.getInstance(SfwInstaladorScriptApp.class)).getContext().getResourceMap(SfwWizardWelcome.class);
-        //ResourceMap resourceMap = ((SfwInstaladorScriptApp)Application.getInstance(SfwInstaladorScriptApp.class)).getContext().getResourceMap(SfwInstalador.class);
+        //ResourceMap resourceMap = ((SfwInstaladorScriptApp)Application.getInstance(SfwInstaladorScriptApp.class)).getContext().getResourceMap(SfwInstaladorFrame.class);
         //String teste = resourceMap.getString("jLabel5.text", new Object[0]);
 
         //DefaultMutableTreeNode root = new DefaultMutableTreeNode("Root Label");
@@ -431,7 +431,7 @@ public class SfwInstalador extends javax.swing.JFrame {
         try {
             nomeDir = new File(".").getCanonicalPath() + "\\pacotes\\";
         } catch (IOException ex) {
-            Logger.getLogger(SfwInstalador.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SfwInstaladorFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
         StringBuffer dirAtual = new StringBuffer();
         dirAtual.append(".\\" + nomeDir.substring(nomeDir.lastIndexOf("\\")+1, nomeDir.length()) + "\\" );
@@ -547,7 +547,7 @@ public class SfwInstalador extends javax.swing.JFrame {
     }
 
     public void getLastPathComponent(CheckNode node){
-        SfwInstalador.lastPathCompnent = lastPathCompnent;
+        SfwInstaladorFrame.lastPathCompnent = lastPathCompnent;
         //CheckNode node = (CheckNode)lastPathCompnent;
 
         StringBuffer sbNodes = new StringBuffer();
@@ -597,7 +597,7 @@ public class SfwInstalador extends javax.swing.JFrame {
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new SfwInstalador().setVisible(true);
+                new SfwInstaladorFrame().setVisible(true);
 
             }
         });
@@ -688,7 +688,7 @@ public class SfwInstalador extends javax.swing.JFrame {
         // Setando a TextFild
         //node.getRoot().toString();
         getLastPathComponent(node);
-        //new SfwInstalador().getLastPathCompnent((MutableTreeNode) tree.getLastSelectedPathComponent());
+        //new SfwInstaladorFrame().getLastPathCompnent((MutableTreeNode) tree.getLastSelectedPathComponent());
       } // end mouseClicked
 
     } // end NodeSelectionListener

@@ -1,7 +1,7 @@
 package cvsstructure.gui;
 
-import cvsstructure.gui.JFrameCVS;
-import cvsstructure.gui.SfwMapeamento;
+import cvsstructure.gui.CvsStructureFrame;
+import cvsstructure.gui.SfwMapeamentoFrame;
 
 
 /*
@@ -19,10 +19,10 @@ import cvsstructure.gui.SfwMapeamento;
  *
  * @author andrein
  */
-public class SfwMain extends javax.swing.JFrame {
+public class SfwMainFrame extends javax.swing.JFrame {
 
     /** Creates new form ValidaScripts */
-    public SfwMain() {
+    public SfwMainFrame() {
         initComponents();
     }
 
@@ -181,28 +181,28 @@ public class SfwMain extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void CVSStructureActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CVSStructureActionPerformed
-        new JFrameCVS().setVisible(true);
+        new CvsStructureFrame().setVisible(true);
     }//GEN-LAST:event_CVSStructureActionPerformed
 
     private void ValidaScriptsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ValidaScriptsActionPerformed
-        new SfwValidaScripts().setVisible(true);
+        new SfwValidaScriptsFrame().setVisible(true);
     }//GEN-LAST:event_ValidaScriptsActionPerformed
 
     private void jToggleButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton1ActionPerformed
-        new JFrameCVS().setVisible(true);
+        new CvsStructureFrame().setVisible(true);
     }//GEN-LAST:event_jToggleButton1ActionPerformed
 
     private void jToggleButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton2ActionPerformed
-        new SfwValidaScripts().setVisible(true);
+        new SfwValidaScriptsFrame().setVisible(true);
 }//GEN-LAST:event_jToggleButton2ActionPerformed
 
     private void jToggleButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton3ActionPerformed
-        new SfwInstalador().setVisible(true);
+        new SfwInstaladorFrame().setVisible(true);
         //JOptionPane.showMessageDialog(null, "Em construção !");
     }//GEN-LAST:event_jToggleButton3ActionPerformed
 
     private void jToggleButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton4ActionPerformed
-        new SfwMapeamento().setVisible(true);
+        new SfwMapeamentoFrame().setVisible(true);
     }//GEN-LAST:event_jToggleButton4ActionPerformed
 
     /**
@@ -211,7 +211,7 @@ public class SfwMain extends javax.swing.JFrame {
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new SfwMain().setVisible(true);
+                new SfwMainFrame().setVisible(true);
             }
         });
     }
