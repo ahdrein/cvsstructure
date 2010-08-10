@@ -11,49 +11,49 @@ import cvsstructure.log.SfwLogger;
  */
 public class ConnectionSQLLite {
 
-	private static Connection conn;
+    private static Connection conn;
 
-	private ConnectionSQLLite() throws Exception{
-	}
+    private ConnectionSQLLite() throws Exception {
+    }
 
-	public static void initialize(String dataBase, String userName, String passWord, String port, String service) throws SQLException{
+    public static void initialize(String dataBase, String userName, String passWord, String port, String service) throws SQLException {
 
-		SfwLogger.debug("Conectando ao banco de dados...");
+        SfwLogger.debug("Conectando ao banco de dados...");
 
-		ConnectionIntegracao.getConnection();
+        ConnectionIntegracao.getConnection();
 
-		SfwLogger.debug("Conexão com o banco de dados realizada com sucesso.");
-	}
+        SfwLogger.debug("Conexão com o banco de dados realizada com sucesso.");
+    }
 
-	public static Connection getConnection() throws SQLException {
+    public static Connection getConnection() throws SQLException {
 
-		if (conn == null || conn.isClosed()){
-			SfwLogger.debug("Conexão não encontrada. Connectando ...");
+        if (conn == null || conn.isClosed()) {
+            SfwLogger.debug("Conexão não encontrada. Connectando ...");
 
-			try {
-				Class.forName("org.sqlite.JDBC");
-			} catch(Exception e){
-				System.out.println("ERRO ao localizar o Driver 'org.sqlite.JDBC' da base de dados!");
-				throw new RuntimeException(e);
-			}
+            try {
+                Class.forName("org.sqlite.JDBC");
+            } catch (Exception e) {
+                SfwLogger.log("ERRO ao localizar o Driver 'org.sqlite.JDBC' da base de dados!");
+                throw new RuntimeException(e);
+            }
 
             SfwLogger.debug("Driver encontrado com sucesso");
 
-            try{
+            try {
                 conn = DriverManager.getConnection("jdbc:sqlite:./database/test.db");
                 conn.setAutoCommit(false);
-            }catch(Exception e){
+            } catch (Exception e) {
                 conn = null;
             }
 
-			SfwLogger.debug("Conectado com sucesso");
-		}
-		return conn;
-	}
+            SfwLogger.debug("Conectado com sucesso");
+        }
+        return conn;
+    }
 
-	public static void disconnect() throws SQLException {
-		if(conn != null){
-			conn.close();
-		}
-	}
+    public static void disconnect() throws SQLException {
+        if (conn != null) {
+            conn.close();
+        }
+    }
 }
