@@ -62,7 +62,7 @@
                           </Group>
                           <Group type="102" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="painelOpcoes" min="-2" pref="570" max="-2" attributes="0"/>
+                              <Component id="painelInterfaces" min="-2" pref="570" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>
@@ -72,11 +72,11 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="btRemover" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jToggleButton3" min="-2" max="-2" attributes="0"/>
+                      <Component id="btClear" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="btTesteConexao" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="jButton1" min="-2" max="-2" attributes="0"/>
+                      <Component id="btExecutar" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Component id="jProgressBar1" alignment="1" pref="771" max="32767" attributes="1"/>
               </Group>
@@ -99,16 +99,16 @@
                   </Group>
                   <Group type="102" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="painelOpcoes" min="-2" pref="338" max="-2" attributes="1"/>
+                      <Component id="painelInterfaces" min="-2" pref="338" max="-2" attributes="1"/>
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="btRemover" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="btAdd" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jToggleButton3" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="btClear" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="btTesteConexao" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jButton1" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="btExecutar" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="jProgressBar1" min="-2" max="-2" attributes="0"/>
@@ -145,7 +145,7 @@
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
       <SubComponents>
-        <Component class="javax.swing.JList" name="jList1">
+        <Component class="javax.swing.JList" name="jListUsuarios">
           <Properties>
             <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
               <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
@@ -166,19 +166,19 @@
             </Property>
           </Properties>
           <Events>
-            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jList1MouseClicked"/>
+            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jListUsuariosMouseClicked"/>
           </Events>
         </Component>
       </SubComponents>
     </Container>
     <Component class="javax.swing.JProgressBar" name="jProgressBar1">
     </Component>
-    <Component class="javax.swing.JButton" name="jButton1">
+    <Component class="javax.swing.JButton" name="btExecutar">
       <Properties>
         <Property name="text" type="java.lang.String" value="Executar"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton1ActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btExecutarActionPerformed"/>
       </Events>
     </Component>
     <Component class="javax.swing.JToggleButton" name="btSalvar">
@@ -197,7 +197,7 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btCarregarActionPerformed"/>
       </Events>
     </Component>
-    <Container class="javax.swing.JTabbedPane" name="painelOpcoes">
+    <Container class="javax.swing.JTabbedPane" name="painelInterfaces">
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
       <SubComponents>
@@ -229,7 +229,7 @@
                       <Component id="jPanel3" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="chDebug" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="37" max="32767" attributes="0"/>
+                      <EmptySpace pref="34" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -279,12 +279,12 @@
                                       <Group type="103" groupAlignment="1" attributes="0">
                                           <Group type="102" attributes="0">
                                               <Component id="chObjetos" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace pref="78" max="32767" attributes="0"/>
+                                              <EmptySpace pref="74" max="32767" attributes="0"/>
                                               <Component id="btUncheall" min="-2" max="-2" attributes="0"/>
                                           </Group>
                                           <Group type="102" alignment="0" attributes="0">
                                               <Component id="chViews" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace pref="100" max="32767" attributes="0"/>
+                                              <EmptySpace pref="96" max="32767" attributes="0"/>
                                               <Component id="btChekAll" min="-2" max="-2" attributes="0"/>
                                           </Group>
                                           <Group type="102" alignment="0" attributes="0">
@@ -297,7 +297,7 @@
                                       <Group type="103" groupAlignment="0" attributes="0">
                                           <Group type="102" alignment="0" attributes="0">
                                               <Component id="txCaminhoGeracao" min="-2" pref="464" max="-2" attributes="0"/>
-                                              <EmptySpace pref="15" max="32767" attributes="0"/>
+                                              <EmptySpace pref="11" max="32767" attributes="0"/>
                                               <Component id="btSearch" min="-2" pref="34" max="-2" attributes="0"/>
                                           </Group>
                                           <Component id="jLabel7" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -549,7 +549,7 @@
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
-                          <EmptySpace pref="31" max="32767" attributes="0"/>
+                          <EmptySpace pref="19" max="32767" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
                               <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
@@ -687,7 +687,7 @@
                               <Component id="txBSUser" max="32767" attributes="1"/>
                               <Component id="txBGUser" alignment="0" max="32767" attributes="1"/>
                               <Component id="txItUser" alignment="0" max="32767" attributes="1"/>
-                              <Component id="txUser" alignment="0" min="-2" pref="65" max="-2" attributes="1"/>
+                              <Component id="txIoUser" alignment="0" min="-2" pref="65" max="-2" attributes="1"/>
                               <Component id="txISUser" max="32767" attributes="1"/>
                               <Component id="txCEUser" max="32767" attributes="1"/>
                               <Component id="txCIUser" max="32767" attributes="1"/>
@@ -723,7 +723,7 @@
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                       <Component id="txBGPass" alignment="0" pref="69" max="32767" attributes="1"/>
-                                      <Component id="txPass" alignment="0" pref="69" max="32767" attributes="1"/>
+                                      <Component id="txIoPass" alignment="0" pref="69" max="32767" attributes="1"/>
                                       <Component id="txItPass" alignment="0" max="32767" attributes="1"/>
                                   </Group>
                               </Group>
@@ -754,7 +754,7 @@
                               <Group type="102" alignment="0" attributes="0">
                                   <Group type="103" groupAlignment="1" attributes="0">
                                       <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
-                                      <Component id="txPass" alignment="1" min="-2" max="-2" attributes="0"/>
+                                      <Component id="txIoPass" alignment="1" min="-2" max="-2" attributes="0"/>
                                   </Group>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="txItPass" min="-2" max="-2" attributes="0"/>
@@ -762,7 +762,7 @@
                               <Group type="102" alignment="0" attributes="0">
                                   <Group type="103" groupAlignment="1" attributes="0">
                                       <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
-                                      <Component id="txUser" min="-2" pref="20" max="-2" attributes="0"/>
+                                      <Component id="txIoUser" min="-2" pref="20" max="-2" attributes="0"/>
                                   </Group>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="3" attributes="0">
@@ -873,12 +873,12 @@
                     <Property name="text" type="java.lang.String" value="IO Pass:"/>
                   </Properties>
                 </Component>
-                <Component class="java.awt.TextField" name="txPass">
+                <Component class="java.awt.TextField" name="txIoPass">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                       <Font name="Arial" size="10" style="0"/>
                     </Property>
-                    <Property name="name" type="java.lang.String" value="txPass" noResource="true"/>
+                    <Property name="name" type="java.lang.String" value="txIoPass" noResource="true"/>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JTextField" name="txBGUser">
@@ -911,12 +911,12 @@
                     <Property name="text" type="java.lang.String" value="IO User:"/>
                   </Properties>
                 </Component>
-                <Component class="java.awt.TextField" name="txUser">
+                <Component class="java.awt.TextField" name="txIoUser">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                       <Font name="Arial" size="10" style="0"/>
                     </Property>
-                    <Property name="name" type="java.lang.String" value="txUser" noResource="true"/>
+                    <Property name="name" type="java.lang.String" value="txIoUser" noResource="true"/>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JTextField" name="txBGPass">
@@ -1185,7 +1185,7 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
                       <Component id="jPanel7" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="223" max="32767" attributes="0"/>
+                      <EmptySpace pref="219" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -1194,7 +1194,7 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="21" max="-2" attributes="0"/>
                       <Component id="jPanel7" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="153" max="32767" attributes="0"/>
+                      <EmptySpace pref="150" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -1359,7 +1359,7 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="txWhereInterfaces" alignment="0" pref="533" max="32767" attributes="0"/>
+                          <Component id="txWhereInterfaces" alignment="0" pref="529" max="32767" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="jScrollPane2" min="-2" pref="191" max="-2" attributes="0"/>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
@@ -1444,12 +1444,12 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btRemoverActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JToggleButton" name="jToggleButton3">
+    <Component class="javax.swing.JToggleButton" name="btClear">
       <Properties>
         <Property name="text" type="java.lang.String" value="Clear"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jToggleButton3ActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btClearActionPerformed"/>
       </Events>
     </Component>
     <Component class="javax.swing.JToggleButton" name="btTesteConexao">

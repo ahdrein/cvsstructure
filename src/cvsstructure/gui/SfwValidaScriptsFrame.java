@@ -28,7 +28,7 @@ import java.util.logging.Logger;
  *
  * @author andrein
  */
-public class SfwValidaScripts extends javax.swing.JFrame {
+public class SfwValidaScriptsFrame extends javax.swing.JFrame {
     StringBuffer strOut;
     private String fileName;
     private String arqsInstala = "S";
@@ -49,7 +49,7 @@ public class SfwValidaScripts extends javax.swing.JFrame {
     public String tipoPasta = "";
 
     /** Creates new form ValidaScripts */
-    public SfwValidaScripts() {
+    public SfwValidaScriptsFrame() {
         initComponents();
     }
 
@@ -242,7 +242,7 @@ public class SfwValidaScripts extends javax.swing.JFrame {
                     //fw.close();
 
                 } catch (Exception ex) {
-                    Logger.getLogger(SfwValidaScripts.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(SfwValidaScriptsFrame.class.getName()).log(Level.SEVERE, null, ex);
                     ex.printStackTrace();
                 }
             }
@@ -289,7 +289,7 @@ public class SfwValidaScripts extends javax.swing.JFrame {
                 }
 
             } catch (Exception ex) {
-                Logger.getLogger(SfwValidaScripts.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(SfwValidaScriptsFrame.class.getName()).log(Level.SEVERE, null, ex);
                 ex.printStackTrace();
             }
     }
@@ -578,7 +578,7 @@ public class SfwValidaScripts extends javax.swing.JFrame {
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new SfwValidaScripts().setVisible(true);
+                new SfwValidaScriptsFrame().setVisible(true);
             }
         });
     }

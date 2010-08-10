@@ -1,11 +1,12 @@
 package cvsstructure.gui;
 
-
 import cvsstructure.model.Usuario;
 import cvsstructure.CVSStructure;
 import cvsstructure.util.Estatisticas;
 import cvsstructure.database.ConnectionInout;
 import cvsstructure.database.ConnectionIntegracao;
+import cvsstructure.log.SfwLogger;
+import cvsstructure.model.Cliente;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -14,6 +15,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Scanner;
 import java.util.TimeZone;
 import java.util.logging.Level;
@@ -29,50 +31,39 @@ import javax.swing.JOptionPane;
  */
 
 /*
- * JFrameCVS.java
+ * CvsStructureFrame.java
  *
  * Created on 11/09/2009, 14:43:25
  */
-
 /**
  *
  * @author andrein
  */
-public class JFrameCVS extends javax.swing.JFrame {
+public class CvsStructureFrame extends javax.swing.JFrame {
     //Vector arrUsers;
-    public String arrUsers[][] = new String[100][100];
-    int contador = 0;
+
+    //public String arrUsers[][] = new String[100][100];
+    private Collection<Cliente> collectionCliente = new ArrayList<Cliente>();
+    //int contador = 0;
     DefaultListModel model = new DefaultListModel();
     DefaultListModel modelInterfaces = new DefaultListModel();
+
     CVSStructure cvsStruct;
-    JFrameCVS jFrame = this;
     private ArrayList<String> arrInterfaces;
 
-    public void setTextArea(String textArea){
-        this.textArea1.append(textArea);
-    }
-
-    public String getTxItUser(){
-        return this.txItUser.getText().toString();
-    }
-
-    public String getTxItPass(){
-        return this.txItPass.getText().toString();
-    }
-
-    public String getTxCaminhaGeracao(){
-        return this.txCaminhoGeracao.getText().toString();
-    }
-
-    /** Creates new form JFrameCVS */
-    public JFrameCVS() {
+    /** Creates new form CvsStructureFrame */
+    public CvsStructureFrame() {
         initComponents();
-        jList1.setModel(model);
+        SfwLogger.cvsStructureFrame = this;
+
+        jListUsuarios.setModel(model);
         jListInterfaces.setModel(modelInterfaces);
-        cvsStruct =  new CVSStructure();
-        carregarUsuarios();
+
+        cvsStruct = new CVSStructure();
+ 
         btSalvar.setEnabled(false);
         btCarregar.setEnabled(false);
+        carregarUsuarios();
 
         /*
         arrUsers[0][1] = "jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=192.168.61.7)(PORT=1511)))(CONNECT_DATA=(SERVICE_NAME=HOMOL11)))";
@@ -111,12 +102,12 @@ public class JFrameCVS extends javax.swing.JFrame {
         panel1 = new java.awt.Panel();
         textArea1 = new java.awt.TextArea();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList();
+        jListUsuarios = new javax.swing.JList();
         jProgressBar1 = new javax.swing.JProgressBar();
-        jButton1 = new javax.swing.JButton();
+        btExecutar = new javax.swing.JButton();
         btSalvar = new javax.swing.JToggleButton();
         btCarregar = new javax.swing.JToggleButton();
-        painelOpcoes = new javax.swing.JTabbedPane();
+        painelInterfaces = new javax.swing.JTabbedPane();
         jPanel2 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
         chCriaDir = new java.awt.Checkbox();
@@ -152,12 +143,12 @@ public class JFrameCVS extends javax.swing.JFrame {
         jLabel9 = new javax.swing.JLabel();
         txItPass = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
-        txPass = new java.awt.TextField();
+        txIoPass = new java.awt.TextField();
         txBGUser = new javax.swing.JTextField();
         txItUser = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
-        txUser = new java.awt.TextField();
+        txIoUser = new java.awt.TextField();
         txBGPass = new javax.swing.JTextField();
         txBSUser = new javax.swing.JTextField();
         txBSPass = new javax.swing.JTextField();
@@ -209,7 +200,7 @@ public class JFrameCVS extends javax.swing.JFrame {
         chScriptsSemVinculo = new javax.swing.JCheckBox();
         btAdd = new javax.swing.JButton();
         btRemover = new javax.swing.JButton();
-        jToggleButton3 = new javax.swing.JToggleButton();
+        btClear = new javax.swing.JToggleButton();
         btTesteConexao = new javax.swing.JToggleButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -237,24 +228,24 @@ public class JFrameCVS extends javax.swing.JFrame {
             .addGap(0, 0, Short.MAX_VALUE)
         );
 
-        jList1.setBorder(javax.swing.BorderFactory.createTitledBorder("Usuários:"));
-        jList1.setFont(new java.awt.Font("Arial", 0, 10));
-        jList1.setModel(new javax.swing.AbstractListModel() {
+        jListUsuarios.setBorder(javax.swing.BorderFactory.createTitledBorder("Usuários:"));
+        jListUsuarios.setFont(new java.awt.Font("Arial", 0, 10));
+        jListUsuarios.setModel(new javax.swing.AbstractListModel() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
-        jList1.addMouseListener(new java.awt.event.MouseAdapter() {
+        jListUsuarios.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jList1MouseClicked(evt);
+                jListUsuariosMouseClicked(evt);
             }
         });
-        jScrollPane1.setViewportView(jList1);
+        jScrollPane1.setViewportView(jListUsuarios);
 
-        jButton1.setText("Executar");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        btExecutar.setText("Executar");
+        btExecutar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btExecutarActionPerformed(evt);
             }
         });
 
@@ -370,11 +361,11 @@ public class JFrameCVS extends javax.swing.JFrame {
                                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addGroup(jPanel3Layout.createSequentialGroup()
                                         .addComponent(chObjetos)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 78, Short.MAX_VALUE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 74, Short.MAX_VALUE)
                                         .addComponent(btUncheall))
                                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
                                         .addComponent(chViews)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 100, Short.MAX_VALUE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 96, Short.MAX_VALUE)
                                         .addComponent(btChekAll))
                                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
                                         .addComponent(chSapMapeamento)
@@ -383,7 +374,7 @@ public class JFrameCVS extends javax.swing.JFrame {
                                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(jPanel3Layout.createSequentialGroup()
                                         .addComponent(txCaminhoGeracao, javax.swing.GroupLayout.PREFERRED_SIZE, 464, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 15, Short.MAX_VALUE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 11, Short.MAX_VALUE)
                                         .addComponent(btSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addComponent(jLabel7))
                                 .addContainerGap()))))
@@ -447,10 +438,10 @@ public class JFrameCVS extends javax.swing.JFrame {
                     .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                     .addComponent(chDebug, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(37, Short.MAX_VALUE))
+                    .addContainerGap(34, Short.MAX_VALUE))
             );
 
-            painelOpcoes.addTab("Opções", jPanel2);
+            painelInterfaces.addTab("Opções", jPanel2);
 
             jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Informações para Conexão:"));
             jPanel1.setFont(new java.awt.Font("Comic Sans MS", 3, 11));
@@ -484,7 +475,7 @@ public class JFrameCVS extends javax.swing.JFrame {
             jPanel4Layout.setHorizontalGroup(
                 jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
-                    .addContainerGap(31, Short.MAX_VALUE)
+                    .addContainerGap(19, Short.MAX_VALUE)
                     .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(jLabel3)
                         .addComponent(jLabel4)
@@ -527,8 +518,8 @@ public class JFrameCVS extends javax.swing.JFrame {
             jLabel2.setFont(new java.awt.Font("Arial", 0, 10));
             jLabel2.setText("IO Pass:");
 
-            txPass.setFont(new java.awt.Font("Arial", 0, 10));
-            txPass.setName("txPass"); // NOI18N
+            txIoPass.setFont(new java.awt.Font("Arial", 0, 10));
+            txIoPass.setName("txIoPass"); // NOI18N
 
             txBGUser.setFont(new java.awt.Font("Arial", 0, 10));
 
@@ -540,8 +531,8 @@ public class JFrameCVS extends javax.swing.JFrame {
             jLabel1.setFont(new java.awt.Font("Arial", 0, 10));
             jLabel1.setText("IO User:");
 
-            txUser.setFont(new java.awt.Font("Arial", 0, 10));
-            txUser.setName("txUser"); // NOI18N
+            txIoUser.setFont(new java.awt.Font("Arial", 0, 10));
+            txIoUser.setName("txIoUser"); // NOI18N
 
             txBGPass.setFont(new java.awt.Font("Arial", 0, 10));
 
@@ -632,7 +623,7 @@ public class JFrameCVS extends javax.swing.JFrame {
                         .addComponent(txBSUser)
                         .addComponent(txBGUser)
                         .addComponent(txItUser)
-                        .addComponent(txUser, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txIoUser, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(txISUser)
                         .addComponent(txCEUser)
                         .addComponent(txCIUser)
@@ -662,7 +653,7 @@ public class JFrameCVS extends javax.swing.JFrame {
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                             .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addComponent(txBGPass, javax.swing.GroupLayout.DEFAULT_SIZE, 69, Short.MAX_VALUE)
-                                .addComponent(txPass, javax.swing.GroupLayout.DEFAULT_SIZE, 69, Short.MAX_VALUE)
+                                .addComponent(txIoPass, javax.swing.GroupLayout.DEFAULT_SIZE, 69, Short.MAX_VALUE)
                                 .addComponent(txItPass)))
                         .addGroup(jPanel5Layout.createSequentialGroup()
                             .addComponent(jLabel19)
@@ -685,13 +676,13 @@ public class JFrameCVS extends javax.swing.JFrame {
                         .addGroup(jPanel5Layout.createSequentialGroup()
                             .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                 .addComponent(jLabel2)
-                                .addComponent(txPass, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(txIoPass, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                             .addComponent(txItPass, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGroup(jPanel5Layout.createSequentialGroup()
                             .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                 .addComponent(jLabel1)
-                                .addComponent(txUser, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(txIoUser, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                             .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(jLabel8)
@@ -803,7 +794,7 @@ public class JFrameCVS extends javax.swing.JFrame {
                     .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             );
 
-            painelOpcoes.addTab("Dados Conexão", jPanel1);
+            painelInterfaces.addTab("Dados Conexão", jPanel1);
 
             jPanel7.setBorder(javax.swing.BorderFactory.createTitledBorder("Oracle"));
 
@@ -884,17 +875,17 @@ public class JFrameCVS extends javax.swing.JFrame {
                 .addGroup(jPanel6Layout.createSequentialGroup()
                     .addGap(18, 18, 18)
                     .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(223, Short.MAX_VALUE))
+                    .addContainerGap(219, Short.MAX_VALUE))
             );
             jPanel6Layout.setVerticalGroup(
                 jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel6Layout.createSequentialGroup()
                     .addGap(21, 21, 21)
                     .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(153, Short.MAX_VALUE))
+                    .addContainerGap(150, Short.MAX_VALUE))
             );
 
-            painelOpcoes.addTab("Oracle", jPanel6);
+            painelInterfaces.addTab("Oracle", jPanel6);
 
             jPanel8.setBorder(javax.swing.BorderFactory.createTitledBorder("Selecione a interface desejada ou nehuma para [TODAS]"));
 
@@ -923,7 +914,7 @@ public class JFrameCVS extends javax.swing.JFrame {
                 .addGroup(jPanel8Layout.createSequentialGroup()
                     .addContainerGap()
                     .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(txWhereInterfaces, javax.swing.GroupLayout.DEFAULT_SIZE, 533, Short.MAX_VALUE)
+                        .addComponent(txWhereInterfaces, javax.swing.GroupLayout.DEFAULT_SIZE, 529, Short.MAX_VALUE)
                         .addGroup(jPanel8Layout.createSequentialGroup()
                             .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGap(18, 18, 18)
@@ -941,7 +932,7 @@ public class JFrameCVS extends javax.swing.JFrame {
                     .addGap(77, 77, 77))
             );
 
-            painelOpcoes.addTab("Interfaces", jPanel8);
+            painelInterfaces.addTab("Interfaces", jPanel8);
 
             btAdd.setText("Add");
             btAdd.addActionListener(new java.awt.event.ActionListener() {
@@ -957,10 +948,10 @@ public class JFrameCVS extends javax.swing.JFrame {
                 }
             });
 
-            jToggleButton3.setText("Clear");
-            jToggleButton3.addActionListener(new java.awt.event.ActionListener() {
+            btClear.setText("Clear");
+            btClear.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    jToggleButton3ActionPerformed(evt);
+                    btClearActionPerformed(evt);
                 }
             });
 
@@ -992,18 +983,18 @@ public class JFrameCVS extends javax.swing.JFrame {
                                     .addComponent(panel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addGroup(layout.createSequentialGroup()
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(painelOpcoes, javax.swing.GroupLayout.PREFERRED_SIZE, 570, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                    .addComponent(painelInterfaces, javax.swing.GroupLayout.PREFERRED_SIZE, 570, javax.swing.GroupLayout.PREFERRED_SIZE))))
                         .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                             .addGap(201, 201, 201)
                             .addComponent(btAdd)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                             .addComponent(btRemover)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(jToggleButton3)
+                            .addComponent(btClear)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                             .addComponent(btTesteConexao)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addComponent(jButton1))
+                            .addComponent(btExecutar))
                         .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 771, Short.MAX_VALUE))
                     .addContainerGap())
             );
@@ -1020,14 +1011,14 @@ public class JFrameCVS extends javax.swing.JFrame {
                                 .addComponent(btCarregar)))
                         .addGroup(layout.createSequentialGroup()
                             .addContainerGap()
-                            .addComponent(painelOpcoes, javax.swing.GroupLayout.PREFERRED_SIZE, 338, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(painelInterfaces, javax.swing.GroupLayout.PREFERRED_SIZE, 338, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(btRemover)
                         .addComponent(btAdd)
-                        .addComponent(jToggleButton3)
+                        .addComponent(btClear)
                         .addComponent(btTesteConexao)
-                        .addComponent(jButton1))
+                        .addComponent(btExecutar))
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                     .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1039,168 +1030,114 @@ public class JFrameCVS extends javax.swing.JFrame {
             pack();
         }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-            jProgressBar1.setIndeterminate(true);
+    private void btExecutarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btExecutarActionPerformed
+        jProgressBar1.setIndeterminate(true);
 
-            Thread tThread = new Thread(new Runnable() {
+        Thread tThread = new Thread(new Runnable() {
+
+            @Override
             public void run() {
                 Estatisticas.zeraEstatisticas();
-                ArrayList arrChecks = new ArrayList();
+                ArrayList<String> arrChecks = new ArrayList<String>();
 
                 CVSStructure.chScriptsSemVinculoInterface = "S";
-                if(!chScriptsSemVinculo.isSelected()){
+                if (!chScriptsSemVinculo.isSelected()) {
                     CVSStructure.chScriptsSemVinculoInterface = "N";
                 }
 
-                if(chArquivosExternos.isSelected()){
+                if (chArquivosExternos.isSelected()) {
                     arrChecks.add("ArquivosExternos");
                 }
 
-                if(chInterfaces.isSelected()){
+                if (chInterfaces.isSelected()) {
                     arrChecks.add("Interfaces");
                 }
 
-                if(chCriaDir.getState()){
+                if (chCriaDir.getState()) {
                     arrChecks.add("D");
                 }
 
-                if(chSynonyms.isSelected()){
+                if (chSynonyms.isSelected()) {
                     arrChecks.add("Synonyms");
                 }
 
-                if(chIntMapeamento.isSelected()){
+                if (chIntMapeamento.isSelected()) {
                     arrChecks.add("IntMapeamento");
                 }
 
-                if(chSapMapeamento.isSelected()){
+                if (chSapMapeamento.isSelected()) {
                     arrChecks.add("SapMapeamento");
                 }
 
-                if(chViews.isSelected()){
+                if (chViews.isSelected()) {
                     arrChecks.add("Views");
                 }
 
-                if(chSequences.isSelected()){
+                if (chSequences.isSelected()) {
                     arrChecks.add("Sequences");
                 }
 
-                if(chSistemas.isSelected()){
+                if (chSistemas.isSelected()) {
                     arrChecks.add("Sistemas");
                 }
 
-                if(chObjetos.isSelected()){
+                if (chObjetos.isSelected()) {
                     arrChecks.add("Objetos");
                 }
 
-                if(chTabelasTemporiarias.isSelected()){
+                if (chTabelasTemporiarias.isSelected()) {
                     arrChecks.add("TabelasTemporarias");
                 }
 
                 int cont_user = 0;
-                if(!model.isEmpty()){
+                if (!model.isEmpty()) {
                     Calendar cal = Calendar.getInstance(TimeZone.getDefault());
                     String DATE_FORMAT = "yyyy-MM-dd HHmmss";
                     java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(DATE_FORMAT);
                     sdf.setTimeZone(TimeZone.getDefault());
 
-                    Object[] sSelectedUser = jList1.getSelectedValues();
-                    if(sSelectedUser.length != 0){
+                    Object[] sSelectedUser = jListUsuarios.getSelectedValues();
+                    if (sSelectedUser.length != 0) {
                         // Obtendo as bases selecionadas
-                        for(int j=0; j < sSelectedUser.length; j++){
+                        for (int j = 0; j < sSelectedUser.length; j++) {
 
                             //
-                            for(int i=0; i < arrUsers.length;i++){
-                                if(arrUsers[i][1] != null && !arrUsers[i][1].equals("")){
-                                    String userArray = arrUsers[i][2].toUpperCase()+"/"+arrUsers[i][4].toUpperCase();
-                                    if(userArray.toUpperCase().equals(((String)sSelectedUser[j]).toUpperCase())){
+                            for (Cliente cliente: collectionCliente) {
+                                if (cliente.getIoUser() != null ) {
+                                    String userArray = cliente.getIoUser().getUser().toUpperCase() + "/" + cliente.getService().toUpperCase();
+                                    if (userArray.toUpperCase().equals(((String) sSelectedUser[j]).toUpperCase())) {
 
                                         setTextArea("#################################################################\n");
-                                        setTextArea("## " + arrUsers[i][2].toUpperCase() +"/"+ arrUsers[i][4].toUpperCase() + "##\n");
+                                        setTextArea("## " + userArray + "##\n");
                                         setTextArea("## Data Hora Inicio " + sdf.format(cal.getTime()) + "##\n");
                                         setTextArea("#################################################################\n\n");
 
-                                        Usuario ioUser = new Usuario();
-                                        ioUser.setConn(txUser.getText());
-                                        ioUser.setUser(txPass.getText());
-                                        ioUser.setPass(arrUsers[i][3]);
-                                        cvsStruct.setIoUser(ioUser);
-
-                                        Usuario bgUser = new Usuario();
-                                        bgUser.setConn(txBGUser.getText());
-                                        bgUser.setUser(txBGPass.getText());
-                                        bgUser.setPass(arrUsers[i][3]);
-                                        cvsStruct.setBgUser(bgUser);
-
-                                        Usuario itUser = new Usuario();
-                                        itUser.setConn(txItUser.getText());
-                                        itUser.setUser(txItPass.getText());
-                                        itUser.setPass(arrUsers[i][3]);
-                                        cvsStruct.setItUser(itUser);
-                                        
-                                        Usuario bsUser = new Usuario();
-                                        bsUser.setConn(txBSUser.getText());
-                                        bsUser.setUser(txBSPass.getText());
-                                        bsUser.setPass(arrUsers[i][3]);
-                                        cvsStruct.setBsUser(bsUser);
-
-                                        Usuario isUser = new Usuario();
-                                        isUser.setConn(txISUser.getText());
-                                        isUser.setUser(txISPass.getText());
-                                        isUser.setPass(arrUsers[i][3]);
-                                        cvsStruct.setIsUser(isUser);
-
-                                        Usuario ceUser = new Usuario();
-                                        ceUser.setConn(txCEUser.getText());
-                                        ceUser.setUser(txCEPass.getText());
-                                        ceUser.setPass(arrUsers[i][3]);
-                                        cvsStruct.setCeUser(ceUser);
-
-                                        Usuario ciUser = new Usuario();
-                                        ciUser.setConn(txCIUser.getText());
-                                        ciUser.setUser(txCIPass.getText());
-                                        ciUser.setPass(arrUsers[i][3]);
-                                        cvsStruct.setCiUser(ciUser);
-
-                                        Usuario exUser = new Usuario();
-                                        exUser.setConn(txEXUser.getText());
-                                        exUser.setUser(txEXPass.getText());
-                                        exUser.setPass(arrUsers[i][3]);
-                                        cvsStruct.setExUser(exUser);
-
-                                        Usuario dbUser = new Usuario();
-                                        dbUser.setConn(txDBUser.getText());
-                                        dbUser.setUser(txDBPass.getText());
-                                        dbUser.setPass(arrUsers[i][3]);
-                                        cvsStruct.setDbUser(dbUser);
-
-                                        cvsStruct.s_Conn = arrUsers[i][1];
-                                        cvsStruct.s_User = arrUsers[i][2];
-                                        cvsStruct.s_Pass = arrUsers[i][3];
-                                        cvsStruct.s_ItUser = arrUsers[i][5];
-                                        cvsStruct.s_ItPass = arrUsers[i][6];
-
-                                        if(chDebug.getState()){
+                                        if (chDebug.getState()) {
                                             CVSStructure.sDebug = "S";
                                         }
 
-                                        if(chNomePasta.isSelected()){
+                                        if (chNomePasta.isSelected()) {
                                             CVSStructure.chNomePasta = "S";
-                                        }else{
+                                        } else {
                                             CVSStructure.chNomePasta = "N";
                                         }
 
-                                        if(chConexaoPorArquivo.isSelected()){
+                                        if (chConexaoPorArquivo.isSelected()) {
                                             CVSStructure.chConexaoPorArquivos = "S";
-                                        }else{
+                                        } else {
                                             CVSStructure.chConexaoPorArquivos = "N";
                                         }
 
                                         try {
                                             //Conectando na Base do InOut
                                             try {
-                                                ConnectionInout.initialize(arrUsers[i][7], cvsStruct.s_User, cvsStruct.s_Pass, arrUsers[i][8], arrUsers[i][4]);
+                                                ConnectionInout.initialize(cliente.getDataBase(),
+                                                        cliente.getIoUser().getUser(),
+                                                        cliente.getIoUser().getPass(),
+                                                        cliente.getPort(),
+                                                        cliente.getService());
 
-                                                if( ConnectionInout.getConnection() == null ){
+                                                if (ConnectionInout.getConnection() == null) {
                                                     JOptionPane.showMessageDialog(null, "Erro ao conectar no inout !");
                                                 }
                                             } catch (SQLException ex) {
@@ -1208,11 +1145,15 @@ public class JFrameCVS extends javax.swing.JFrame {
                                             }
 
                                             //Conectando na Base de Integração
-                                            if(cvsStruct.s_ItUser != null && !cvsStruct.s_ItUser.equals("")){
-                                                try{
-                                                    ConnectionIntegracao.initialize(arrUsers[i][7], cvsStruct.s_ItUser, cvsStruct.s_ItPass, arrUsers[i][8], arrUsers[i][4]);
+                                            if (cliente.getItUser().getUser() != null && !cliente.getItUser().getUser().equals("")) {
+                                                try {
+                                                    ConnectionIntegracao.initialize(cliente.getDataBase(),
+                                                            cliente.getItUser().getUser(),
+                                                            cliente.getItUser().getPass(),
+                                                            cliente.getPort(),
+                                                            cliente.getService());
 
-                                                    if( ConnectionIntegracao.getConnection() == null ){
+                                                    if (ConnectionIntegracao.getConnection() == null) {
                                                         JOptionPane.showMessageDialog(null, "Erro ao conectar na integracao !");
                                                     }
                                                 } catch (SQLException ex) {
@@ -1220,17 +1161,19 @@ public class JFrameCVS extends javax.swing.JFrame {
                                                 }
                                             }
 
-                                            cvsStruct.setSSelectInterfaces( jListInterfaces.getSelectedValues() );
-                                            cvsStruct.spoolCVSStruture(arrChecks, jFrame);
+                                            cvsStruct.setSSelectInterfaces(jListInterfaces.getSelectedValues());
+                                            cvsStruct.setCliente(cliente);
+                                            cvsStruct.setCaminhoGeracao(getTxCaminhaGeracao());
+                                            cvsStruct.spoolCVSStruture(arrChecks);
                                         } catch (SQLException ex) {
-                                            Logger.getLogger(JFrameCVS.class.getName()).log(Level.SEVERE, null, ex);
+                                            Logger.getLogger(CvsStructureFrame.class.getName()).log(Level.SEVERE, null, ex);
                                         } catch (IOException ex) {
-                                            Logger.getLogger(JFrameCVS.class.getName()).log(Level.SEVERE, null, ex);
+                                            Logger.getLogger(CvsStructureFrame.class.getName()).log(Level.SEVERE, null, ex);
                                         }
-                                        cont_user+=1;
+                                        cont_user += 1;
 
                                         setTextArea("\n#################################################################\n");
-                                        setTextArea("## GERAÇÃO DOS SCRIPTS CONCLUIDA - " + arrUsers[i][2].toUpperCase() +"/"+ arrUsers[i][4].toUpperCase() + "\n");
+                                        setTextArea("## GERAÇÃO DOS SCRIPTS CONCLUIDA - " + userArray + "\n");
                                         setTextArea("## Data Hora Fim " + sdf.format(cal.getTime()) + " \n");
                                         setTextArea("## Total Sistemas Extraidas: " + Estatisticas.nTotalSistemas + "\n");
                                         setTextArea("## Total Interfaces Extraidas: " + Estatisticas.nTotalInterfaces + "\n");
@@ -1249,90 +1192,137 @@ public class JFrameCVS extends javax.swing.JFrame {
                                 }
                             }
                         }
-                    }else{
+                    } else {
                         JOptionPane.showMessageDialog(null, "Selecione as bases desejadas para geração dos scripts !");
                         jProgressBar1.setIndeterminate(false);
                     }
                     arrChecks.removeAll(arrChecks);
                 }
             }
-            });
-             tThread.start();
-             
-    }//GEN-LAST:event_jButton1ActionPerformed
+        });
+        tThread.start();
+
+    }//GEN-LAST:event_btExecutarActionPerformed
 
     private void btAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btAddActionPerformed
+        String conn = null;
+        Cliente cliente =  new Cliente();
 
-        if(txService.getText().equals("") && txSid.getText().equals("")){
+        if (txService.getText().equals("") && txSid.getText().equals("")) {
             JOptionPane.showMessageDialog(null, "Informe a Service/Sid");
-        }else{
-            if(txUser.getText().equals("")){
+        } else {
+            if (txIoUser.getText().equals("")) {
                 JOptionPane.showMessageDialog(null, "Informe Usuario");
-            }else{
-                if(txPass.getText().equals("")){
+            } else {
+                if (txIoPass.getText().equals("")) {
                     JOptionPane.showMessageDialog(null, "Informe Password");
-                }else{
-                    if(txPort.getText().equals("")){
+                } else {
+                    if (txPort.getText().equals("")) {
                         JOptionPane.showMessageDialog(null, "Informe a Porta para conexão");
-                    }else{
-                        if(txHost.getText().equals("")){
+                    } else {
+                        if (txHost.getText().equals("")) {
                             JOptionPane.showMessageDialog(null, "Informe o Host conexão");
-                        }else{
-                            if(model.contains(txUser.getText()+"/"+txService.getText()) || model.contains(txUser.getText()+"/"+txSid.getText())){
+                        } else {
+                            if (model.contains(txIoUser.getText() + "/" + txService.getText()) || model.contains(txIoUser.getText() + "/" + txSid.getText())) {
                                 JOptionPane.showMessageDialog(null, "Usuarios já cadastrado");
-                            }else{
-                                if(txService.getText() != null || !txService.getText().equals("")){
-                                    arrUsers[contador][1] = "jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=" + txHost.getText() +")(PORT="+ txPort.getText() +")))(CONNECT_DATA=(SERVICE_NAME="+txService.getText()+")))";
-                                    model.addElement(txUser.getText().toLowerCase().trim()+"/"+txService.getText().toLowerCase().trim());
-                                    arrUsers[contador][4] = txService.getText();
-                                }else if(txSid.getText() != null || !txSid.getText().equals("")){
-                                    arrUsers[contador][1] = "jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=" + txHost.getText() +")(PORT="+ txPort.getText() +")))(CONNECT_DATA=(SID="+txSid.getText()+")))";
-                                    model.addElement(txUser.getText().toLowerCase().trim()+"/"+txSid.getText().toLowerCase().trim());
-                                    arrUsers[contador][4] = txSid.getText();
+                            } else {
+                                if (txService.getText() != null || !txService.getText().equals("")) {
+                                    cliente.setConn("jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=" + txHost.getText() + ")(PORT=" + txPort.getText() + ")))(CONNECT_DATA=(SERVICE_NAME=" + txService.getText() + ")))");
+                                    model.addElement(txIoUser.getText().toLowerCase().trim() + "/" + txService.getText().toLowerCase().trim());
+                                    cliente.setService(txService.getText());
+                                } else if (txSid.getText() != null || !txSid.getText().equals("")) {
+                                    cliente.setConn("jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=" + txHost.getText() + ")(PORT=" + txPort.getText() + ")))(CONNECT_DATA=(SID=" + txSid.getText() + ")))");
+                                    model.addElement(txIoUser.getText().toLowerCase().trim() + "/" + txSid.getText().toLowerCase().trim());
+                                    cliente.setService(txSid.getText());
                                 }
 
-                                arrUsers[contador][2] = txUser.getText();
-                                arrUsers[contador][3] = txPass.getText();
-                                arrUsers[contador][5] = txItUser.getText();
-                                arrUsers[contador][6] = txItPass.getText();
-                                arrUsers[contador][7] = txHost.getText();
-                                arrUsers[contador][8] = txPort.getText();
-                                arrUsers[contador][9] = txSid.getText();
+                                Usuario ioUser = new Usuario();
+                                ioUser.setUser(txIoUser.getText());
+                                ioUser.setPass(txIoPass.getText());
+                                cliente.setIoUser(ioUser);
 
-                                contador += 1;
+                                Usuario itUser = new Usuario();
+                                itUser.setUser(txItUser.getText());
+                                itUser.setPass(txItPass.getText());
+                                cliente.setItUser(itUser);
+
+                                Usuario bgUser = new Usuario();
+                                bgUser.setUser(txBGUser.getText());
+                                bgUser.setPass(txAPPSPass.getText());
+                                cliente.setBgUser(bgUser);
+
+                                Usuario bsUser = new Usuario();
+                                bsUser.setUser(txBSUser.getText());
+                                bsUser.setPass(txBSPass.getText());
+                                cliente.setBsUser(bsUser);
+
+                                Usuario isUser = new Usuario();
+                                isUser.setUser(txISUser.getText());
+                                isUser.setPass(txISPass.getText());
+                                cliente.setIsUser(isUser);
+
+                                Usuario ceUser = new Usuario();
+                                ceUser.setUser(txCEUser.getText());
+                                ceUser.setPass(txCEPass.getText());
+                                cliente.setCeUser(ceUser);
+
+                                Usuario ciUser = new Usuario();
+                                ciUser.setUser(txCIUser.getText());
+                                ciUser.setPass(txCIPass.getText());
+                                cliente.setCiUser(ciUser);
+
+                                Usuario exUser = new Usuario();
+                                exUser.setUser(txEXUser.getText());
+                                exUser.setPass(txEXPass.getText());
+                                cliente.setExUser(exUser);
+
+                                Usuario dbUser = new Usuario();
+                                dbUser.setUser(txDBUser.getText());
+                                dbUser.setPass(txDBPass.getText());
+                                cliente.setDbUser(dbUser);
+
+                                Usuario caiUser = new Usuario();
+                                caiUser.setUser(txCAIUser.getText());
+                                caiUser.setPass(txCAIPass.getText());
+                                cliente.setDbUser(caiUser);
+
+                                Usuario appsUser = new Usuario();
+                                appsUser.setUser(txAPPSUser.getText());
+                                appsUser.setPass(txAPPSPass.getText());
+                                cliente.setDbUser(appsUser);
+
+                                cliente.setDbLinkApps(conn);
+                                cliente.setAppsUser(appsUser);
+                                
+                                cliente.setConn(conn);
+                                cliente.setService(txService.getText());
+                                cliente.setPort(txPort.getText());
+                                cliente.setTns(txService.getText());
+                                cliente.setDataBase(txHost.getText());
+                                collectionCliente.add(cliente);
+                                
                                 btSalvar.setEnabled(true);
                                 btCarregar.setEnabled(true);
                             }
                         }
                     }
-               }
+                }
             }
         }
 }//GEN-LAST:event_btAddActionPerformed
 
     private void btRemoverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btRemoverActionPerformed
         // TODO add your handling code here:
-        String  sSelectedUser = jList1.getSelectedValue().toString();
+        String sSelectedUser = jListUsuarios.getSelectedValue().toString();
         //JOptionPane.showMessageDialog(null, sSelectedUser);
-        Object[] options = { "OK", "CANCEL" };
-        if(JOptionPane.showOptionDialog(null, "Confirma a remoção do usuário " + sSelectedUser + "?", "Atenção",
-        JOptionPane.OK_CANCEL_OPTION, JOptionPane.OK_CANCEL_OPTION,
-        null, options, options[0]) == 0){
+        Object[] options = {"OK", "CANCEL"};
+        if (JOptionPane.showOptionDialog(null, "Confirma a remoção do usuário " + sSelectedUser + "?", "Atenção",
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.OK_CANCEL_OPTION,
+                null, options, options[0]) == 0) {
 
-            for(int i=0;i < arrUsers.length;i++){
-                if(arrUsers[i][2] !=null && arrUsers[i][4] !=null ){
-                    String userArray = arrUsers[i][2].toUpperCase()+"/"+arrUsers[i][4].toUpperCase();
-                    if(userArray.toUpperCase().equals(sSelectedUser.toUpperCase())){
-                        arrUsers[i][1] = null;
-                        arrUsers[i][2] = null;
-                        arrUsers[i][3] = null;
-                        arrUsers[i][4] = null;
-                        arrUsers[i][5] = null;
-                        arrUsers[i][6] = null;
-                        model.removeElement(sSelectedUser);
-                        break;
-                    }
-                }
+            for (Cliente cliente: collectionCliente) {
+                collectionCliente.remove(cliente);
+                model.removeElement(sSelectedUser);
             }
             btSalvar.setEnabled(true);
             btCarregar.setEnabled(true);
@@ -1340,41 +1330,45 @@ public class JFrameCVS extends javax.swing.JFrame {
 }//GEN-LAST:event_btRemoverActionPerformed
 
     private void btSalvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btSalvarActionPerformed
-        Object[] options = { "OK", "CANCEL" };
-        if(JOptionPane.showOptionDialog(null, "Deseja gravar os usuarios cadastrados ?", "Atenção",
-        JOptionPane.OK_CANCEL_OPTION, JOptionPane.OK_CANCEL_OPTION,
-        null, options, options[0]) == 0){
+        Object[] options = {"OK", "CANCEL"};
+        if (JOptionPane.showOptionDialog(null, "Deseja gravar os usuarios cadastrados ?", "Atenção",
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.OK_CANCEL_OPTION,
+                null, options, options[0]) == 0) {
 
             StringBuffer strOutScripts = new StringBuffer();
             String fileNameScripts = ".\\ConfigCVSStructure.conf";
-            for(int i=0;i < arrUsers.length;i++){
-                if(arrUsers[i][2] !=null && arrUsers[i][4] !=null ){
+            for (Cliente cliente: collectionCliente) {
+                if (cliente.getIoUser().getUser() != null && cliente.getIoUser().getUser() != null) {
                     //String userArray = arrUsers[i][2].toUpperCase()+"/"+arrUsers[i][4].toUpperCase();
-                    strOutScripts.append(arrUsers[i][2] + ";"); //
-                    strOutScripts.append(arrUsers[i][3] + ";"); //
-                    strOutScripts.append(arrUsers[i][5] + ";"); //
-                    strOutScripts.append(arrUsers[i][6] + ";"); //
-                    strOutScripts.append(arrUsers[i][1] + ";"); //
+                    strOutScripts.append(cliente.getIoUser().getUser() + ";"); //
+                    strOutScripts.append(cliente.getIoUser().getPass() + ";"); //
+                    strOutScripts.append(cliente.getItUser().getUser() + ";"); //
+                    strOutScripts.append(cliente.getItUser().getPass() + ";"); //
+                    strOutScripts.append(cliente.getConn() + ";"); //
 
-                    /*
-                    strOutScripts.append(cvsStruct.getBgUser().getUser() + ";"); //
-                    strOutScripts.append(cvsStruct.getBgUser().getPass() + ";"); //
+                    strOutScripts.append(cliente.getBgUser().getUser() + ";"); //
+                    strOutScripts.append(cliente.getBgUser().getPass() + ";"); //
 
-                    strOutScripts.append(cvsStruct.getExUser().getUser() + ";"); //
-                    strOutScripts.append(cvsStruct.getExUser().getPass() + ";"); //
+                    strOutScripts.append(cliente.getExUser().getUser() + ";"); //
+                    strOutScripts.append(cliente.getExUser().getPass() + ";"); //
 
-                    strOutScripts.append(cvsStruct.getIsUser().getUser() + ";"); //
-                    strOutScripts.append(cvsStruct.getIsUser().getPass() + ";"); //
+                    strOutScripts.append(cliente.getIsUser().getUser() + ";"); //
+                    strOutScripts.append(cliente.getIsUser().getPass() + ";"); //
 
-                    strOutScripts.append(cvsStruct.getDbUser().getUser() + ";"); //
-                    strOutScripts.append(cvsStruct.getDbUser().getPass() + ";"); //
+                    strOutScripts.append(cliente.getDbUser().getUser() + ";"); //
+                    strOutScripts.append(cliente.getDbUser().getPass() + ";"); //
 
-                    strOutScripts.append(cvsStruct.getCeUser().getUser() + ";"); //
-                    strOutScripts.append(cvsStruct.getCeUser().getPass() + ";"); //
+                    strOutScripts.append(cliente.getCeUser().getUser() + ";"); //
+                    strOutScripts.append(cliente.getCeUser().getPass() + ";"); //
 
-                    strOutScripts.append(cvsStruct.getCiUser().getUser() + ";"); //
-                    strOutScripts.append(cvsStruct.getCiUser().getPass()); //
-                     */
+                    strOutScripts.append(cliente.getCiUser().getUser() + ";"); //
+                    strOutScripts.append(cliente.getCiUser().getPass() + ";"); //
+
+                    strOutScripts.append(cliente.getCaiUser().getUser() + ";"); //
+                    strOutScripts.append(cliente.getCaiUser().getPass() + ";"); //
+
+                    strOutScripts.append(cliente.getAppsUser().getUser() + ";"); //
+                    strOutScripts.append(cliente.getAppsUser().getPass()); //
 
                     strOutScripts.append("\n");
                 }
@@ -1383,14 +1377,15 @@ public class JFrameCVS extends javax.swing.JFrame {
             //logMessage("Creating or appending to file " + fileNameScripts);
             try {
                 File fileScripts = new File(fileNameScripts);
-                if(!fileScripts.exists())
+                if (!fileScripts.exists()) {
                     fileScripts.createNewFile();
+                }
 
                 FileWriter fwScripts = new FileWriter(fileScripts, false);
-                fwScripts.write(strOutScripts.toString(),0,strOutScripts.length());
+                fwScripts.write(strOutScripts.toString(), 0, strOutScripts.length());
                 fwScripts.close();
             } catch (IOException ex) {
-                Logger.getLogger(JFrameCVS.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(CvsStructureFrame.class.getName()).log(Level.SEVERE, null, ex);
             }
             btSalvar.setEnabled(false);
             btCarregar.setEnabled(false);
@@ -1403,74 +1398,112 @@ public class JFrameCVS extends javax.swing.JFrame {
         btCarregar.setEnabled(false);
 }//GEN-LAST:event_btCarregarActionPerformed
 
-    private void jToggleButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton3ActionPerformed
+    private void btClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btClearActionPerformed
         this.cleanField();
-    }//GEN-LAST:event_jToggleButton3ActionPerformed
+    }//GEN-LAST:event_btClearActionPerformed
 
-    public void carregarUsuarios(){
+    public void carregarUsuarios() {
         String readLine = "";
-        String s_User = "";
-        String s_Pass = "";
-        String s_ItUser = "";
-        String s_ItPass = "";
-        String sChave = "";
-        String s_Conn = "";
 
-        //FileReader rd = new FileReader("c:\\texto3.txt");
-        //LineNumberReader scanner = new LineNumberReader(rd);
         model.removeAllElements();
         try {
             File fileT = new File(".\\ConfigCVSStructure.conf");
             FileInputStream file;
             file = new FileInputStream(fileT);
 
-            Scanner scanner	= new Scanner(file);
-            while (scanner.hasNext()){
+            Scanner scanner = new Scanner(file);
+            while (scanner.hasNext()) {
                 readLine = scanner.next();
 
-                //s_User = readLine.substring(0, readLine.indexOf(";"));
-                //s_Pass = readLine.substring(readLine.indexOf(";")+1, readLine.lastIndexOf(";"));
-                //s_Conn = readLine.substring(readLine.lastIndexOf(";")+1, readLine.length());
+                String arrUsersConf[] = readLine.split(";");
 
-                String ar[] = readLine.split(";");
-                s_User = ar[0];
-                s_Pass = ar[1];
-                s_ItUser = ar[2];
-                s_ItPass = ar[3];
-                s_Conn = ar[4];
-
-                arrUsers[contador][2] = s_User;
-                arrUsers[contador][3] = s_Pass;
-                arrUsers[contador][1] = s_Conn;
-                arrUsers[contador][5] = s_ItUser;
-                arrUsers[contador][6] = s_ItPass;
-
-                String sTNS = readLine.substring(readLine.lastIndexOf("SERVICE_NAME")+13, readLine.lastIndexOf(")))"));
+                String sTNS = readLine.substring(readLine.lastIndexOf("SERVICE_NAME") + 13, readLine.lastIndexOf(")))"));
                 String sSid = "";
-                if (readLine.lastIndexOf("SID") != -1){
-                    sSid = readLine.substring(readLine.lastIndexOf("SID")+4, readLine.lastIndexOf(")))"));
+                if (readLine.lastIndexOf("SID") != -1) {
+                    sSid = readLine.substring(readLine.lastIndexOf("SID") + 4, readLine.lastIndexOf(")))"));
                 }
-                String sHost = readLine.substring(readLine.lastIndexOf("HOST")+5, readLine.lastIndexOf(")(PORT"));
-                String sPort = readLine.substring(readLine.lastIndexOf("PORT")+5, readLine.lastIndexOf(")))("));
-                arrUsers[contador][4] = sTNS;
-                arrUsers[contador][7] = sHost;
-                arrUsers[contador][8] = sPort;
-                arrUsers[contador][9] = sSid;
-                model.addElement(s_User + "/" + sTNS);
-                contador += 1;
+                String sHost = readLine.substring(readLine.lastIndexOf("HOST") + 5, readLine.lastIndexOf(")(PORT"));
+                String sPort = readLine.substring(readLine.lastIndexOf("PORT") + 5, readLine.lastIndexOf(")))("));
+
+                Cliente cliente = new Cliente();
+                Usuario ioUser = new Usuario();
+                ioUser.setUser(arrUsersConf[0]);
+                ioUser.setPass(arrUsersConf[1]);
+                cliente.setIoUser(ioUser);
+
+                Usuario itUser = new Usuario();
+                itUser.setUser(arrUsersConf[2]);
+                itUser.setPass(arrUsersConf[3]);
+                cliente.setItUser(itUser);
+
+                Usuario bgUser = new Usuario();
+                bgUser.setUser("");
+                bgUser.setPass("");
+                cliente.setBgUser(bgUser);
+
+                Usuario bsUser = new Usuario();
+                bsUser.setUser("");
+                bsUser.setPass("");
+                cliente.setBsUser(bsUser);
+
+                Usuario isUser = new Usuario();
+                isUser.setUser("");
+                isUser.setPass("");
+                cliente.setIsUser(isUser);
+
+                Usuario ceUser = new Usuario();
+                ceUser.setUser("");
+                ceUser.setPass("");
+                cliente.setCeUser(ceUser);
+
+                Usuario ciUser = new Usuario();
+                ciUser.setUser("");
+                ciUser.setPass("");
+                cliente.setCiUser(ciUser);
+
+                Usuario exUser = new Usuario();
+                exUser.setUser("");
+                exUser.setPass("");
+                cliente.setExUser(exUser);
+
+                Usuario dbUser = new Usuario();
+                dbUser.setUser("");
+                dbUser.setPass("");
+                cliente.setDbUser(dbUser);
+
+                Usuario caiUser = new Usuario();
+                caiUser.setUser("");
+                caiUser.setPass("");
+                cliente.setCaiUser(caiUser);
+
+                Usuario appsUser = new Usuario();
+                appsUser.setUser("");
+                appsUser.setPass("");
+                cliente.setAppsUser(appsUser);
+
+                cliente.setDbLinkApps(sSid);
+                cliente.setDbLinkCai(sSid);
+
+                cliente.setConn(arrUsersConf[4]);
+                cliente.setService(sTNS);
+                cliente.setDataBase(sHost);
+                cliente.setPort(sPort);
+                collectionCliente.add(cliente);
+
+                model.addElement(cliente.getIoUser().getUser() + "/" + sTNS);
             }
             file.close();
 
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(JFrameCVS.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CvsStructureFrame.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-          Logger.getLogger(JFrameCVS.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CvsStructureFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    public void cleanField(){
-        txUser.setText("");
-        txPass.setText("");
+    public void cleanField() {
+        txIoUser.setText("");
+        txIoPass.setText("");
 
         txBGUser.setText("");
         txBGPass.setText("");
@@ -1501,53 +1534,52 @@ public class JFrameCVS extends javax.swing.JFrame {
         txService.setText("");
         txSid.setText("");
     }
-    private void jList1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jList1MouseClicked
-        String  sSelectedUser = jList1.getSelectedValue().toString();
+    private void jListUsuariosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jListUsuariosMouseClicked
+        String sSelectedUser = jListUsuarios.getSelectedValue().toString();
 
         this.cleanField();
-        for(int i=0;i < arrUsers.length;i++){
-            if(arrUsers[i][2] !=null && arrUsers[i][4] !=null ){
-                String userArray = arrUsers[i][2].toUpperCase()+"/"+arrUsers[i][4].toUpperCase();
-                if(userArray.toUpperCase().equals(sSelectedUser.toUpperCase())){
-                    //txUser.setText(arrUsers[i][1]);
-                    txUser.setText(arrUsers[i][2]);
-                    txPass.setText(arrUsers[i][3]);
-                    txService.setText(arrUsers[i][4]);
-                    txItUser.setText(arrUsers[i][5]);
-                    txItPass.setText(arrUsers[i][6]);
-                    txHost.setText(arrUsers[i][7]);
-                    txPort.setText(arrUsers[i][8]);
-                    txSid.setText(arrUsers[i][9]);
+        for (Cliente cliente: collectionCliente) {
+            if (cliente.getIoUser().getUser() != null) {
+                String userArray = cliente.getIoUser().getUser().toUpperCase() + "/" + cliente.getService().toUpperCase();
+                if (userArray.toUpperCase().equals(sSelectedUser.toUpperCase())) {
 
-                    /*
-                    txBGUser.setText(cvsStruct.getBgUser().getUser());
-                    txBGPass.setText(cvsStruct.getBgUser().getPass());
+                    txHost.setText(cliente.getDataBase());
+                    txPort.setText(cliente.getPort());
+                    txSid.setText(cliente.getService());
+                    txService.setText(cliente.getService());
 
-                    txBSUser.setText(cvsStruct.getBsUser().getUser());
-                    txBSPass.setText(cvsStruct.getBsUser().getPass());
+                    txIoUser.setText(cliente.getIoUser().getUser());
+                    txIoPass.setText(cliente.getIoUser().getPass());
 
-                    txCEUser.setText(cvsStruct.getCeUser().getUser());
-                    txCEPass.setText(cvsStruct.getCeUser().getPass());
+                    txItUser.setText(cliente.getItUser().getUser());
+                    txItPass.setText(cliente.getItUser().getPass());
 
-                    txCIUser.setText(cvsStruct.getCiUser().getUser());
-                    txCIPass.setText(cvsStruct.getCiUser().getPass());
+                    txBGUser.setText(cliente.getBgUser().getUser());
+                    txBGPass.setText(cliente.getBgUser().getPass());
 
-                    txDBUser.setText(cvsStruct.getDbUser().getUser());
-                    txDBPass.setText(cvsStruct.getDbUser().getPass());
+                    txBSUser.setText(cliente.getBsUser().getUser());
+                    txBSPass.setText(cliente.getBsUser().getPass());
 
-                    txEXUser.setText(cvsStruct.getExUser().getUser());
-                    txEXPass.setText(cvsStruct.getExUser().getPass());
+                    txCEUser.setText(cliente.getCeUser().getUser());
+                    txCEPass.setText(cliente.getCeUser().getPass());
 
-                    txISUser.setText(cvsStruct.getIsUser().getUser());
-                    txISPass.setText(cvsStruct.getIsUser().getPass());
+                    txCIUser.setText(cliente.getCiUser().getUser());
+                    txCIPass.setText(cliente.getCiUser().getPass());
 
-                    txCAIUser.setText(cvsStruct.getCaiUser().getUser());
-                    txCAIPass.setText(cvsStruct.getCaiUser().getPass());
+                    txDBUser.setText(cliente.getDbUser().getUser());
+                    txDBPass.setText(cliente.getDbUser().getPass());
 
-                    txAPPSUser.setText(cvsStruct.getAppsUser().getUser());
-                    txAPPSPass.setText(cvsStruct.getAppsUser().getPass());
-                    */
+                    txEXUser.setText(cliente.getExUser().getUser());
+                    txEXPass.setText(cliente.getExUser().getPass());
 
+                    txISUser.setText(cliente.getIsUser().getUser());
+                    txISPass.setText(cliente.getIsUser().getPass());
+
+                    txCAIUser.setText(cliente.getCaiUser().getUser());
+                    txCAIPass.setText(cliente.getCaiUser().getPass());
+
+                    txAPPSUser.setText(cliente.getAppsUser().getUser());
+                    txAPPSPass.setText(cliente.getAppsUser().getPass());
 
                     break;
                 }
@@ -1556,40 +1588,40 @@ public class JFrameCVS extends javax.swing.JFrame {
 
 //        Thread tThread = new Thread(new Runnable() {
 //        public void run() {
-            try {
-                ConnectionInout.disconnect();
-                ConnectionInout.initialize(txHost.getText().toString(), txUser.getText().toString(), txPass.getText().toString(), txPort.getText(), txService.getText());
-                modelInterfaces.removeAllElements();
-                ArrayList interfaces = cvsStruct.readInterfaces();
-                for(int i = 0; i < interfaces.size() ; i++){
-                    modelInterfaces.addElement(interfaces.get(i));
-                }
-                setArrInterfaces(interfaces);
-                ConnectionInout.disconnect();
-            }catch(Exception ex){
-                ex.printStackTrace();
+        try {
+            ConnectionInout.disconnect();
+            ConnectionInout.initialize(txHost.getText().toString(), txIoUser.getText().toString(), txIoPass.getText().toString(), txPort.getText(), txService.getText());
+            modelInterfaces.removeAllElements();
+            ArrayList interfaces = cvsStruct.readInterfaces();
+            for (int i = 0; i < interfaces.size(); i++) {
+                modelInterfaces.addElement(interfaces.get(i));
             }
+            setArrInterfaces(interfaces);
+            ConnectionInout.disconnect();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
 //        }
 //        });
 //         tThread.start();
 
-    }//GEN-LAST:event_jList1MouseClicked
+    }//GEN-LAST:event_jListUsuariosMouseClicked
 
     private void btTesteConexaoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btTesteConexaoActionPerformed
         try {
-            ConnectionInout.initialize(txHost.getText().toString(), txUser.getText().toString(), txPass.getText().toString(), txPort.getText(), txService.getText());
-            if( ConnectionInout.getConnection() != null ){
+            ConnectionInout.initialize(txHost.getText().toString(), txIoUser.getText().toString(), txIoPass.getText().toString(), txPort.getText(), txService.getText());
+            if (ConnectionInout.getConnection() != null) {
                 JOptionPane.showMessageDialog(null, "OK !");
-            }else{
+            } else {
                 JOptionPane.showMessageDialog(null, "Erro ao conectar !");
             }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, "Erro na conexão !" + ex.getMessage());
-        }finally{
+        } finally {
             try {
                 ConnectionInout.disconnect();
             } catch (SQLException ex) {
-                Logger.getLogger(JFrameCVS.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(CvsStructureFrame.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
 
@@ -1603,13 +1635,13 @@ public class JFrameCVS extends javax.swing.JFrame {
 
         int res = fc.showOpenDialog(null);
 
-        if(res == JFileChooser.APPROVE_OPTION){
+        if (res == JFileChooser.APPROVE_OPTION) {
             File diretorio = fc.getSelectedFile();
             //JOptionPane.showMessageDialog(null, "Voce escolheu o diretório: " + diretorio.getName());
             txCaminhoGeracao.setText(diretorio.getAbsolutePath());
-        }
-        else
+        } else {
             JOptionPane.showMessageDialog(null, "Voce nao selecionou nenhum diretorio.");
+        }
     }//GEN-LAST:event_btSearchActionPerformed
 
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
@@ -1617,7 +1649,7 @@ public class JFrameCVS extends javax.swing.JFrame {
         try {
             ConnectionInout.disconnect();
         } catch (SQLException ex) {
-            Logger.getLogger(JFrameCVS.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CvsStructureFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_formWindowClosed
 
@@ -1649,116 +1681,120 @@ public class JFrameCVS extends javax.swing.JFrame {
 
     private void txWhereInterfacesKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txWhereInterfacesKeyPressed
         modelInterfaces.removeAllElements();
-        for(int i = 0; i < getArrInterfaces().size() ; i++){
-            if(txWhereInterfaces.getText().equals("") || getArrInterfaces().get(i).toUpperCase().contains(txWhereInterfaces.getText().toUpperCase()) ){
+        for (int i = 0; i < getArrInterfaces().size(); i++) {
+            if (txWhereInterfaces.getText().equals("") || getArrInterfaces().get(i).toUpperCase().contains(txWhereInterfaces.getText().toUpperCase())) {
                 modelInterfaces.addElement(getArrInterfaces().get(i));
             }
         }
 }//GEN-LAST:event_txWhereInterfacesKeyPressed
 
     /**
-    * @param args the command line arguments
-    */
+     * @param args the command line arguments
+     */
     public static void main(final String args[]) {
 
         java.awt.EventQueue.invokeLater(new Runnable() {
+
             public void run() {
                 try {
                     validateCommandLine();
                 } catch (Exception ex) {
-                    Logger.getLogger(JFrameCVS.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(CvsStructureFrame.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
 
             private void validateCommandLine() throws Exception {
-                  CVSStructure cvsStruct = new CVSStructure();
-                  String sChave = null;
-                  String s_User = null;
-                  String s_Pass = null;
-                  String s_ItUser = null;
-                  String s_ItPass = null;
-                  String sRole  = null;
-                  String sDebug = "N";
-                  String sSessionSchema = null;
-                  String s_Conn = null;
+                CVSStructure cvsStruct = new CVSStructure();
+                String sChave = null;
+                String s_User = null;
+                String s_Pass = null;
+                String s_ItUser = null;
+                String s_ItPass = null;
+                String sRole = null;
+                String sDebug = "N";
+                String sSessionSchema = null;
+                String s_Conn = null;
 
-                  for (int i=0; i<args.length ;i++)
-                  {
-                        // valida parâmetro importacao
-                        //armazena o usuário e senha a utilizar durante o processamento
-                        sChave = "-user=";
-                        if (args[i].startsWith(sChave)) {
-                            String s_Usuario_Senha = args[i].substring(sChave.length(),args[i].length());
-                            s_User = s_Usuario_Senha.substring(0, s_Usuario_Senha.indexOf("/"));
-                            s_Pass = s_Usuario_Senha.substring(s_Usuario_Senha.indexOf("/")+1);
-                        }
-                        // Valida parametro CONN
-                        //armazena dados sobre o TNS
-                        sChave = "-conn=";
-                        if (args[i].startsWith(sChave))
-                            s_Conn = args[i].substring(sChave.length(),args[i].length());
+                for (int i = 0; i < args.length; i++) {
+                    // valida parâmetro importacao
+                    //armazena o usuário e senha a utilizar durante o processamento
+                    sChave = "-user=";
+                    if (args[i].startsWith(sChave)) {
+                        String s_Usuario_Senha = args[i].substring(sChave.length(), args[i].length());
+                        s_User = s_Usuario_Senha.substring(0, s_Usuario_Senha.indexOf("/"));
+                        s_Pass = s_Usuario_Senha.substring(s_Usuario_Senha.indexOf("/") + 1);
+                    }
+                    // Valida parametro CONN
+                    //armazena dados sobre o TNS
+                    sChave = "-conn=";
+                    if (args[i].startsWith(sChave)) {
+                        s_Conn = args[i].substring(sChave.length(), args[i].length());
+                    }
 
-                        //armazena o schema a utilizar durante o processamento corrente
-                        sChave = "-sessionschema=";
-                        if (args[i].startsWith(sChave))
-                            sSessionSchema = args[i].substring(sChave.length(),args[i].length());
+                    //armazena o schema a utilizar durante o processamento corrente
+                    sChave = "-sessionschema=";
+                    if (args[i].startsWith(sChave)) {
+                        sSessionSchema = args[i].substring(sChave.length(), args[i].length());
+                    }
 
-                        //armazena a ROLE utilizada durante o processamento
-                        sChave = "-role=";
-                        if (args[i].startsWith(sChave))
-                            sRole = args[i].substring(sChave.length(),args[i].length());
+                    //armazena a ROLE utilizada durante o processamento
+                    sChave = "-role=";
+                    if (args[i].startsWith(sChave)) {
+                        sRole = args[i].substring(sChave.length(), args[i].length());
+                    }
 
-                        //armazena a ROLE utilizada durante o processamento
-                        sChave = "-debug=";
-                        if (args[i].startsWith(sChave))
-                            sDebug = args[i].substring(sChave.length(),args[i].length());
-                  }
+                    //armazena a ROLE utilizada durante o processamento
+                    sChave = "-debug=";
+                    if (args[i].startsWith(sChave)) {
+                        sDebug = args[i].substring(sChave.length(), args[i].length());
+                    }
+                }
 
-                  if(s_Conn == null){
-                    new JFrameCVS().setVisible(true);
-                  }else{
-                            cvsStruct.s_Conn = s_Conn;
-                            cvsStruct.s_User = s_User;
-                            cvsStruct.s_Pass = s_Pass;
-                            cvsStruct.s_ItUser = s_ItUser;
-                            cvsStruct.s_ItPass = s_ItPass;
+                if (s_Conn == null) {
+                    new CvsStructureFrame().setVisible(true);
+                } else {
+                    cvsStruct.s_Conn = s_Conn;
+                    cvsStruct.s_User = s_User;
+                    cvsStruct.s_Pass = s_Pass;
+                    cvsStruct.s_ItUser = s_ItUser;
+                    cvsStruct.s_ItPass = s_ItPass;
 
-                            ArrayList arrChecks = new ArrayList();
-                            arrChecks.add("T");
+                    ArrayList arrChecks = new ArrayList();
+                    arrChecks.add("T");
 
-                            if(sDebug != null && !sDebug.equals("")){
-                                CVSStructure.sDebug = "S";
-                            }
+                    if (sDebug != null && !sDebug.equals("")) {
+                        CVSStructure.sDebug = "S";
+                    }
 
-                            // Utilizado para execução da interface sem a camada de apresentação visual
-                            //Conectando na Base do InOut
+                    // Utilizado para execução da interface sem a camada de apresentação visual
+                    //Conectando na Base do InOut
                             /*
-                            try {
-                                ConnectionInout.initialize(arrUsers[i][7], cvsStruct.s_User, cvsStruct.s_Pass, arrUsers[i][8], arrUsers[i][4]);
+                    try {
+                    ConnectionInout.initialize(arrUsers[i][7], cvsStruct.s_User, cvsStruct.s_Pass, arrUsers[i][8], arrUsers[i][4]);
 
-                                if( ConnectionInout.getConnection() == null ){
-                                    JOptionPane.showMessageDialog(null, "Erro ao conectar no inout !");
-                                }
-                            } catch (SQLException ex) {
-                                JOptionPane.showMessageDialog(null, "Erro na conexão inout !" + ex.getMessage());
-                            }
+                    if( ConnectionInout.getConnection() == null ){
+                    JOptionPane.showMessageDialog(null, "Erro ao conectar no inout !");
+                    }
+                    } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(null, "Erro na conexão inout !" + ex.getMessage());
+                    }
 
-                            //Conectando na Base de Integração
-                            if(cvsStruct.s_ItUser != null && !cvsStruct.s_ItUser.equals("")){
-                                try{
-                                    ConnectionIntegracao.initialize(arrUsers[i][7], cvsStruct.s_ItUser, cvsStruct.s_ItPass, arrUsers[i][8], arrUsers[i][4]);
+                    //Conectando na Base de Integração
+                    if(cvsStruct.s_ItUser != null && !cvsStruct.s_ItUser.equals("")){
+                    try{
+                    ConnectionIntegracao.initialize(arrUsers[i][7], cvsStruct.s_ItUser, cvsStruct.s_ItPass, arrUsers[i][8], arrUsers[i][4]);
 
-                                    if( ConnectionIntegracao.getConnection() == null ){
-                                        JOptionPane.showMessageDialog(null, "Erro ao conectar na integracao !");
-                                    }
-                                } catch (SQLException ex) {
-                                    JOptionPane.showMessageDialog(null, "Erro na conexão integração !" + ex.getMessage());
-                                }
-                            }
-                            cvsStruct.connectOracle(s_User, s_Pass);
-                             * */
-                            cvsStruct.spoolCVSStruture(arrChecks, null);
-                  }
+                    if( ConnectionIntegracao.getConnection() == null ){
+                    JOptionPane.showMessageDialog(null, "Erro ao conectar na integracao !");
+                    }
+                    } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(null, "Erro na conexão integração !" + ex.getMessage());
+                    }
+                    }
+                    cvsStruct.connectOracle(s_User, s_Pass);
+                     * */
+                    cvsStruct.spoolCVSStruture(arrChecks);
+                }
             }
         });
     }
@@ -1777,13 +1813,32 @@ public class JFrameCVS extends javax.swing.JFrame {
         this.arrInterfaces = arrInterfaces;
     }
 
-    public javax.swing.JCheckBox getChIntMapeamento(){
+    public javax.swing.JCheckBox getChIntMapeamento() {
         return chIntMapeamento;
     }
+
+    public void setTextArea(String textArea) {
+        this.textArea1.append(textArea);
+    }
+
+    public String getTxItUser() {
+        return this.txItUser.getText().toString();
+    }
+
+    public String getTxItPass() {
+        return this.txItPass.getText().toString();
+    }
+
+    public String getTxCaminhaGeracao() {
+        return this.txCaminhoGeracao.getText().toString();
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btAdd;
     private javax.swing.JToggleButton btCarregar;
     private javax.swing.JToggleButton btChekAll;
+    private javax.swing.JToggleButton btClear;
+    private javax.swing.JButton btExecutar;
     private javax.swing.JButton btRemover;
     private javax.swing.JToggleButton btSalvar;
     private javax.swing.JToggleButton btSearch;
@@ -1804,7 +1859,6 @@ public class JFrameCVS extends javax.swing.JFrame {
     private javax.swing.JCheckBox chSynonyms;
     private javax.swing.JCheckBox chTabelasTemporiarias;
     private javax.swing.JCheckBox chViews;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -1834,8 +1888,8 @@ public class JFrameCVS extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
-    private javax.swing.JList jList1;
     private javax.swing.JList jListInterfaces;
+    private javax.swing.JList jListUsuarios;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -1850,8 +1904,7 @@ public class JFrameCVS extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JToggleButton jToggleButton1;
-    private javax.swing.JToggleButton jToggleButton3;
-    private javax.swing.JTabbedPane painelOpcoes;
+    private javax.swing.JTabbedPane painelInterfaces;
     private java.awt.Panel panel1;
     private java.awt.TextArea textArea1;
     private javax.swing.JTextField txAPPSPass;
@@ -1876,13 +1929,14 @@ public class JFrameCVS extends javax.swing.JFrame {
     private java.awt.TextField txHost;
     private javax.swing.JTextField txISPass;
     private javax.swing.JTextField txISUser;
+    private java.awt.TextField txIoPass;
+    private java.awt.TextField txIoUser;
     private javax.swing.JTextField txItPass;
     private javax.swing.JTextField txItUser;
-    private java.awt.TextField txPass;
     private java.awt.TextField txPort;
     private java.awt.TextField txService;
     private java.awt.TextField txSid;
-    private java.awt.TextField txUser;
     private javax.swing.JTextField txWhereInterfaces;
     // End of variables declaration//GEN-END:variables
+
 }
