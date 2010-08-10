@@ -12,9 +12,9 @@ import java.io.IOException;
  *
  * @author ahdrein
  */
-public class Arquivo extends File{
+public class CvsStructureFile extends File{
 
-    public Arquivo(String fileName){
+    public CvsStructureFile(String fileName){
         super(fileName);
     }
 
@@ -24,14 +24,6 @@ public class Arquivo extends File{
         FileWriter fwScripts = new FileWriter(this, false);
         fwScripts.write(strOutScripts.toString(), 0, strOutScripts.length());
         fwScripts.close();
-    }
-
-    @Override
-    public boolean exists(){
-        if(this.exists()){
-            return true;
-        }
-        return false;
     }
 
 }
