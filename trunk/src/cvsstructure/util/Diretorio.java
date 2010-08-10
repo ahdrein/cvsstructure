@@ -8,6 +8,7 @@ package cvsstructure.util;
 import cvsstructure.model.Interface;
 import cvsstructure.model.Cliente;
 import cvsstructure.log.SfwLogger;
+import cvsstructure.CVSStructure;
 import java.io.File;
 import java.util.ArrayList;
 
@@ -17,7 +18,7 @@ import java.util.ArrayList;
  */
 public class Diretorio {
 
-    public static ArrayList dirScriptsValida = new ArrayList(2000);
+    public static ArrayList<String> dirScriptsValida = new ArrayList<String>(2000);
 
     private String tipoInterface;
     private ArrayList<String> dirScripts;
@@ -80,9 +81,9 @@ public class Diretorio {
         for (int i = 0; i < dirScripts.size(); i++) {
             File file = new File(dirScripts.get(i).toString());
             if (file.mkdir()) {
-                SfwLogger.saveLog("Diretorio criado com sucesso! " + dirScripts.get(i));
+                SfwLogger.debug("Diretorio criado com sucesso! " + dirScripts.get(i));
             } else {
-                SfwLogger.saveLog("Erro ao criar diretorio! " + dirScripts.get(i));
+                SfwLogger.log("Erro ao criar diretorio! " + dirScripts.get(i));
             }
         }
     }
@@ -152,15 +153,15 @@ public class Diretorio {
         for (int i = 0; i < dirScripts.size(); i++) {
             File file = new File(dirScripts.get(i).toString());
             if (file.mkdir()) {
-                SfwLogger.saveLog("Diretorio criado com sucesso! " + dirScripts.get(i));
+                SfwLogger.debug("Diretorio criado com sucesso! " + dirScripts.get(i));
             } else {
-                SfwLogger.saveLog("Erro ao criar diretorio! " + dirScripts.get(i));
+                SfwLogger.log("Erro ao criar diretorio! " + dirScripts.get(i));
             }
         }
     }
 
     public String getNomePasta(String tipo) {
-        if (tipo.equals("") || chNomePasta.equals("N")) {
+        if (tipo.equals("") || CVSStructure.chNomePasta.equals("N")) {
             return interfaces.getIdInterface();
         } else if (tipo.equals("IN")) {
             return interfaces.getIdSistema() + "_in_" + interfaces.getIdInterface();
