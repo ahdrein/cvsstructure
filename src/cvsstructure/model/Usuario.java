@@ -13,7 +13,7 @@ public class Usuario {
 
     private String user;
     private String pass;
-    private String conn;
+
 
     /**
      * @return the user
@@ -41,20 +41,6 @@ public class Usuario {
      */
     public void setPass(String pass) {
         this.pass = pass;
-    }
-
-    /**
-     * @return the conn
-     */
-    public String getConn() {
-        return conn;
-    }
-
-    /**
-     * @param conn the conn to set
-     */
-    public void setConn(String conn) {
-        this.conn = conn;
     }
 
 }

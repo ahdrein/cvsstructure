@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package cvsstructure.model;
 
 /**
@@ -10,8 +9,8 @@ package cvsstructure.model;
  * @author andrein
  */
 public class Cliente {
-    public static String userNameSys = "";
 
+    public static String userNameSys = "";
     private Usuario ioUser;
     private Usuario itUser;
     private Usuario bgUser;
@@ -25,6 +24,25 @@ public class Cliente {
     private Usuario appsUser;
     private String dbLinkCai;
     private String dbLinkApps;
+
+    private String conn;
+    private String dataBase;
+    private String tns;
+    private String port;
+    private String service;
+
+    private static Cliente instance;
+
+    static {
+        instance = new Cliente();
+    }
+
+    public Cliente() {
+    }
+
+    public static Cliente getInstance(){
+            return instance;
+    }
 
     /**
      * @return the ioUser
@@ -208,4 +226,73 @@ public class Cliente {
         this.dbLinkApps = dbLinkApps;
     }
 
+    /**
+     * @return the conn
+     */
+    public String getConn() {
+        return conn;
+    }
+
+    /**
+     * @param conn the conn to set
+     */
+    public void setConn(String conn) {
+        this.conn = conn;
+    }
+
+    /**
+     * @return the dataBase
+     */
+    public String getDataBase() {
+        return dataBase;
+    }
+
+    /**
+     * @param dataBase the dataBase to set
+     */
+    public void setDataBase(String dataBase) {
+        this.dataBase = dataBase;
+    }
+
+    /**
+     * @return the tns
+     */
+    public String getTns() {
+        return tns;
+    }
+
+    /**
+     * @param tns the tns to set
+     */
+    public void setTns(String tns) {
+        this.tns = tns;
+    }
+
+    /**
+     * @return the port
+     */
+    public String getPort() {
+        return port;
+    }
+
+    /**
+     * @param port the port to set
+     */
+    public void setPort(String port) {
+        this.port = port;
+    }
+
+    /**
+     * @return the service
+     */
+    public String getService() {
+        return service;
+    }
+
+    /**
+     * @param service the service to set
+     */
+    public void setService(String service) {
+        this.service = service;
+    }
 }
