@@ -1,22 +1,21 @@
 package cvsstructure.objects;
 
+import static cvsstructure.CVSStructure.QUEBRA_LINHA;
+import static cvsstructure.CVSStructure.chConexaoPorArquivos;
+import static cvsstructure.CVSStructure.chNomePasta;
 import cvsstructure.util.Diretorio;
 import cvsstructure.util.DataTableLayout;
 import cvsstructure.util.PrepararConsultas;
-import cvsstructure.CVSStructure;
 import cvsstructure.util.Estatisticas;
 import cvsstructure.database.ConnectionInout;
 import cvsstructure.database.ConnectionIntegracao;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import cvsstructure.log.SfwLogger;
 import cvsstructure.model.Cliente;
-import cvsstructure.util.Arquivo;
+import cvsstructure.util.CvsStructureFile;
 
 /*
  * To change this template, choose Tools | Templates
@@ -26,10 +25,11 @@ import cvsstructure.util.Arquivo;
  *
  * @author andrein
  */
-public class IntMapeamento {
+public class IntMapeamento extends Thread {
 
     private String idInterface = "";
     private String idSistema = "";
+    private String system;
     private static PreparedStatement psIntMapeamento = null;
     private static ResultSet rsIntMapeamento = null;
     private static PreparedStatement psIntMapeamentoColuna = null;
@@ -43,7 +43,15 @@ public class IntMapeamento {
     private static PreparedStatement psDadosInterface = null;
     private static ResultSet rsDadosInterface = null;
 
-    public IntMapeamento(String system, CVSStructure cvsStructure) throws IOException {
+    public IntMapeamento() {
+    }
+
+    public IntMapeamento(String system) {
+        this.system = system;
+    }
+
+    @Override
+    public void run() {
 
         // Informações InOut
         String executavel = "";
@@ -57,7 +65,7 @@ public class IntMapeamento {
         String fileNameScripts = "";
         String fileName = "";
 
-        Arquivo fileScripts;
+        CvsStructureFile fileScripts;
         StringBuilder strOutScripts;
 
         StringBuilder sbIntMapeamento = new StringBuilder();
@@ -125,8 +133,8 @@ public class IntMapeamento {
                             rsInterfaceDaTabela = psSistemaInterfaceDaTabela.executeQuery();
                             rsInterfaceDaTabela.next();
 
-                            if (!CVSStructure.id_sistema_it.equals("")) {
-                                if (CVSStructure.id_sistema_it.equals(rsInterfaceDaTabela.getString("ID_SISTEMA"))) {
+                            if (!cvsstructure.CVSStructure.id_sistema_it.equals("")) {
+                                if (cvsstructure.CVSStructure.id_sistema_it.equals(rsInterfaceDaTabela.getString("ID_SISTEMA"))) {
                                     sisFlag = false;
                                 }
                             }
@@ -162,50 +170,50 @@ public class IntMapeamento {
                         }
 
                         try {
-                            fileScripts = new Arquivo(fileNameScripts);
+                            fileScripts = new CvsStructureFile(fileNameScripts);
                             if (!fileScripts.exists()) {
-                                CVSStructure.logMessage("Creating or appending to file " + fileNameScripts);
+                                SfwLogger.log("Creating or appending to file " + fileNameScripts);
                             }
                             strOutScripts = new StringBuilder();
 
                             /******************************************
                              * Gerando arquivos na pasta de Scripts
                              ******************************************/
-                            if (CVSStructure.chConexaoPorArquivos.equals("S")) {
+                            if (chConexaoPorArquivos.equals("S")) {
                                 if (system.toUpperCase().equals("INOUT")) {
-                                    strOutScripts.append("conn &&INOUT_USER/&&INOUT_PASS@&&TNS" + CVSStructure.QUEBRA_LINHA + CVSStructure.QUEBRA_LINHA);
+                                    strOutScripts.append("conn &&INOUT_USER/&&INOUT_PASS@&&TNS" + QUEBRA_LINHA + QUEBRA_LINHA);
                                 } else {
-                                    strOutScripts.append("conn &&INTEGRACAO_USER/&&INTEGRACAO_PASS@&&TNS" + CVSStructure.QUEBRA_LINHA + CVSStructure.QUEBRA_LINHA);
+                                    strOutScripts.append("conn &&INTEGRACAO_USER/&&INTEGRACAO_PASS@&&TNS" + QUEBRA_LINHA + QUEBRA_LINHA);
                                 }
                             }
 
-                            strOutScripts.append(CVSStructure.QUEBRA_LINHA);
-                            strOutScripts.append("/*###############################" + CVSStructure.QUEBRA_LINHA);
-                            strOutScripts.append(rsIntMapeamento.getString("LAYOUT") + CVSStructure.QUEBRA_LINHA);
-                            strOutScripts.append("###############################*/" + CVSStructure.QUEBRA_LINHA);
-                            strOutScripts.append("--garante que não existirão registros duplicados" + CVSStructure.QUEBRA_LINHA);
-                            strOutScripts.append("declare" + CVSStructure.QUEBRA_LINHA);
-                            strOutScripts.append("    n_id   number := null;" + CVSStructure.QUEBRA_LINHA);
-                            strOutScripts.append("begin" + CVSStructure.QUEBRA_LINHA);
-                            strOutScripts.append("    select l.id into n_id" + CVSStructure.QUEBRA_LINHA);
-                            strOutScripts.append("      from int_mapeamento_layout l " + CVSStructure.QUEBRA_LINHA);
-                            strOutScripts.append("     where layout = '" + rsIntMapeamento.getString("LAYOUT") + "' " + CVSStructure.QUEBRA_LINHA);
-                            strOutScripts.append("       and api = '" + rsIntMapeamento.getString("API") + "'; " + CVSStructure.QUEBRA_LINHA);
-                            strOutScripts.append(CVSStructure.QUEBRA_LINHA);
-                            strOutScripts.append("    delete from int_mapeamento_coluna c where c.id = n_id;" + CVSStructure.QUEBRA_LINHA);
-                            strOutScripts.append("    delete from int_mapeamento_layout l where l.id = n_id;" + CVSStructure.QUEBRA_LINHA);
-                            strOutScripts.append(CVSStructure.QUEBRA_LINHA);
-                            strOutScripts.append("    EXCEPTION" + CVSStructure.QUEBRA_LINHA);
-                            strOutScripts.append("        WHEN NO_DATA_FOUND THEN" + CVSStructure.QUEBRA_LINHA);
-                            strOutScripts.append("             null;" + CVSStructure.QUEBRA_LINHA);
-                            strOutScripts.append("end;" + CVSStructure.QUEBRA_LINHA);
-                            strOutScripts.append("/" + CVSStructure.QUEBRA_LINHA);
-                            strOutScripts.append("insert into int_mapeamento_layout (id, layout, api, processa, ordem_processamento, tipo)" + CVSStructure.QUEBRA_LINHA);
-                            //strOutScripts.append("values ( seq_int_mapeamento_layout.nextval, '" + rsIntMapeamento.getString("LAYOUT") + "', '" + rsIntMapeamento.getString("API") + "', '" + rsIntMapeamento.getString("PROCESSA") + "', "+rsIntMapeamento.getString("ORDEM_PROCESSAMENTO")+", '"+rsIntMapeamento.getString("TIPO")+"');" + CVSStructure.QUEBRA_LINHA);
-                            strOutScripts.append("values ( " + rsIntMapeamento.getString("ID") + ", '" + rsIntMapeamento.getString("LAYOUT") + "', '" + rsIntMapeamento.getString("API") + "', '" + rsIntMapeamento.getString("PROCESSA") + "', " + rsIntMapeamento.getString("ORDEM_PROCESSAMENTO") + ", '" + rsIntMapeamento.getString("TIPO") + "');" + CVSStructure.QUEBRA_LINHA);
-                            strOutScripts.append(CVSStructure.QUEBRA_LINHA);
-                            strOutScripts.append("--inserções de relacionamento das tags contidas dentro da tag " + rsIntMapeamento.getString("API") + CVSStructure.QUEBRA_LINHA);
-                            strOutScripts.append("--relacionam a tag com uma coluna da tabela temporário do INOUT" + CVSStructure.QUEBRA_LINHA);
+                            strOutScripts.append(QUEBRA_LINHA);
+                            strOutScripts.append("/*###############################" + QUEBRA_LINHA);
+                            strOutScripts.append(rsIntMapeamento.getString("LAYOUT") + QUEBRA_LINHA);
+                            strOutScripts.append("###############################*/" + QUEBRA_LINHA);
+                            strOutScripts.append("--garante que não existirão registros duplicados" + QUEBRA_LINHA);
+                            strOutScripts.append("declare" + QUEBRA_LINHA);
+                            strOutScripts.append("    n_id   number := null;" + QUEBRA_LINHA);
+                            strOutScripts.append("begin" + QUEBRA_LINHA);
+                            strOutScripts.append("    select l.id into n_id" + QUEBRA_LINHA);
+                            strOutScripts.append("      from int_mapeamento_layout l " + QUEBRA_LINHA);
+                            strOutScripts.append("     where layout = '" + rsIntMapeamento.getString("LAYOUT") + "' " + QUEBRA_LINHA);
+                            strOutScripts.append("       and api = '" + rsIntMapeamento.getString("API") + "'; " + QUEBRA_LINHA);
+                            strOutScripts.append(QUEBRA_LINHA);
+                            strOutScripts.append("    delete from int_mapeamento_coluna c where c.id = n_id;" + QUEBRA_LINHA);
+                            strOutScripts.append("    delete from int_mapeamento_layout l where l.id = n_id;" + QUEBRA_LINHA);
+                            strOutScripts.append(QUEBRA_LINHA);
+                            strOutScripts.append("    EXCEPTION" + QUEBRA_LINHA);
+                            strOutScripts.append("        WHEN NO_DATA_FOUND THEN" + QUEBRA_LINHA);
+                            strOutScripts.append("             null;" + QUEBRA_LINHA);
+                            strOutScripts.append("end;" + QUEBRA_LINHA);
+                            strOutScripts.append("/" + QUEBRA_LINHA);
+                            strOutScripts.append("insert into int_mapeamento_layout (id, layout, api, processa, ordem_processamento, tipo)" + QUEBRA_LINHA);
+                            //strOutScripts.append("values ( seq_int_mapeamento_layout.nextval, '" + rsIntMapeamento.getString("LAYOUT") + "', '" + rsIntMapeamento.getString("API") + "', '" + rsIntMapeamento.getString("PROCESSA") + "', "+rsIntMapeamento.getString("ORDEM_PROCESSAMENTO")+", '"+rsIntMapeamento.getString("TIPO")+"');" + QUEBRA_LINHA);
+                            strOutScripts.append("values ( " + rsIntMapeamento.getString("ID") + ", '" + rsIntMapeamento.getString("LAYOUT") + "', '" + rsIntMapeamento.getString("API") + "', '" + rsIntMapeamento.getString("PROCESSA") + "', " + rsIntMapeamento.getString("ORDEM_PROCESSAMENTO") + ", '" + rsIntMapeamento.getString("TIPO") + "');" + QUEBRA_LINHA);
+                            strOutScripts.append(QUEBRA_LINHA);
+                            strOutScripts.append("--inserções de relacionamento das tags contidas dentro da tag " + rsIntMapeamento.getString("API") + QUEBRA_LINHA);
+                            strOutScripts.append("--relacionam a tag com uma coluna da tabela temporário do INOUT" + QUEBRA_LINHA);
 
                             if (psIntMapeamentoColuna == null) {
                                 if (system.toUpperCase().equals("INOUT")) {
@@ -217,12 +225,12 @@ public class IntMapeamento {
                             psIntMapeamentoColuna.setObject(1, rsIntMapeamento.getString("ID"));
                             //rsIntMapeamentoColuna = psIntMapeamentoColuna.executeQuery();
                             //while(rsIntMapeamentoColuna.next()){
-                            //    strOutScripts.append(CVSStructure.QUEBRA_LINHA);
-                            //    strOutScripts.append("insert into int_mapeamento_coluna (id, api_coluna, layout_coluna,layout_formula)" + CVSStructure.QUEBRA_LINHA);
+                            //    strOutScripts.append(QUEBRA_LINHA);
+                            //    strOutScripts.append("insert into int_mapeamento_coluna (id, api_coluna, layout_coluna,layout_formula)" + QUEBRA_LINHA);
                             //    if(rsIntMapeamentoColuna.getString("LAYOUT_FORMULA")==null || rsIntMapeamentoColuna.getString("LAYOUT_FORMULA").equals("") || rsIntMapeamentoColuna.getString("LAYOUT_FORMULA").equals("null")){
-                            //         strOutScripts.append("values (seq_int_mapeamento_layout.currval, '" + rsIntMapeamentoColuna.getString("API_COLUNA") + "', '" + rsIntMapeamentoColuna.getString("LAYOUT_COLUNA") + "', '');      " + CVSStructure.QUEBRA_LINHA);
+                            //         strOutScripts.append("values (seq_int_mapeamento_layout.currval, '" + rsIntMapeamentoColuna.getString("API_COLUNA") + "', '" + rsIntMapeamentoColuna.getString("LAYOUT_COLUNA") + "', '');      " + QUEBRA_LINHA);
                             //     }else{
-                            //         strOutScripts.append("values (seq_int_mapeamento_layout.currval, '" + rsIntMapeamentoColuna.getString("API_COLUNA") + "', '" + rsIntMapeamentoColuna.getString("LAYOUT_COLUNA") + "', '" + rsIntMapeamentoColuna.getString("LAYOUT_FORMULA") + "');      " + CVSStructure.QUEBRA_LINHA);
+                            //         strOutScripts.append("values (seq_int_mapeamento_layout.currval, '" + rsIntMapeamentoColuna.getString("API_COLUNA") + "', '" + rsIntMapeamentoColuna.getString("LAYOUT_COLUNA") + "', '" + rsIntMapeamentoColuna.getString("LAYOUT_FORMULA") + "');      " + QUEBRA_LINHA);
                             //     }
                             // }
 
@@ -230,29 +238,29 @@ public class IntMapeamento {
                                     "int_mapeamento_coluna",
                                     psIntMapeamentoColuna).create());
 
-                            strOutScripts.append(CVSStructure.QUEBRA_LINHA);
-                            strOutScripts.append("commit;" + CVSStructure.QUEBRA_LINHA);
+                            strOutScripts.append(QUEBRA_LINHA);
+                            strOutScripts.append("commit;" + QUEBRA_LINHA);
 
 
                             if (strOutScripts != null && !strOutScripts.toString().equals("")) {
                                 fileScripts.saveArquivo(strOutScripts);
 
                                 Estatisticas.nTotalIntMapeamento++;
-                                CVSStructure.logMessage("File " + fileNameScripts + " was succesfull generated.");
+                                SfwLogger.log("File " + fileNameScripts + " was succesfull generated.");
                             }
                         } catch (IOException ioex) {
-                            CVSStructure.logMessage("File " + fileNameScripts + " was error generated.");
-                            SfwLogger.saveLog(ioex.getClass().toString(), ioex.getStackTrace());
+                            SfwLogger.log("File " + fileNameScripts + " was error generated.");
+                            SfwLogger.debug(ioex.getClass().toString(), ioex.getStackTrace());
                             ioex.printStackTrace();
                         }
 
                     }
                 }
             } else {
-                SfwLogger.saveLog("Não encontrado a tabela INT_MAPEAMENTO_LAYOUT em " + system);
+                SfwLogger.log("Não encontrado a tabela INT_MAPEAMENTO_LAYOUT em " + system);
             }
         } catch (SQLException sqlex) {
-            SfwLogger.saveLog(sqlex.getClass().toString(), sqlex.getStackTrace());
+            SfwLogger.debug(sqlex.getClass().toString(), sqlex.getStackTrace());
             sqlex.printStackTrace();
         } finally {
             try {
@@ -275,7 +283,7 @@ public class IntMapeamento {
                     rsInterfaceDaTabela.close();
                 }
             } catch (SQLException sqlex) {
-                SfwLogger.saveLog(sqlex.getClass().toString(), sqlex.getStackTrace());
+                SfwLogger.debug(sqlex.getClass().toString(), sqlex.getStackTrace());
                 sqlex.printStackTrace();
             }
         }
@@ -288,7 +296,7 @@ public class IntMapeamento {
     public String getNomePasta(String tipo) {
         String pasta = "";
 
-        if (tipo.equals("") || CVSStructure.chNomePasta.equals("N")) {
+        if (tipo.equals("") || chNomePasta.equals("N")) {
             pasta = getIdInterface();
         } else if (tipo.equals("IN")) {
             pasta = getIdSistema() + "_in_" + getIdInterface();

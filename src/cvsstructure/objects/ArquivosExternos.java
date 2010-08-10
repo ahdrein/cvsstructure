@@ -5,11 +5,12 @@
 
 package cvsstructure.objects;
 
-import cvsstructure.CVSStructure;
+import static cvsstructure.CVSStructure.QUEBRA_LINHA;
+import static cvsstructure.CVSStructure.chNomePasta;
 import cvsstructure.log.SfwLogger;
 import cvsstructure.model.Cliente;
 import cvsstructure.model.Interface;
-import cvsstructure.util.Arquivo;
+import cvsstructure.util.CvsStructureFile;
 import cvsstructure.util.Diretorio;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -32,7 +33,7 @@ public class ArquivosExternos {
      * <b>Gerar scripts dos arquivos externos</b>
      **************************************************************************/
     private void ArquivosExternos() throws Exception {
-        Arquivo fileScripts;
+        CvsStructureFile fileScripts;
         StringBuilder strOutScripts = null;
         BufferedReader brScripts;
 
@@ -45,7 +46,7 @@ public class ArquivosExternos {
 
             int nTotalArquivos = this.interfaces.getCountInterfaceByExecutavel().getInt("TOTAL_ARQUIVOS");
 
-            rsArquivosExternos = new cvsstructure.model.ArquivosExternos().getArquivosExternosByNomeArquivo(this.interfaces.getExecutavel());
+            rsArquivosExternos = cvsstructure.model.ArquivosExternos.getInstance().getArquivosExternosByNomeArquivo(this.interfaces.getExecutavel());
 
             while (rsArquivosExternos.next()) {
 
@@ -68,33 +69,33 @@ public class ArquivosExternos {
                 } else {
                     fileNameScripts = Diretorio.path + "\\" + Cliente.userNameSys + "\\Scripts\\comum\\INOUT\\ArquivosExternos\\" + fileName;
                 }
-                //logMessage("Creating or appending to file " + fileName);
+                SfwLogger.log("Creating or appending to file " + fileName);
                 //fileName = ".\\"+sUserName+"\\Scripts\\" + IDInterface + " \\" fileName;
 
                 clob = rsArquivosExternos.getClob("CONTEUDO");
                 if (clob != null) {
                     try {
-                        fileScripts = new Arquivo(fileNameScripts);
+                        fileScripts = new CvsStructureFile(fileNameScripts);
                         if (!fileScripts.exists()) {
 
                             /******************************************
                              * Gerando arquivos na pasta de Scripts
                              ******************************************/
-                            //logMessage("Creating or appending to file " + fileNameScripts);
+                            SfwLogger.log("Creating or appending to file " + fileNameScripts);
 
                             strOutScripts = new StringBuilder();
                             String auxScripts;
 
-                            strOutScripts.append("conn &&INOUT_USER/&&INOUT_PASS@&&TNS" + CVSStructure.QUEBRA_LINHA + CVSStructure.QUEBRA_LINHA);
-                            strOutScripts.append("--  ///////" + CVSStructure.QUEBRA_LINHA);
-                            strOutScripts.append("--  ///////     Script Gerado a partir do Sistema Gerenciador de Interfaces IN-OUT" + CVSStructure.QUEBRA_LINHA);
-                            strOutScripts.append("--  ///////     Arquivo Externo: " + rsArquivosExternos.getString("NOME_ARQUIVO") + CVSStructure.QUEBRA_LINHA);
-                            strOutScripts.append("--  ///////" + CVSStructure.QUEBRA_LINHA + CVSStructure.QUEBRA_LINHA);
-                            strOutScripts.append("set define off" + CVSStructure.QUEBRA_LINHA + CVSStructure.QUEBRA_LINHA + CVSStructure.QUEBRA_LINHA + CVSStructure.QUEBRA_LINHA);
-                            strOutScripts.append("delete from ARQUIVO_EXTERNO where NOME_ARQUIVO = '" + rsArquivosExternos.getString("NOME_ARQUIVO") + "';" + CVSStructure.QUEBRA_LINHA + CVSStructure.QUEBRA_LINHA);
-                            strOutScripts.append("insert into ARQUIVO_EXTERNO" + CVSStructure.QUEBRA_LINHA);
-                            strOutScripts.append("(NOME_ARQUIVO, DESCRICAO, PATH_RELATIVO, CONTEUDO)" + CVSStructure.QUEBRA_LINHA);
-                            strOutScripts.append("values" + CVSStructure.QUEBRA_LINHA);
+                            strOutScripts.append("conn &&INOUT_USER/&&INOUT_PASS@&&TNS" + QUEBRA_LINHA + QUEBRA_LINHA);
+                            strOutScripts.append("--  ///////" + QUEBRA_LINHA);
+                            strOutScripts.append("--  ///////     Script Gerado a partir do Sistema Gerenciador de Interfaces IN-OUT" + QUEBRA_LINHA);
+                            strOutScripts.append("--  ///////     Arquivo Externo: " + rsArquivosExternos.getString("NOME_ARQUIVO") + QUEBRA_LINHA);
+                            strOutScripts.append("--  ///////" + QUEBRA_LINHA + QUEBRA_LINHA);
+                            strOutScripts.append("set define off" + QUEBRA_LINHA + QUEBRA_LINHA + QUEBRA_LINHA + QUEBRA_LINHA);
+                            strOutScripts.append("delete from ARQUIVO_EXTERNO where NOME_ARQUIVO = '" + rsArquivosExternos.getString("NOME_ARQUIVO") + "';" + QUEBRA_LINHA + QUEBRA_LINHA);
+                            strOutScripts.append("insert into ARQUIVO_EXTERNO" + QUEBRA_LINHA);
+                            strOutScripts.append("(NOME_ARQUIVO, DESCRICAO, PATH_RELATIVO, CONTEUDO)" + QUEBRA_LINHA);
+                            strOutScripts.append("values" + QUEBRA_LINHA);
 
                             // We access to stream, as this way we don't have to use the CLOB.length() which is slower...
                             brScripts = new BufferedReader(clob.getCharacterStream());
@@ -106,7 +107,7 @@ public class ArquivosExternos {
                                 auxScripts = auxScripts.replaceAll("@", "' || chr(64) || '");
                                 auxScripts = auxScripts.replaceAll("\t", "' '");
                                 //auxScripts = auxScripts.replaceAll(sQuebraLinha,  "' || chr(13) || '");
-                                auxScripts = auxScripts.replaceAll(CVSStructure.QUEBRA_LINHA, "' || chr(13) || CHR(10) ||'");
+                                auxScripts = auxScripts.replaceAll(QUEBRA_LINHA, "' || chr(13) || CHR(10) ||'");
                                 //auxScripts = auxScripts.replaceAll("|| '' ||",  "||");
 
                                 if (contador == 0) {
@@ -138,7 +139,7 @@ public class ArquivosExternos {
                                     //	maxLin += auxScripts.length();
                                     //}
                                     //if(!auxScripts.equals("")){
-                                    strOutScripts.append(CVSStructure.QUEBRA_LINHA + CVSStructure.QUEBRA_LINHA);
+                                    strOutScripts.append(QUEBRA_LINHA + QUEBRA_LINHA);
                                     strOutScripts.append("exec CONCATENA_CONTEUDO (");
                                     strOutScripts.append("'" + rsArquivosExternos.getString("NOME_ARQUIVO") + "'");
                                     strOutScripts.append(",");
@@ -157,45 +158,42 @@ public class ArquivosExternos {
                             //	strOutScripts.append("');");
                             //}
 
-                            strOutScripts.append(CVSStructure.QUEBRA_LINHA + CVSStructure.QUEBRA_LINHA);
+                            strOutScripts.append(QUEBRA_LINHA + QUEBRA_LINHA);
                             strOutScripts.append("commit;");
-                            strOutScripts.append(CVSStructure.QUEBRA_LINHA + CVSStructure.QUEBRA_LINHA + CVSStructure.QUEBRA_LINHA + CVSStructure.QUEBRA_LINHA);
+                            strOutScripts.append(QUEBRA_LINHA + QUEBRA_LINHA + QUEBRA_LINHA + QUEBRA_LINHA);
                             strOutScripts.append("set define on");
-                            strOutScripts.append(CVSStructure.QUEBRA_LINHA + CVSStructure.QUEBRA_LINHA);
-                            strOutScripts.append("-- //////" + CVSStructure.QUEBRA_LINHA);
-                            strOutScripts.append("-- //////  Fim do Script" + CVSStructure.QUEBRA_LINHA);
+                            strOutScripts.append(QUEBRA_LINHA + QUEBRA_LINHA);
+                            strOutScripts.append("-- //////" + QUEBRA_LINHA);
+                            strOutScripts.append("-- //////  Fim do Script" + QUEBRA_LINHA);
                             strOutScripts.append("-- //////");
 
                             if (strOutScripts != null) {
                                 fileScripts.saveArquivo(strOutScripts);
                             }
+                            SfwLogger.log("File " + fileNameScripts + " was succesfull generated.");
                         }
-
-                        //logMessage("File " + fileNameScripts + " was succesfull generated.");
                     } catch (IOException ioex) {
-                        //CVSStructure.logMessage("File " + fileNameScripts + " was error generated.");
-                        SfwLogger.saveLog(ioex.getClass().toString(), ioex.getStackTrace());
+                        SfwLogger.log("File " + fileNameScripts + " was error generated.");
+                        SfwLogger.debug(ioex.getClass().toString(), ioex.getStackTrace());
                         ioex.printStackTrace();
                     }
                 } else {
-                    //logMessage("No data are being generated");
-                    //logMessage("File " + fileName + " wasn't generated.");
-                    //logMessage("Error in the implementation of the interface with Id_Importação ");
+                    SfwLogger.log("No data are being generated");
+                    SfwLogger.log("File " + fileName + " wasn't generated.");
+                    SfwLogger.log("Error in the implementation of the interface with Id_Importação ");
                 }
-
-
             }
         } catch (Exception ex) {
-            //logMessage("Error generating " + fileName);
-            //logMessage(ex.getLocalizedMessage());
-            SfwLogger.saveLog(ex.getClass().toString(), ex.getStackTrace());
+            SfwLogger.log("Error generating " + fileName);
+            SfwLogger.log(ex.getLocalizedMessage());
+            SfwLogger.debug(ex.getClass().toString(), ex.getStackTrace());
         } finally {
             //rsCountInterface.close();
         }
     }
 
     public String getNomePasta(String tipo) {
-        if (tipo.equals("") || CVSStructure.chNomePasta.equals("N")) {
+        if (tipo.equals("") || chNomePasta.equals("N")) {
             return interfaces.getIdInterface();
         } else if (tipo.equals("IN")) {
             return interfaces.getIdSistema() + "_in_" + interfaces.getIdInterface();

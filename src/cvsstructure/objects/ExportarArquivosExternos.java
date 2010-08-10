@@ -2,35 +2,64 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package cvsstructure.objects;
+
+import static cvsstructure.CVSStructure.QUEBRA_LINHA;
+import static cvsstructure.CVSStructure.chNomePasta;
+import cvsstructure.log.SfwLogger;
+import cvsstructure.model.Cliente;
+import cvsstructure.model.Interface;
+import cvsstructure.util.CvsStructureFile;
+import cvsstructure.util.Diretorio;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.sql.Clob;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 /**
  *
  * @author ahdrein
  */
-public class ExportarArquivosExternos {
+public class ExportarArquivosExternos extends Thread {
+
+    Interface interfaces;
+    private PreparedStatement psExportarArquivosExternos;
+    private ResultSet rsArquivosExternos;
+
+    public ExportarArquivosExternos() {
+    }
+
+    public ExportarArquivosExternos(Interface interfaces) {
+        this.interfaces = interfaces;
+    }
+
     /**************************************************************************
      * <b>Gerar arquivos externos</b>
      **************************************************************************/
-    private void exportarArquivosExternos() throws Exception {
+    @Override
+    public void run() {
+        String fileName = null;
+        String fileNameScripts = null;
+        Clob clob;
 
         //psArquivosExternos = ConnectionInout.getConnection().prepareStatement(this.selectExportarArquivosExternos);
         try {
-            psExportarArquivosExternos.setString(1, executavel);
+            psExportarArquivosExternos = cvsstructure.model.ArquivosExternos.getInstance().getExportarArquivosExternosByNomeArquivo();
+            psExportarArquivosExternos.setString(1, interfaces.getExecutavel());
             rsArquivosExternos = psExportarArquivosExternos.executeQuery();
 
             while (rsArquivosExternos.next()) {
 
                 fileName = rsArquivosExternos.getString("NOME_ARQUIVO").toLowerCase();
-                if (tipoInterface.trim().equals("S")) {
-                    fileName = path + "\\" + Cliente.userNameSys + "\\Arquivos\\" + getNomePasta("OUT") + "\\INOUT\\ArquivosExternos\\" + fileName;
-                } else if (tipoInterface.trim().equals("E")) {
-                    fileName = path + "\\" + Cliente.userNameSys + "\\Arquivos\\" + getNomePasta("IN") + "\\INOUT\\ArquivosExternos\\" + fileName;
+                if (interfaces.getTipoInterface().trim().equals("S")) {
+                    fileName = Diretorio.path + "\\" + Cliente.userNameSys + "\\Arquivos\\" + getNomePasta("OUT") + "\\INOUT\\ArquivosExternos\\" + fileName;
+                } else if (interfaces.getTipoInterface().trim().equals("E")) {
+                    fileName = Diretorio.path + "\\" + Cliente.userNameSys + "\\Arquivos\\" + getNomePasta("IN") + "\\INOUT\\ArquivosExternos\\" + fileName;
                 } else {
-                    fileName = path + "\\" + Cliente.userNameSys + "\\Arquivos\\" + this.getIdInterface() + "\\INOUT\\ArquivosExternos\\" + fileName;
+                    fileName = Diretorio.path + "\\" + Cliente.userNameSys + "\\Arquivos\\" + interfaces.getIdInterface() + "\\INOUT\\ArquivosExternos\\" + fileName;
                 }
-                logMessage("Creating or appending to file " + fileName);
+                //logMessage("Creating or appending to file " + fileName);
                 //fileName = ".\\"+sUserName+"\\Scripts\\" + IDInterface + " \\" fileName;
 
                 clob = rsArquivosExternos.getClob("CONTEUDO");
@@ -38,7 +67,7 @@ public class ExportarArquivosExternos {
                     /******************************************
                      * Gerando arquivos na pasta de Arquivos
                      ******************************************/
-                    StringBuffer strOut = new StringBuffer();
+                    StringBuilder strOut = new StringBuilder();
                     String aux;
 
                     // We access to stream, as this way we don't have to use the CLOB.length() which is slower...
@@ -50,33 +79,40 @@ public class ExportarArquivosExternos {
                     }
 
                     try {
-                        File file = new File(fileName);
+                        CvsStructureFile file = new CvsStructureFile(fileName);
                         if (!file.exists()) {
-                            file.createNewFile();
+                            if (strOut != null) {
+                                file.saveArquivo(strOut);
+                            }
                         }
 
-                        FileWriter fw = new FileWriter(file, false);
-
-                        fw.write(strOut.toString(), 0, strOut.length());
-                        fw.close();
-
-                        logMessage("File " + fileName + " was succesfull generated.");
+                        //logMessage("File " + fileName + " was succesfull generated.");
 
                     } catch (IOException ioex) {
-                        CVSStructure.logMessage("File " + fileNameScripts + " was error generated.");
-                        SfwLogger.saveLog(ioex.getClass().toString(), ioex.getStackTrace());
+                        SfwLogger.log("File " + fileNameScripts + " was error generated.");
+                        SfwLogger.debug(ioex.getClass().toString(), ioex.getStackTrace());
                         ioex.printStackTrace();
                     }
                 } else {
-                    logMessage("No data are being generated");
-                    logMessage("File " + fileName + " wasn't generated.");
+                    //logMessage("No data are being generated");
+                    //logMessage("File " + fileName + " wasn't generated.");
                 }
             }
         } catch (Exception ex) {
-            logMessage("Error generating " + fileName);
-            logMessage(ex.getLocalizedMessage());
-            SfwLogger.saveLog(ex.getClass().toString(), ex.getStackTrace());
+            SfwLogger.log("Error generating " + fileName);
+            SfwLogger.log(ex.getLocalizedMessage());
+            SfwLogger.debug(ex.getClass().toString(), ex.getStackTrace());
         }
     }
 
+    public String getNomePasta(String tipo) {
+        if (tipo.equals("") || chNomePasta.equals("N")) {
+            return interfaces.getIdInterface();
+        } else if (tipo.equals("IN")) {
+            return interfaces.getIdSistema() + "_in_" + interfaces.getIdInterface();
+        } else if (tipo.equals("OUT")) {
+            return interfaces.getIdSistema() + "_out_" + interfaces.getIdInterface();
+        }
+        return "";
+    }
 }

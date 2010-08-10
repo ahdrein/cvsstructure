@@ -1,9 +1,11 @@
 package cvsstructure.objects;
 
+import static cvsstructure.CVSStructure.QUEBRA_LINHA;
+import static cvsstructure.CVSStructure.chConexaoPorArquivos;
+import static cvsstructure.CVSStructure.chNomePasta;
 import cvsstructure.util.Diretorio;
 import cvsstructure.util.Define;
 import cvsstructure.util.PrepararConsultas;
-import cvsstructure.CVSStructure;
 import cvsstructure.util.Estatisticas;
 import cvsstructure.database.ConnectionInout;
 import cvsstructure.database.ConnectionIntegracao;
@@ -25,6 +27,7 @@ public class Synonyms extends Thread {
 
     private String idInterface = "";
     private String idSistema = "";
+    private Cliente cliente;
     private PreparedStatement psArquivosSynonyms = null;
     private ResultSet rsArquivosSynonyms = null;
     private PreparedStatement psCountArquivosSynonyms = null;
@@ -35,11 +38,10 @@ public class Synonyms extends Thread {
     private ResultSet rsBatInterface = null;
     private ResultSet rsDadosInterface = null;
     private String system;
-    private CVSStructure cvsStructure;
 
-    public Synonyms(String system, CVSStructure cvsStructure) {
-        this.setSystem(system);
-        this.setCvsStructure(cvsStructure);
+    public Synonyms(String system, Cliente cliente) {
+        this.system = system;
+        this.cliente = cliente;
     }
 
     @Override
@@ -173,44 +175,44 @@ public class Synonyms extends Thread {
                         if (!fileScripts.exists()) {
                             fileScripts.createNewFile();
 
-                            CVSStructure.logMessage("Creating or appending to file " + fileNameScripts);
+                            SfwLogger.log("Creating or appending to file " + fileNameScripts);
 
                             strOutScripts = new StringBuilder();
 
                             /******************************************
                              * Gerando arquivos na pasta de Scripts
                              ******************************************/
-                            if (CVSStructure.chConexaoPorArquivos.equals("S")) {
+                            if (chConexaoPorArquivos.equals("S")) {
                                 if (getSystem().equals("INOUT")) {
-                                    strOutScripts.append("conn &&INOUT_USER/&&INOUT_PASS@&&TNS" + CVSStructure.QUEBRA_LINHA + CVSStructure.QUEBRA_LINHA);
+                                    strOutScripts.append("conn &&INOUT_USER/&&INOUT_PASS@&&TNS" + QUEBRA_LINHA + QUEBRA_LINHA);
                                 } else {
-                                    strOutScripts.append("conn &&INTEGRACAO_USER/&&INTEGRACAO_PASS@&&TNS" + CVSStructure.QUEBRA_LINHA + CVSStructure.QUEBRA_LINHA);
+                                    strOutScripts.append("conn &&INTEGRACAO_USER/&&INTEGRACAO_PASS@&&TNS" + QUEBRA_LINHA + QUEBRA_LINHA);
                                 }
                             }
 
-                            strOutScripts.append("-- Create the synonym" + CVSStructure.QUEBRA_LINHA);
-                            strOutScripts.append("create or replace synonym " + rsSynonyms.getString("SYNONYM_NAME") + CVSStructure.QUEBRA_LINHA);
+                            strOutScripts.append("-- Create the synonym" + QUEBRA_LINHA);
+                            strOutScripts.append("create or replace synonym " + rsSynonyms.getString("SYNONYM_NAME") + QUEBRA_LINHA);
 
                             String tableOwner = "";
                             if (rsSynonyms.getString("TABLE_OWNER") == null && rsSynonyms.getString("DB_LINK") == null) {
                                 tableOwner = "";
                             } else if (rsSynonyms.getString("TABLE_OWNER") == null && rsSynonyms.getString("DB_LINK") != null) {
                                 tableOwner = "";
-                            } else if (getCvsStructure().getIoUser().getUser().toUpperCase().equals(rsSynonyms.getString("TABLE_OWNER").toUpperCase()) || rsSynonyms.getString("TABLE_OWNER").toUpperCase().contains("IO")) {
+                            } else if (cliente.getIoUser().getUser().toUpperCase().equals(rsSynonyms.getString("TABLE_OWNER").toUpperCase()) || rsSynonyms.getString("TABLE_OWNER").toUpperCase().contains("IO")) {
                                 tableOwner = Define.INOUT_USER;
-                            } else if (getCvsStructure().getCeUser().getUser().toUpperCase().equals(rsSynonyms.getString("TABLE_OWNER").toUpperCase()) || rsSynonyms.getString("TABLE_OWNER").toUpperCase().contains("CE")) {
+                            } else if (cliente.getCeUser().getUser().toUpperCase().equals(rsSynonyms.getString("TABLE_OWNER").toUpperCase()) || rsSynonyms.getString("TABLE_OWNER").toUpperCase().contains("CE")) {
                                 tableOwner = Define.CAMBIO_EXP_USER;
-                            } else if (getCvsStructure().getCiUser().getUser().toUpperCase().equals(rsSynonyms.getString("TABLE_OWNER").toUpperCase()) || rsSynonyms.getString("TABLE_OWNER").toUpperCase().contains("CI")) {
+                            } else if (cliente.getCiUser().getUser().toUpperCase().equals(rsSynonyms.getString("TABLE_OWNER").toUpperCase()) || rsSynonyms.getString("TABLE_OWNER").toUpperCase().contains("CI")) {
                                 tableOwner = Define.CAMBIO_IMP_USER;
-                            } else if (getCvsStructure().getIsUser().getUser().toUpperCase().equals(rsSynonyms.getString("TABLE_OWNER").toUpperCase()) || rsSynonyms.getString("TABLE_OWNER").toUpperCase().contains("IS")) {
+                            } else if (cliente.getIsUser().getUser().toUpperCase().equals(rsSynonyms.getString("TABLE_OWNER").toUpperCase()) || rsSynonyms.getString("TABLE_OWNER").toUpperCase().contains("IS")) {
                                 tableOwner = Define.IMPORT_USER;
-                            } else if (getCvsStructure().getExUser().getUser().toUpperCase().equals(rsSynonyms.getString("TABLE_OWNER").toUpperCase()) || rsSynonyms.getString("TABLE_OWNER").toUpperCase().contains("EX")) {
+                            } else if (cliente.getExUser().getUser().toUpperCase().equals(rsSynonyms.getString("TABLE_OWNER").toUpperCase()) || rsSynonyms.getString("TABLE_OWNER").toUpperCase().contains("EX")) {
                                 tableOwner = Define.EXPORT_USER;
-                            } else if (getCvsStructure().getDbUser().getUser().toUpperCase().equals(rsSynonyms.getString("TABLE_OWNER").toUpperCase()) || rsSynonyms.getString("TABLE_OWNER").toUpperCase().contains("DB")) {
+                            } else if (cliente.getDbUser().getUser().toUpperCase().equals(rsSynonyms.getString("TABLE_OWNER").toUpperCase()) || rsSynonyms.getString("TABLE_OWNER").toUpperCase().contains("DB")) {
                                 tableOwner = Define.DRAWBACK_USER;
-                            } else if (getCvsStructure().getBsUser().getUser().toUpperCase().equals(rsSynonyms.getString("TABLE_OWNER").toUpperCase()) || rsSynonyms.getString("TABLE_OWNER").toUpperCase().contains("BS")) {
+                            } else if (cliente.getBsUser().getUser().toUpperCase().equals(rsSynonyms.getString("TABLE_OWNER").toUpperCase()) || rsSynonyms.getString("TABLE_OWNER").toUpperCase().contains("BS")) {
                                 tableOwner = Define.BROKER_USER;
-                            } else if (getCvsStructure().getItUser().getUser().toUpperCase().equals(rsSynonyms.getString("TABLE_OWNER").toUpperCase()) || rsSynonyms.getString("TABLE_OWNER").toUpperCase().contains("IT")) {
+                            } else if (cliente.getItUser().getUser().toUpperCase().equals(rsSynonyms.getString("TABLE_OWNER").toUpperCase()) || rsSynonyms.getString("TABLE_OWNER").toUpperCase().contains("IT")) {
                                 tableOwner = Define.INTEGRACAO_USER;
                             } else if (rsSynonyms.getString("TABLE_OWNER").toUpperCase().contains("APPS")) {
                                 tableOwner = Define.APPS_USER;
@@ -236,33 +238,32 @@ public class Synonyms extends Thread {
                                 }
 
                             }
-                            //strOutScripts.append(rsSynonyms.getString("DB_LINK") != null ? "@" + rsSynonyms.getString("DB_LINK") + CVSStructure.QUEBRA_LINHA : "");
-                            strOutScripts.append(";" + CVSStructure.QUEBRA_LINHA);
+                            //strOutScripts.append(rsSynonyms.getString("DB_LINK") != null ? "@" + rsSynonyms.getString("DB_LINK") + QUEBRA_LINHA : "");
+                            strOutScripts.append(";" + QUEBRA_LINHA);
 
                             fwScripts = new FileWriter(fileScripts, false);
                             fwScripts.write(strOutScripts.toString(), 0, strOutScripts.length());
                             fwScripts.close();
 
                             Estatisticas.nTotalSynonyms++;
-                            CVSStructure.logMessage("File " + fileNameScripts + " was succesfull generated.");
+                            SfwLogger.log("File " + fileNameScripts + " was succesfull generated.");
                         }
                     } catch (IOException ioex) {
-                        CVSStructure.logMessage("File " + fileNameScripts + " was error generated.");
-                        SfwLogger.saveLog(ioex.getClass().toString(), ioex.getStackTrace());
+                        SfwLogger.log("File " + fileNameScripts + " was error generated.");
+                        SfwLogger.debug(ioex.getClass().toString(), ioex.getStackTrace());
                         ioex.printStackTrace();
                     }
                 }
             }
         } catch (Exception ex) {
-            CVSStructure.logMessage("Error generating " + fileName);
-            CVSStructure.logMessage(ex.getLocalizedMessage());
-            SfwLogger.saveLog(ex.getClass().toString(), ex.getStackTrace());
+            SfwLogger.log(ex.getLocalizedMessage());
+            SfwLogger.debug(ex.getClass().toString(), ex.getStackTrace());
             ex.printStackTrace();
         } catch (Error e) {
             e.printStackTrace();
         } finally {
             try {
-                SfwLogger.debug("Fechando conexões Synonyms");
+                SfwLogger.log("Fechando conexões Synonyms");
                 if (psArquivosSynonyms != null) {
                     psArquivosSynonyms.close();
                 }
@@ -291,7 +292,7 @@ public class Synonyms extends Thread {
                     rsDadosInterface.close();
                 }
             } catch (SQLException sqlex) {
-                SfwLogger.log(sqlex);
+                SfwLogger.log(sqlex.getLocalizedMessage());
                 sqlex.printStackTrace();
             }
         }
@@ -304,7 +305,7 @@ public class Synonyms extends Thread {
     public String getNomePasta(String tipo) {
         String pasta = "";
 
-        if (tipo.equals("") || CVSStructure.chNomePasta.equals("N")) {
+        if (tipo.equals("") || chNomePasta.equals("N")) {
             pasta = getIdInterface();
         } else if (tipo.equals("IN")) {
             pasta = getIdSistema() + "_in_" + getIdInterface();
@@ -334,19 +335,5 @@ public class Synonyms extends Thread {
      */
     public void setSystem(String system) {
         this.system = system;
-    }
-
-    /**
-     * @return the cvsStructure
-     */
-    public CVSStructure getCvsStructure() {
-        return cvsStructure;
-    }
-
-    /**
-     * @param cvsStructure the cvsStructure to set
-     */
-    public void setCvsStructure(CVSStructure cvsStructure) {
-        this.cvsStructure = cvsStructure;
     }
 }
