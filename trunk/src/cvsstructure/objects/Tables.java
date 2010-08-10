@@ -1,17 +1,18 @@
 package cvsstructure.objects;
 
-import cvsstructure.CVSStructure;
+import static cvsstructure.CVSStructure.QUEBRA_LINHA;
+import static cvsstructure.CVSStructure.chConexaoPorArquivos;
 import cvsstructure.database.ConnectionInout;
 import cvsstructure.database.ConnectionIntegracao;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Clob;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import cvsstructure.log.SfwLogger;
-import cvsstructure.util.Arquivo;
+import cvsstructure.model.Cliente;
+import cvsstructure.util.CvsStructureFile;
 import cvsstructure.util.Estatisticas;
 
 /**
@@ -23,6 +24,7 @@ public class Tables {
     private Clob clob;
     private static PreparedStatement psTableSource = null;
     private ResultSet rsTableSource = null;
+    private Cliente cliente;
 
     //private static PreparedStatement psTablespace = null;
     //private static ResultSet rsTablespace = null;
@@ -33,7 +35,7 @@ public class Tables {
             String fileName,
             String fileNameScripts) {
 
-        Arquivo fileScripts;
+        CvsStructureFile fileScripts;
         FileWriter fwScripts;
         StringBuilder strOutScripts;
         BufferedReader brScripts;
@@ -43,7 +45,7 @@ public class Tables {
 
         try {
 
-            fileScripts = new Arquivo(fileNameScripts);
+            fileScripts = new CvsStructureFile(fileNameScripts);
             if (!fileScripts.exists()) {
 
                 strOutScripts = new StringBuilder();
@@ -83,11 +85,11 @@ public class Tables {
                     clob = rsTableSource.getClob("CONTEUDO");
 
                     if (clob != null) {
-                        if (CVSStructure.chConexaoPorArquivos.equals("S")) {
+                        if (chConexaoPorArquivos.equals("S")) {
                             if (system.equals("INOUT")) {
-                                strOutScripts.append("conn &&INOUT_USER/&&INOUT_PASS@&&TNS" + CVSStructure.QUEBRA_LINHA + CVSStructure.QUEBRA_LINHA);
+                                strOutScripts.append("conn &&INOUT_USER/&&INOUT_PASS@&&TNS" + QUEBRA_LINHA + QUEBRA_LINHA);
                             } else {
-                                strOutScripts.append("conn &&INTEGRACAO_USER/&&INTEGRACAO_PASS@&&TNS" + CVSStructure.QUEBRA_LINHA + CVSStructure.QUEBRA_LINHA);
+                                strOutScripts.append("conn &&INTEGRACAO_USER/&&INTEGRACAO_PASS@&&TNS" + QUEBRA_LINHA + QUEBRA_LINHA);
                             }
                         }
                         pcFree = false;
@@ -105,25 +107,25 @@ public class Tables {
                                     //for(String tablespace: arrTablespace){
                                     auxScripts = auxScripts.trim().toUpperCase().contains("CREATE GLOBAL TEMPORARY TABLE") ? auxScripts.replace("\"", "") : auxScripts;
                                     auxScripts = auxScripts.trim().toUpperCase().contains("CREATE TABLE") ? auxScripts.replace("\"", "") : auxScripts;
-                                    auxScripts = auxScripts.trim().replace(("\"" + CVSStructure.s_ItUser2 + "\".").toUpperCase(), "");
-                                    auxScripts = auxScripts.trim().toUpperCase().replace(CVSStructure.s_ItUser2.toUpperCase() + ".", "");
-                                    //.replace(("\""+CVSStructure.s_ItUser2+"\"").toUpperCase(), "&&INTEGRACAO_USER.")
-                                    //.replace(CVSStructure.s_ItUser2.toUpperCase(), "&&INTEGRACAO_USER");
+                                    auxScripts = auxScripts.trim().replace(("\"" + cliente.getItUser().getUser() + "\".").toUpperCase(), "");
+                                    auxScripts = auxScripts.trim().toUpperCase().replace(cliente.getItUser().getUser().toUpperCase() + ".", "");
+                                    //.replace(("\""+s_ItUser2+"\"").toUpperCase(), "&&INTEGRACAO_USER.")
+                                    //.replace(s_ItUser2.toUpperCase(), "&&INTEGRACAO_USER");
                                     //.replace(tablespace, "&&SFW_DATA_1M");
                                     //.substring(0, (auxScripts.indexOf("PCFREE") == -1 ? auxScripts.length() -1 : auxScripts.indexOf("PCFREE")));
                                     //}
-                                    strOutScripts.append(auxScripts + CVSStructure.QUEBRA_LINHA);
+                                    strOutScripts.append(auxScripts + QUEBRA_LINHA);
                                 }
                             }
                         }
-                        //strOutScripts.append(CVSStructure.QUEBRA_LINHA );
-                        //strOutScripts.append(CVSStructure.QUEBRA_LINHA);
-                        strOutScripts.append(";" + CVSStructure.QUEBRA_LINHA);
+                        //strOutScripts.append(QUEBRA_LINHA );
+                        //strOutScripts.append(QUEBRA_LINHA);
+                        strOutScripts.append(";" + QUEBRA_LINHA);
                         //strOutScripts.append("/");
                     } else {
-                        CVSStructure.logMessage("No data are being generated");
-                        CVSStructure.logMessage("File " + fileName + " wasn't generated.");
-                        CVSStructure.logMessage("Error in the implementation of the interface with Id_Importação ");
+                        SfwLogger.log("No data are being generated");
+                        SfwLogger.log("File " + fileName + " wasn't generated.");
+                        SfwLogger.log("Error in the implementation of the interface with Id_Importação ");
 
                     }
                 }
@@ -132,16 +134,16 @@ public class Tables {
                     fileScripts.saveArquivo(strOutScripts);
 
                     Estatisticas.nTotalTabelas++;
-                    CVSStructure.logMessage("File " + fileNameScripts + " was succesfull generated.");
+                    SfwLogger.log("File " + fileNameScripts + " was succesfull generated.");
                 }
             }
         } catch (IOException ioex) {
-            CVSStructure.logMessage("File " + fileNameScripts + " was error generated.");
-            SfwLogger.saveLog(ioex.getClass().toString(), ioex.getStackTrace());
+            SfwLogger.log("File " + fileNameScripts + " was error generated.");
+            SfwLogger.debug(ioex.getClass().toString(), ioex.getStackTrace());
             ioex.printStackTrace();
         } catch (Exception ex) {
-            CVSStructure.logMessage("File " + fileNameScripts + " was error generated.");
-            SfwLogger.saveLog(ex.getClass().toString(), ex.getStackTrace());
+            SfwLogger.log("File " + fileNameScripts + " was error generated.");
+            SfwLogger.debug(ex.getClass().toString(), ex.getStackTrace());
             ex.printStackTrace();
         }
 

@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package cvsstructure.objects;
 
 import cvsstructure.database.ConnectionInout;
@@ -11,27 +10,34 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 /**
- *
+ * <b>Exportar Tabelas sem vinculo com alguma interface</b>
  * @author ahdrein
  */
-public class TabInterfaceSemPermissao {
-    /**************************************************************************
-     * <b>Exportar Tabelas sem vinculo com alguma interface</b>
-     **************************************************************************/
-    private void TabInterfaceSemPermissao(Object[] selectInterfaces) {
+public class TabInterfaceSemPermissao extends Thread {
+
+    private Object[] selectInterfaces;
+
+    public TabInterfaceSemPermissao() {
+    }
+
+    public void TabInterfaceSemPermissao(Object[] selectInterfaces) {
+        this.selectInterfaces = selectInterfaces;
+    }
+
+    @Override
+    public void run() {
         try {
             String sSelectTabsSemPermissao = "select table_name from tab_interface tab where tab.table_name not in (select table_name from permissao_tabela)";
             PreparedStatement psTabsSemPermissao = ConnectionInout.getConnection().prepareStatement(sSelectTabsSemPermissao);
             ResultSet rsTabsSemPermissao = psTabsSemPermissao.executeQuery();
-       
+
             while (rsTabsSemPermissao.next()) {
                 new TabInterfaces(rsTabsSemPermissao.getString("TABLE_NAME"),
-                                  selectInterfaces);
+                        this.selectInterfaces);
             }
         } catch (Exception ex) {
             //logMessage(ex.getLocalizedMessage());
-            SfwLogger.saveLog(ex.getClass().toString(), ex.getStackTrace());
+            SfwLogger.debug(ex.getClass().toString(), ex.getStackTrace());
         }
     }
-
 }

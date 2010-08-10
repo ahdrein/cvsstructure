@@ -2,11 +2,11 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package cvsstructure.objects;
 
+import static cvsstructure.CVSStructure.QUEBRA_LINHA;
+import static cvsstructure.CVSStructure.chConexaoPorArquivos;
 import cvsstructure.util.PrepararConsultas;
-import cvsstructure.CVSStructure;
 import cvsstructure.util.Estatisticas;
 import cvsstructure.database.ConnectionInout;
 import cvsstructure.database.ConnectionIntegracao;
@@ -23,79 +23,78 @@ import cvsstructure.log.SfwLogger;
  * @author andrein
  */
 public class FunctionProcedure {
-	private PreparedStatement psUserSource = null;
-	private ResultSet rsUserSource = null;
+
+    private PreparedStatement psUserSource = null;
+    private ResultSet rsUserSource = null;
 
     public FunctionProcedure(String system,
-                             String tipo,
-                             String referenceName,
-                             String fileName,
-                             String fileNameScripts) throws IOException{
+            String tipo,
+            String referenceName,
+            String fileName,
+            String fileNameScripts) throws IOException {
 
-		File fileScripts;
-		FileWriter fwScripts;
-		StringBuilder strOutScripts = null;
-		BufferedReader brScripts;
+        File fileScripts;
+        FileWriter fwScripts;
+        StringBuilder strOutScripts = null;
+        BufferedReader brScripts;
 
-        try{
+        try {
             fileScripts = new File(fileNameScripts);
-            if(!fileScripts.exists()){
+            if (!fileScripts.exists()) {
 
                 strOutScripts = new StringBuilder();
 
-                if(system.equals("INOUT")){
+                if (system.equals("INOUT")) {
                     psUserSource = ConnectionInout.getConnection().prepareStatement(PrepararConsultas.getUserSurce().toString());
-                }else{
+                } else {
                     psUserSource = ConnectionIntegracao.getConnection().prepareStatement(PrepararConsultas.getUserSurce().toString());
                 }
 
-                
-                psUserSource.setString(1, tipo.toUpperCase() );
-                psUserSource.setString(2, referenceName.toUpperCase() );
+
+                psUserSource.setString(1, tipo.toUpperCase());
+                psUserSource.setString(2, referenceName.toUpperCase());
                 rsUserSource = psUserSource.executeQuery();
 
-                if(CVSStructure.chConexaoPorArquivos.equals("S")){
-                    if(system.equals("INOUT")){
-                        strOutScripts.append("conn &&INOUT_USER/&&INOUT_PASS@&&TNS" + CVSStructure.QUEBRA_LINHA + CVSStructure.QUEBRA_LINHA);
-                    }else{
-                        strOutScripts.append("conn &&INTEGRACAO_USER/&&INTEGRACAO_PASS@&&TNS" + CVSStructure.QUEBRA_LINHA + CVSStructure.QUEBRA_LINHA);
+                if (chConexaoPorArquivos.equals("S")) {
+                    if (system.equals("INOUT")) {
+                        strOutScripts.append("conn &&INOUT_USER/&&INOUT_PASS@&&TNS" + QUEBRA_LINHA + QUEBRA_LINHA);
+                    } else {
+                        strOutScripts.append("conn &&INTEGRACAO_USER/&&INTEGRACAO_PASS@&&TNS" + QUEBRA_LINHA + QUEBRA_LINHA);
                     }
                 }
 
-                while(rsUserSource.next()){
-                    if(rsUserSource.getString("TEXT").toLowerCase().contains("procedure") || rsUserSource.getString("TEXT").toLowerCase().contains("function")){
+                while (rsUserSource.next()) {
+                    if (rsUserSource.getString("TEXT").toLowerCase().contains("procedure") || rsUserSource.getString("TEXT").toLowerCase().contains("function")) {
                         strOutScripts.append(rsUserSource.getString("TEXT").toLowerCase().replace("procedure", "create or replace procedure").replace("function", "create or replace function"));
-                    }else{
+                    } else {
                         strOutScripts.append(rsUserSource.getString("TEXT"));
                     }
                 }
 
-                strOutScripts.append(CVSStructure.QUEBRA_LINHA);
+                strOutScripts.append(QUEBRA_LINHA);
                 strOutScripts.append("/");
 
-                if(strOutScripts != null && !strOutScripts.toString().equals("")){
+                if (strOutScripts != null && !strOutScripts.toString().equals("")) {
                     fileScripts.createNewFile();
 
                     fwScripts = new FileWriter(fileScripts, false);
-                    fwScripts.write(strOutScripts.toString(),0,strOutScripts.length());
+                    fwScripts.write(strOutScripts.toString(), 0, strOutScripts.length());
                     fwScripts.close();
 
                     Estatisticas.nTotalFunctionsProcedures++;
-                    CVSStructure.logMessage("File " + fileNameScripts + " was succesfull generated.");
+                    SfwLogger.log("File " + fileNameScripts + " was succesfull generated.");
                 }
 
             }
-        }catch(IOException ioex){
-            CVSStructure.logMessage("File " + fileNameScripts + " was error generated.");
-            SfwLogger.saveLog(ioex.getClass().toString(), ioex.getStackTrace());
+        } catch (IOException ioex) {
+            SfwLogger.log("File " + fileNameScripts + " was error generated.");
+            SfwLogger.debug(ioex.getClass().toString(), ioex.getStackTrace());
             ioex.printStackTrace();
-        }catch(Exception ex){
-            CVSStructure.logMessage("Error generating " + fileName);
-            CVSStructure.logMessage(ex.getLocalizedMessage());
-            SfwLogger.saveLog(ex.getClass().toString(), ex.getStackTrace());
+        } catch (Exception ex) {
+            SfwLogger.log("Error generating " + fileName);
+            SfwLogger.log(ex.getLocalizedMessage());
+            SfwLogger.debug(ex.getClass().toString(), ex.getStackTrace());
         }
 
     }
-
-
 }

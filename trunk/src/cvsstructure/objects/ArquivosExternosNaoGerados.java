@@ -5,22 +5,44 @@
 
 package cvsstructure.objects;
 
+import static cvsstructure.CVSStructure.QUEBRA_LINHA;
+import static cvsstructure.CVSStructure.chConexaoPorArquivos;
+import static cvsstructure.CVSStructure.chNomePasta;
 import cvsstructure.database.ConnectionInout;
+import cvsstructure.log.SfwLogger;
 import cvsstructure.model.Cliente;
-import cvsstructure.util.Arquivo;
+import cvsstructure.model.Interface;
+import cvsstructure.util.CvsStructureFile;
 import cvsstructure.util.Diretorio;
 import cvsstructure.util.PrepararConsultas;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.sql.Clob;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  *
  * @author ahdrein
  */
-public class ArquivosExternosNaoGerados {
+public class ArquivosExternosNaoGerados extends Thread{
     Cliente cliente;
+    Interface interfaces;
+
     private ResultSet rsGerarArquivosExternosNaoGerados;
     private PreparedStatement psCountArquivosExternosNaoGerados;
+    private ResultSet rsCountArquivosExternosNaoGerados;
+    private ResultSet rsSqlInterface;
+    private ResultSet rsBatInterface;
+    private ResultSet rsDadosInterface;
+    private PreparedStatement psGerarArquivosExternos;
+    private ResultSet rsArquivosExternos;
+    private Clob clob;
+
+    public ArquivosExternosNaoGerados() {
+
+    }
 
     public ArquivosExternosNaoGerados(Cliente cliente){
         this.cliente = cliente;
@@ -28,36 +50,39 @@ public class ArquivosExternosNaoGerados {
     /**************************************************************************
      * <b>Gerar scripts dos arquivos externos</b>
      **************************************************************************/
-    private void arquivosExternosNaoGerados() throws Exception {
-        Arquivo fileScripts;
+    @Override
+    public void run() {
+        CvsStructureFile fileScripts;
         StringBuilder strOutScripts;
-        String fileName;
-        String fileNameScripts;
+        String fileName = null;
+        String fileNameScripts = null;
+        BufferedReader brScripts;
+        
 
         try {
 
             try {
-                //logMessage("*** Drop table TMP_CVS_STRUCTURE ");
-                new cvsstructure.model.ArquivosExternos().dropTableTmpCvsStructure();
+                SfwLogger.log("*** Drop table TMP_CVS_STRUCTURE ");
+                cvsstructure.model.ArquivosExternos.getInstance().dropTableTmpCvsStructure();
             } catch (Exception ex) {
-                //logMessage("Error drop table TMP_CVS_STRUCTURE ");
-                //logMessage(ex.getLocalizedMessage());
+                SfwLogger.log("Error drop table TMP_CVS_STRUCTURE ");
+                SfwLogger.log(ex.getLocalizedMessage());
                 //SfwLogger.saveLog(ex.getClass().toString(), ex.getStackTrace());
             }
 
             try {
-                //logMessage("*** Create table TMP_CVS_STRUCTURE ");
-                new cvsstructure.model.ArquivosExternosNaoGerados().createTableCvsStructure();
-                new cvsstructure.model.ArquivosExternosNaoGerados().insertTableTmpCvsStructure(cliente.getIoUser().getUser());
+                SfwLogger.log("*** Create table TMP_CVS_STRUCTURE ");
+                cvsstructure.model.ArquivosExternosNaoGerados.getInstance().createTableCvsStructure();
+                cvsstructure.model.ArquivosExternosNaoGerados.getInstance().insertTableTmpCvsStructure(cliente.getIoUser().getUser());
             } catch (Exception ex) {
-                //logMessage("Error create table TMP_CVS_STRUCTURE ");
-                //logMessage(ex.getLocalizedMessage());
+                SfwLogger.log("Error create table TMP_CVS_STRUCTURE ");
+                SfwLogger.log(ex.getLocalizedMessage());
                 //SfwLogger.saveLog(ex.getClass().toString(), ex.getStackTrace());
             }
 
-            rsGerarArquivosExternosNaoGerados = new cvsstructure.model.ArquivosExternosNaoGerados().getArquivosExternosNaoGerados();
+            rsGerarArquivosExternosNaoGerados = cvsstructure.model.ArquivosExternosNaoGerados.getInstance().getArquivosExternosNaoGerados();
             while (rsGerarArquivosExternosNaoGerados.next()) {
-
+                interfaces = new Interface();
                 for (int i = 1; i <= 2; i++) {
 
                     psCountArquivosExternosNaoGerados = ConnectionInout.getConnection().prepareStatement(PrepararConsultas.getCountArquivosExternos().toString());
@@ -121,24 +146,24 @@ public class ArquivosExternosNaoGerados {
                         if (rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO").substring(rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO").indexOf(".") + 1, rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO").length()).equals("SQL")) {
                             rsSqlInterface = PrepararConsultas.getSqlInterface(rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO"));
                             while (rsSqlInterface.next()) {
-                                idInterface = rsSqlInterface.getString("ID_INTERFACE");
+                                interfaces.setIdInterface( rsSqlInterface.getString("ID_INTERFACE") );
                             }
                         } else {
                             rsBatInterface = PrepararConsultas.getBatInterface(rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO"));
                             while (rsBatInterface.next()) {
-                                idInterface = rsBatInterface.getString("ID_INTERFACE");
+                                interfaces.setIdInterface( rsBatInterface.getString("ID_INTERFACE") );
                             }
                         }
 
-                        rsDadosInterface = PrepararConsultas.getDadosInterface(idInterface);
+                        rsDadosInterface = PrepararConsultas.getDadosInterface(interfaces.getIdInterface());
                         while (rsDadosInterface.next()) {
-                            executavel = rsDadosInterface.getString("EXECUTAVEL");
-                            tipoInterface = rsDadosInterface.getString("TIPO_INTERFACE");
-                            idSistema = rsDadosInterface.getString("ID_SISTEMA").toLowerCase();
-                            descricao = rsDadosInterface.getString("DESCRICAO");
+                            interfaces.setExecutavel(rsDadosInterface.getString("EXECUTAVEL"));
+                            interfaces.setTipoInterface(rsDadosInterface.getString("TIPO_INTERFACE"));
+                            interfaces.setIdSistema(rsDadosInterface.getString("ID_SISTEMA").toLowerCase());
+                            interfaces.setDescricao(rsDadosInterface.getString("DESCRICAO"));
                             //sUserNameApp = rsDadosInterface.getString("USERNAME");
-                            tempoMedio = rsDadosInterface.getString("TEMPO_MEDIO");
-                            executavelCompl = rsDadosInterface.getString("EXECUTAVELCOMPL");
+                            interfaces.setTempoMedio(rsDadosInterface.getString("TEMPO_MEDIO"));
+                            interfaces.setExecutavelCompl(rsDadosInterface.getString("EXECUTAVELCOMPL"));
                         }
 
                         String nomeArquivo = "";
@@ -148,64 +173,64 @@ public class ArquivosExternosNaoGerados {
                             nomeArquivo = rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO").toLowerCase().substring(0, rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO").indexOf(".") - 1);
                         }
 
-                        if (tipoInterface.trim().equals("S")) {
+                        if (interfaces.getTipoInterface().trim().equals("S")) {
                             if (tipoArquivo.equals("bat")) {
                                 fileName = nomeArquivo + "." + tipoArquivo + ".sql";
-                                fileNameScripts = path + "\\" + Cliente.userNameSys + "\\Scripts\\" + getNomePasta("OUT") + "\\INOUT\\ArquivosExternos\\" + fileName;
+                                fileNameScripts = Diretorio.path + "\\" + Cliente.userNameSys + "\\Scripts\\" + getNomePasta("OUT") + "\\INOUT\\ArquivosExternos\\" + fileName;
                             } else if (tipoArquivo.equals("sql")) {
                                 fileName = nomeArquivo + "." + tipoArquivo;
-                                fileNameScripts = path + "\\" + Cliente.userNameSys + "\\Scripts\\" + getNomePasta("OUT") + "\\INOUT\\ArquivosExternos\\" + fileName;
+                                fileNameScripts = Diretorio.path + "\\" + Cliente.userNameSys + "\\Scripts\\" + getNomePasta("OUT") + "\\INOUT\\ArquivosExternos\\" + fileName;
                             } else if (tipoArquivo.equals("function")) {
                                 fileName = nomeArquivo + ".sql";
-                                fileNameScripts = path + "\\" + Cliente.userNameSys + "\\Scripts\\" + getNomePasta("OUT") + "\\INTEGRACAO\\Function\\" + fileName;
+                                fileNameScripts = Diretorio.path + "\\" + Cliente.userNameSys + "\\Scripts\\" + getNomePasta("OUT") + "\\INTEGRACAO\\Function\\" + fileName;
                             } else if (tipoArquivo.equals("procedure")) {
                                 fileName = nomeArquivo + ".sql";
-                                fileNameScripts = path + "\\" + Cliente.userNameSys + "\\Scripts\\" + getNomePasta("OUT") + "\\INTEGRACAO\\Procedure\\" + fileName;
+                                fileNameScripts = Diretorio.path + "\\" + Cliente.userNameSys + "\\Scripts\\" + getNomePasta("OUT") + "\\INTEGRACAO\\Procedure\\" + fileName;
                             } else if (tipoArquivo.equals("package")) {
                                 fileName = nomeArquivo + ".sql";
-                                fileNameScripts = path + "\\" + Cliente.userNameSys + "\\Scripts\\" + getNomePasta("OUT") + "\\INTEGRACAO\\Package\\" + fileName;
+                                fileNameScripts = Diretorio.path + "\\" + Cliente.userNameSys + "\\Scripts\\" + getNomePasta("OUT") + "\\INTEGRACAO\\Package\\" + fileName;
                             }
-                        } else if (tipoInterface.trim().equals("E")) {
+                        } else if (interfaces.getTipoInterface().trim().equals("E")) {
                             if (tipoArquivo.equals("bat")) {
                                 fileName = nomeArquivo + "." + tipoArquivo + ".sql";
-                                fileNameScripts = path + "\\" + Cliente.userNameSys + "\\Scripts\\" + getNomePasta("IN") + "\\INOUT\\ArquivosExternos\\" + fileName;
+                                fileNameScripts = Diretorio.path + "\\" + Cliente.userNameSys + "\\Scripts\\" + getNomePasta("IN") + "\\INOUT\\ArquivosExternos\\" + fileName;
                             } else if (tipoArquivo.equals("sql")) {
                                 fileName = nomeArquivo + "." + tipoArquivo;
-                                fileNameScripts = path + "\\" + Cliente.userNameSys + "\\Scripts\\" + getNomePasta("IN") + "\\INOUT\\ArquivosExternos\\" + fileName;
+                                fileNameScripts = Diretorio.path + "\\" + Cliente.userNameSys + "\\Scripts\\" + getNomePasta("IN") + "\\INOUT\\ArquivosExternos\\" + fileName;
                             } else if (tipoArquivo.equals("function")) {
                                 fileName = nomeArquivo + ".sql";
-                                fileNameScripts = path + "\\" + Cliente.userNameSys + "\\Scripts\\" + getNomePasta("IN") + "\\INOUT\\Function\\" + fileName;
+                                fileNameScripts = Diretorio.path + "\\" + Cliente.userNameSys + "\\Scripts\\" + getNomePasta("IN") + "\\INOUT\\Function\\" + fileName;
                             } else if (tipoArquivo.equals("procedure")) {
                                 fileName = nomeArquivo + ".sql";
-                                fileNameScripts = path + "\\" + Cliente.userNameSys + "\\Scripts\\" + getNomePasta("IN") + "\\INOUT\\Procedure\\" + fileName;
+                                fileNameScripts = Diretorio.path + "\\" + Cliente.userNameSys + "\\Scripts\\" + getNomePasta("IN") + "\\INOUT\\Procedure\\" + fileName;
                             } else if (tipoArquivo.equals("package")) {
                                 fileName = nomeArquivo + ".sql";
-                                fileNameScripts = path + "\\" + Cliente.userNameSys + "\\Scripts\\" + getNomePasta("IN") + "\\INOUT\\Package\\" + fileName;
+                                fileNameScripts = Diretorio.path + "\\" + Cliente.userNameSys + "\\Scripts\\" + getNomePasta("IN") + "\\INOUT\\Package\\" + fileName;
                             }
                         } else {
                             //fileNameScripts = ".\\"+sUserName+"\\Scripts\\" + this.getIDInterface() + "\\INOUT\\ArquivosExternos\\" + fileName;
                             if (tipoArquivo.equals("bat")) {
                                 fileName = nomeArquivo + "." + tipoArquivo + ".sql";
-                                fileNameScripts = path + "\\" + Cliente.userNameSys + "\\Scripts\\" + this.getIdInterface() + "\\INOUT\\ArquivosExternos\\" + fileName;
+                                fileNameScripts = Diretorio.path + "\\" + Cliente.userNameSys + "\\Scripts\\" + interfaces.getIdInterface() + "\\INOUT\\ArquivosExternos\\" + fileName;
                             } else if (tipoArquivo.equals("sql")) {
                                 fileName = nomeArquivo + "." + tipoArquivo;
-                                fileNameScripts = path + "\\" + Cliente.userNameSys + "\\Scripts\\" + this.getIdInterface() + "\\INOUT\\ArquivosExternos\\" + fileName;
+                                fileNameScripts = Diretorio.path + "\\" + Cliente.userNameSys + "\\Scripts\\" + interfaces.getIdInterface() + "\\INOUT\\ArquivosExternos\\" + fileName;
                             } else if (tipoArquivo.equals("function")) {
                                 fileName = nomeArquivo + ".sql";
-                                fileNameScripts = path + "\\" + Cliente.userNameSys + "\\Scripts\\" + this.getIdInterface() + "\\INOUT\\Function\\" + fileName;
+                                fileNameScripts = Diretorio.path + "\\" + Cliente.userNameSys + "\\Scripts\\" + interfaces.getIdInterface() + "\\INOUT\\Function\\" + fileName;
                             } else if (tipoArquivo.equals("procedure")) {
                                 fileName = nomeArquivo + ".sql";
-                                fileNameScripts = path + "\\" + Cliente.userNameSys + "\\Scripts\\" + this.getIdInterface() + "\\INOUT\\Procedure\\" + fileName;
+                                fileNameScripts = Diretorio.path + "\\" + Cliente.userNameSys + "\\Scripts\\" + interfaces.getIdInterface() + "\\INOUT\\Procedure\\" + fileName;
                             } else if (tipoArquivo.equals("package")) {
                                 fileName = nomeArquivo + ".sql";
-                                fileNameScripts = path + "\\" + Cliente.userNameSys + "\\Scripts\\" + this.getIdInterface() + "\\INOUT\\Package\\" + fileName;
+                                fileNameScripts = Diretorio.path + "\\" + Cliente.userNameSys + "\\Scripts\\" + interfaces.getIdInterface() + "\\INOUT\\Package\\" + fileName;
                             }
                         }
                     }
 
-                    logMessage("Creating or appending to file " + fileNameScripts);
+                    SfwLogger.log("Creating or appending to file " + fileNameScripts);
 
-                    strOutScripts = new StringBuffer();
+                    strOutScripts = new StringBuilder();
                     String auxScripts;
 
                     if (tipoArquivo.equals("bat") || tipoArquivo.equals("sql")) {
@@ -213,11 +238,8 @@ public class ArquivosExternosNaoGerados {
                         rsArquivosExternos = psGerarArquivosExternos.executeQuery();
 
                         try {
-                            fileScripts = new File(fileNameScripts);
+                            fileScripts = new CvsStructureFile(fileNameScripts);
                             if (!fileScripts.exists()) {
-                                fileScripts.createNewFile();
-
-                                fwScripts = new FileWriter(fileScripts, false);
 
                                 while (rsArquivosExternos.next()) {
                                     clob = rsArquivosExternos.getClob("CONTEUDO");
@@ -257,7 +279,7 @@ public class ArquivosExternosNaoGerados {
                                                 strOutScripts.append("('" + rsArquivosExternos.getString("NOME_ARQUIVO") + "'");
                                                 strOutScripts.append(",");
                                                 if (rsArquivosExternos.getString("NOME_ARQUIVO") == null) {
-                                                    strOutScripts.append("'" + (descricao.length() > 50 ? descricao.substring(0, 50) : descricao.trim()) + "'");
+                                                    strOutScripts.append("'" + (interfaces.getDescricao().length() > 50 ? interfaces.getDescricao().substring(0, 50) : interfaces.getDescricao().trim()) + "'");
                                                 } else {
                                                     strOutScripts.append("'" + rsArquivosExternos.getString("NOME_ARQUIVO") + "'");
                                                 }
@@ -290,23 +312,20 @@ public class ArquivosExternosNaoGerados {
                                         strOutScripts.append("-- //////  Fim do Script" + QUEBRA_LINHA);
                                         strOutScripts.append("-- //////");
                                     } else {
-                                        logMessage("No data are being generated");
-                                        logMessage("File " + fileName + " wasn't generated.");
-                                        logMessage("Error in the implementation of the interface with Id_Importação " + idInterface);
-
+                                        SfwLogger.log("File " + fileName + " wasn't generated.");
                                     }
                                 }
 
                                 if (strOutScripts != null) {
-                                    fwScripts.write(strOutScripts.toString(), 0, strOutScripts.length());
+                                    fileScripts.saveArquivo(strOutScripts);
                                 }
-                                fwScripts.close();
+                                
 
-                                logMessage("File " + fileNameScripts + " was succesfull generated.");
+                                SfwLogger.log("File " + fileNameScripts + " was succesfull generated.");
                             }
                         } catch (IOException ioex) {
-                            CVSStructure.logMessage("File " + fileNameScripts + " was error generated.");
-                            SfwLogger.saveLog(ioex.getClass().toString(), ioex.getStackTrace());
+                            SfwLogger.log("File " + fileNameScripts + " was error generated.");
+                            SfwLogger.debug(ioex.getClass().toString(), ioex.getStackTrace());
                             ioex.printStackTrace();
                         }
 
@@ -332,13 +351,27 @@ public class ArquivosExternosNaoGerados {
                 }
             }
         } catch (Exception ex) {
-            logMessage("Error generating " + fileName);
-            logMessage(ex.getLocalizedMessage());
-            SfwLogger.saveLog(ex.getClass().toString(), ex.getStackTrace());
+            SfwLogger.log("Error generating " + fileName);
+            SfwLogger.log(ex.getLocalizedMessage());
+            SfwLogger.debug(ex.getClass().toString(), ex.getStackTrace());
         } finally {
-            psDropTableIT = ConnectionInout.getConnection().prepareStatement("drop table TMP_CVS_STRUCTURE");
-            psDropTableIT.executeQuery();
+            try {
+                cvsstructure.model.ArquivosExternos.getInstance().dropTableTmpCvsStructure();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
         }
+    }
+
+    public String getNomePasta(String tipo) {
+        if (tipo.equals("") || chNomePasta.equals("N")) {
+            return interfaces.getIdInterface();
+        } else if (tipo.equals("IN")) {
+            return interfaces.getIdSistema() + "_in_" + interfaces.getIdInterface();
+        } else if (tipo.equals("OUT")) {
+            return interfaces.getIdSistema() + "_out_" + interfaces.getIdInterface();
+        }
+        return "";
     }
 
 }

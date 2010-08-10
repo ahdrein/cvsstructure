@@ -1,12 +1,12 @@
 package cvsstructure.objects;
 
 import cvsstructure.util.Diretorio;
-import cvsstructure.CVSStructure;
+import static cvsstructure.CVSStructure.QUEBRA_LINHA;
+import static cvsstructure.CVSStructure.chConexaoPorArquivos;
 import cvsstructure.util.Estatisticas;
 import cvsstructure.database.ConnectionInout;
 import cvsstructure.database.ConnectionIntegracao;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.PreparedStatement;
@@ -14,22 +14,32 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import cvsstructure.log.SfwLogger;
 import cvsstructure.model.Cliente;
-import cvsstructure.util.Arquivo;
+import cvsstructure.util.CvsStructureFile;
 
 /**
  *
  * @author andrein
  */
-public class Views {
+public class Views extends Thread {
 
+    private String system;
     private PreparedStatement psView = null;
     private ResultSet rsView = null;
+    private Cliente cliente;
+
+    public Views() {
+    }
 
     public Views(String system) {
+        this.system = system;
+    }
+
+    @Override
+    public void run() {
         String fileNameScripts = "";
         String fileName = "";
 
-        Arquivo fileScripts;
+        CvsStructureFile fileScripts;
         FileWriter fwScripts;
         StringBuilder strOutScripts;
         BufferedReader brScripts;
@@ -56,39 +66,39 @@ public class Views {
                 String longText = rsView.getString("TEXT");
 
                 if (longText != null && !longText.toString().equals("")) {
-                    CVSStructure.logMessage("Creating or appending to file " + fileNameScripts);
+                    SfwLogger.log("Creating or appending to file " + fileNameScripts);
 
                     strOutScripts = new StringBuilder();
                     String auxScripts;
 
-                    if (CVSStructure.chConexaoPorArquivos.equals("S")) {
+                    if (chConexaoPorArquivos.equals("S")) {
                         if (system.equals("INOUT")) {
-                            strOutScripts.append("conn &&INOUT_USER/&&INOUT_PASS@&&TNS" + CVSStructure.QUEBRA_LINHA + CVSStructure.QUEBRA_LINHA);
+                            strOutScripts.append("conn &&INOUT_USER/&&INOUT_PASS@&&TNS" + QUEBRA_LINHA + QUEBRA_LINHA);
                         } else {
-                            strOutScripts.append("conn &&INTEGRACAO_USER/&&INTEGRACAO_PASS@&&TNS" + CVSStructure.QUEBRA_LINHA + CVSStructure.QUEBRA_LINHA);
+                            strOutScripts.append("conn &&INTEGRACAO_USER/&&INTEGRACAO_PASS@&&TNS" + QUEBRA_LINHA + QUEBRA_LINHA);
                         }
                     }
-                    strOutScripts.append("create or replace force view " + rsView.getString("VIEW_NAME") + " as " + CVSStructure.QUEBRA_LINHA);
-                    strOutScripts.append(longText.trim().replace((CVSStructure.s_ItUser2 + ".").toUpperCase(), "").replace((Cliente.userNameSys + ".").toUpperCase(), "") + CVSStructure.QUEBRA_LINHA);
-                    strOutScripts.append(";" + CVSStructure.QUEBRA_LINHA);
+                    strOutScripts.append("create or replace force view " + rsView.getString("VIEW_NAME") + " as " + QUEBRA_LINHA);
+                    strOutScripts.append(longText.trim().replace((cliente.getItUser().getUser() + ".").toUpperCase(), "").replace((Cliente.userNameSys + ".").toUpperCase(), "") + QUEBRA_LINHA);
+                    strOutScripts.append(";" + QUEBRA_LINHA);
 
                     try {
-                        fileScripts = new Arquivo(fileNameScripts);
+                        fileScripts = new CvsStructureFile(fileNameScripts);
                         if (!fileScripts.exists()) {
                             fileScripts.saveArquivo(strOutScripts);
 
                             Estatisticas.nTotalViews++;
-                            CVSStructure.logMessage("File " + fileNameScripts + " was succesfull generated.");
+                            SfwLogger.log("File " + fileNameScripts + " was succesfull generated.");
                         }
                     } catch (IOException ioex) {
-                        CVSStructure.logMessage("File " + fileNameScripts + " was error generated.");
-                        SfwLogger.saveLog(ioex.getClass().toString(), ioex.getStackTrace());
+                        SfwLogger.log("File " + fileNameScripts + " was error generated.");
+                        SfwLogger.debug(ioex.getClass().toString(), ioex.getStackTrace());
                         ioex.printStackTrace();
                     }
                 }
             }
         } catch (Exception ex) {
-            SfwLogger.saveLog(ex.getClass().toString(), ex.getStackTrace());
+            SfwLogger.debug(ex.getClass().toString(), ex.getStackTrace());
             ex.printStackTrace();
         } finally {
             try {
@@ -99,7 +109,7 @@ public class Views {
                     rsView.close();
                 }
             } catch (SQLException sqlex) {
-                SfwLogger.log(sqlex);
+                SfwLogger.log(sqlex.getMessage());
                 sqlex.printStackTrace();
             }
         }

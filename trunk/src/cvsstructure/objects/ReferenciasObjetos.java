@@ -1,7 +1,7 @@
 package cvsstructure.objects;
 
+
 import cvsstructure.util.Diretorio;
-import cvsstructure.CVSStructure;
 import cvsstructure.database.ConnectionInout;
 import cvsstructure.database.ConnectionIntegracao;
 import java.io.BufferedReader;
@@ -65,7 +65,7 @@ public class ReferenciasObjetos {
                     fileNameScripts = Diretorio.path + "\\" + Cliente.userNameSys + "\\Scripts\\comum\\INTEGRACAO\\Table\\" + fileName;
                 }
 
-                CVSStructure.logMessage("Creating or appending to file " + fileNameScripts);
+                SfwLogger.log("Creating or appending to file " + fileNameScripts);
 
                 if (rsGerarReferenciasObjetos.getString("REFERENCED_TYPE").toLowerCase().equals("function")
                         || rsGerarReferenciasObjetos.getString("REFERENCED_TYPE").toLowerCase().equals("procedure")) {
@@ -97,9 +97,9 @@ public class ReferenciasObjetos {
 
             } // fim rsGerarReferenciasObjetos
         } catch (Exception ex) {
-            CVSStructure.logMessage("Error generating " + fileName);
-            CVSStructure.logMessage(ex.getLocalizedMessage());
-            SfwLogger.saveLog(ex.getClass().toString(), ex.getStackTrace());
+            SfwLogger.log("Error generating " + fileName);
+            SfwLogger.log(ex.getLocalizedMessage());
+            SfwLogger.debug(ex.getClass().toString(), ex.getStackTrace());
         }
     }
 }
