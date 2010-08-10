@@ -8,6 +8,9 @@ import java.io.PrintWriter;
 import java.util.Calendar;
 import java.util.TimeZone;
 import cvsstructure.CVSStructure;
+import cvsstructure.gui.CvsStructureFrame;
+import cvsstructure.model.Cliente;
+import cvsstructure.util.Diretorio;
 import java.util.logging.Logger;
 
 public class SfwLogger {
@@ -16,45 +19,39 @@ public class SfwLogger {
     private static Logger logDebug;
     private static String currentTime = null;
     private static String nameArq;
+    public static CvsStructureFrame cvsStructureFrame;
 
-	static{
-		logInfo = Logger.getLogger("CVSStructureInfo");
-		logDebug = Logger.getLogger("CVSStructureDebug");
+    static {
+        logInfo = Logger.getLogger("CVSStructureInfo");
+        logDebug = Logger.getLogger("CVSStructureDebug");
+    }
 
+    private SfwLogger() {
 
-        
-	}
+    }
 
-	private SfwLogger(){
-	}
-
-	public static void log(Object object){
-            if(object instanceof Throwable){
-                    //logInfo.info((Object)((Throwable)object).getMessage(), (Throwable) object);
+     public static void log(String sLog){
+         if(cvsStructureFrame != null){
+            cvsStructureFrame.setTextArea(sLog + CVSStructure.QUEBRA_LINHA);
+            if (CVSStructure.sDebug.equals("S")) {
+                SfwLogger.debug(sLog, null);
             }
-            else{
-                    logInfo.info((String) object);
+         }
+    }
+
+     public static void debug(String sLog){
+         if(cvsStructureFrame != null){
+            if (CVSStructure.sDebug.equals("S")) {
+                cvsStructureFrame.setTextArea(sLog + CVSStructure.QUEBRA_LINHA);
+                SfwLogger.debug(sLog, null);
             }
-	}
+         }
+     }
 
-	public static void debug(Object object){
-		if(object instanceof Throwable){
-			//logDebug.debug((Object)((Throwable)object).getMessage(), (Throwable) object);
-		}
-		else{
-			//logDebug.debug(object);
-		}
-	}
+     public static void debug(String sLog, StackTraceElement[] stackTrace) {
+        File arquivo;
 
-
-	/**************************************************************************
-	 * <b>Save Logs</b>
-	 * @param sLog
-	 **************************************************************************/
-	public static void saveLog(String sLog) throws IOException{
-		File arquivo;
-
-		if(currentTime == null){
+        if (currentTime == null) {
             Calendar cal = Calendar.getInstance(TimeZone.getDefault());
             String DATE_FORMAT = "yyyy-MM-dd HHmmss";
             java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(DATE_FORMAT);
@@ -62,13 +59,13 @@ public class SfwLogger {
 
             currentTime = sdf.format(cal.getTime());
 
-            nameArq = CVSStructure.path+ "\\log_cvs_structure_" + CVSStructure.userNameSys + currentTime + ".log";
+            nameArq = Diretorio.path + "\\log_cvs_structure_" + Cliente.userNameSys + currentTime + ".log";
         }
 
-		try{
-            if(CVSStructure.sDebug.equals("S")){
+        try {
+            if(stackTrace != null){
                 arquivo = new File(nameArq);
-                if (!arquivo.exists()){
+                if (!arquivo.exists()) {
                     arquivo.createNewFile();
                 }
 
@@ -76,56 +73,18 @@ public class SfwLogger {
 
                 //arqLog.println(currentTime);
                 arqLog.println(sLog);
-
-                System.out.println(sLog);
-                CVSStructure.logMessage(sLog);
+                if (stackTrace.length != 0) {
+                    for (int y = 1; y < stackTrace.length; y++) {
+                        arqLog.println(stackTrace[y]);
+                    }
+                }
 
                 arqLog.close();
             }
-		}catch(FileNotFoundException e) {
-			System.out.println("Arquivo de Log não existe");
-		}catch (IOException e) {
-			System.out.println("Impossível abrir arquivo de log");
-		}
-     }
-
-
-	public static void saveLog(String sLog, StackTraceElement[] stackTrace){
-		File arquivo;
-
-		if(currentTime == null){
-            Calendar cal = Calendar.getInstance(TimeZone.getDefault());
-            String DATE_FORMAT = "yyyy-MM-dd HHmmss";
-            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(DATE_FORMAT);
-            sdf.setTimeZone(TimeZone.getDefault());
-
-            currentTime = sdf.format(cal.getTime());
-
-            nameArq = CVSStructure.path+ "\\log_cvs_structure_" + CVSStructure.userNameSys + currentTime + ".log";
+        } catch (FileNotFoundException e) {
+            System.out.println("Arquivo de Log não existe");
+        } catch (IOException e) {
+            System.out.println("Impossível abrir arquivo de log");
         }
-        
-		try{
-			arquivo = new File(nameArq);
-			if (!arquivo.exists()){
-				arquivo.createNewFile();
-			}
-
-			PrintWriter arqLog = new PrintWriter(new FileOutputStream(arquivo, true), true);
-
-			//arqLog.println(currentTime);
-			arqLog.println(sLog);
-			if(stackTrace.length != 0){
-				for(int y = 1; y < stackTrace.length; y++){
-					arqLog.println(stackTrace[y]);
-				}
-			}
-
-            arqLog.close();
-		}catch(FileNotFoundException e) {
-			System.out.println("Arquivo de Log não existe");
-		}catch (IOException e) {
-			System.out.println("Impossível abrir arquivo de log");
-		}
-     }
-
+    }
 }
