@@ -28,17 +28,18 @@ import cvsstructure.objects.Interfaces;
 import cvsstructure.objects.ObjetosIntegracao;
 import cvsstructure.objects.TabInterfaceSemPermissao;
 import cvsstructure.gui.SfwValidaScriptsFrame;
+import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.annotation.processing.SupportedSourceVersion;
+import javax.lang.model.SourceVersion;
 
+@SupportedSourceVersion(SourceVersion.RELEASE_6)
+@SupportedAnnotationTypes("*")
 public class CVSStructure {
 
     // public String sQuebraLinha = System.getProperty("line.separator");
     public static final String QUEBRA_LINHA = "\r\n";
     private Cliente cliente;
-    public String s_User;
-    public String s_Pass;
-    public String s_Conn;
-    public String s_ItUser;
-    public String s_ItPass;
+
     public static String chNomePasta;
     public static String chConexaoPorArquivos;
     public static String chScriptsSemVinculoInterface;
@@ -239,7 +240,7 @@ public class CVSStructure {
 
                             boolean sisFlag = true;
                             if (nTotInter >= 2) {
-                                if (!id_sistema_it.equals("")) {
+                                if (!id_sistema_it.isEmpty()) {
                                     if (id_sistema_it.equals(rsInterfaces.getString("ID_SISTEMA"))) {
                                         sisFlag = false;
                                     }
@@ -248,7 +249,7 @@ public class CVSStructure {
 
                             if (sisFlag) {
 
-                                SfwLogger.log("*** Building Interfaces select found " + rsInterfaces.getString("ID_INTERFACE") + " - " + rsInterfaces.getString("DESCRICAO") + "...");
+                                SfwLogger.log("*** Building Interfaces " + rsInterfaces.getString("ID_INTERFACE") + " - " + rsInterfaces.getString("DESCRICAO") + "...");
                                 Interface interfaces = new Interface();
                                 interfaces.setIdInterface(rsInterfaces.getString("ID_INTERFACE"));
                                 interfaces.setExecutavel(rsInterfaces.getString("EXECUTAVEL"));
@@ -370,7 +371,7 @@ public class CVSStructure {
             }
 
             // Base de Integracao
-            if (s_ItUser != null && !s_ItUser.equals("") && !s_ItPass.equals("") && s_ItPass != null) {
+            if (cliente.getItUser().getUser() != null && !cliente.getItUser().getUser().isEmpty()) {
                 try {
                     if (pTipo.contains("Synonyms") && chScriptsSemVinculoInterface.equals("S")) {
                         SfwLogger.debug(QUEBRA_LINHA + "## Gerando Synonyms Integração ##" + QUEBRA_LINHA);
@@ -421,8 +422,8 @@ public class CVSStructure {
 
             // Deretórios
             try {
-                this.removeDiretorio();
-                this.validaDiretorio();
+                diretorios.removeDiretorio();
+                diretorios.validaDiretorio();
             } catch (Exception ex) {
                 SfwLogger.debug(ex.getClass().toString(), ex.getStackTrace());
             }
@@ -438,141 +439,6 @@ public class CVSStructure {
             //rsCountInterface.close();
             //rsInterfaces.close();
         }
-    }
-
-    private void validaDiretorio() throws Exception {
-        StringBuilder strOutScripts = new StringBuilder();
-        SfwValidaScriptsFrame valid = new SfwValidaScriptsFrame();
-        valid.setArqsInstala("N");
-        //strOutScripts.append("SPOOL SCRIPT_STATUS.LOG" + QUEBRA_LINHA);
-        //strOutScripts.append("@\".\\define.sql\"" + QUEBRA_LINHA);
-
-        // comum em primeiro lugar
-        //valid.executar(path + "\\"+Cliente.userNameSys+"\\Scripts\\comum");
-        //strOutScripts.append("@\"" + (path + "\\"+Cliente.userNameSys+"\\Scripts\\").replace(path + "\\"+Cliente.userNameSys+"\\Scripts", ".") + "\\comum\\ordem_instalacao.sql\"" + QUEBRA_LINHA);
-
-        strOutScripts.append("--spool instalacao_v01r01p00_txt.log  -- esse comando passou a ser executado no script dispara_script_instalacao.sql" + QUEBRA_LINHA);
-        strOutScripts.append(QUEBRA_LINHA);
-        strOutScripts.append("@define.sql" + QUEBRA_LINHA);
-        strOutScripts.append("-- Conectar na base do INOUT para obter a data do inicio do processamento" + QUEBRA_LINHA);
-        strOutScripts.append("conn &INOUT_USER/&INOUT_PASS@&TNS" + QUEBRA_LINHA);
-        strOutScripts.append(QUEBRA_LINHA);
-        strOutScripts.append(QUEBRA_LINHA);
-        strOutScripts.append(QUEBRA_LINHA);
-        strOutScripts.append("column \"DATA INICIO\" format A23" + QUEBRA_LINHA);
-        strOutScripts.append("prompt" + QUEBRA_LINHA);
-        strOutScripts.append("prompt =======================" + QUEBRA_LINHA);
-        strOutScripts.append("SELECT TO_CHAR(SYSDATE,'DD/MM/YYYY HH24:MI:SS') AS \"DATA INICIO\" FROM DUAL;" + QUEBRA_LINHA);
-        strOutScripts.append("prompt =======================" + QUEBRA_LINHA);
-        strOutScripts.append("prompt INICIO do Processamento" + QUEBRA_LINHA);
-        strOutScripts.append("prompt =======================" + QUEBRA_LINHA);
-        strOutScripts.append("prompt" + QUEBRA_LINHA);
-        strOutScripts.append(QUEBRA_LINHA);
-
-        for (int i = 0; i < Diretorio.dirScriptsValida.size(); i++) {
-
-            // iginora o comum pq ele já foi valido em primeiro lugar
-            //if( dirScriptsValida.get(i).toString().indexOf("\\comum\\") == 0 ){
-            valid.executar(Diretorio.dirScriptsValida.get(i).toString());
-            strOutScripts.append("@\"" + Diretorio.dirScriptsValida.get(i).toString().replace(Diretorio.path + "\\" + Cliente.userNameSys + "\\Scripts", ".") + "\\ordem_instalacao.sql\"" + QUEBRA_LINHA);
-            //}
-        }
-
-        strOutScripts.append(QUEBRA_LINHA);
-        strOutScripts.append("@\".\\processa_grants.sql\"" + QUEBRA_LINHA);
-        strOutScripts.append(QUEBRA_LINHA);
-        strOutScripts.append("@\".\\processa_grants_sistema.sql\"" + QUEBRA_LINHA);
-        strOutScripts.append(QUEBRA_LINHA);
-        //strOutScripts.append("conn &INOUT_USER/&INOUT_PASS@&TNS" + QUEBRA_LINHA);
-        strOutScripts.append("connect_io.sql" + QUEBRA_LINHA);
-        strOutScripts.append("@\".\\compila_invalidos.sql\"" + QUEBRA_LINHA);
-        strOutScripts.append(QUEBRA_LINHA);
-        //strOutScripts.append("conn &&INTEGRACAO_USER/&&INTEGRACAO_PASS@&&TNS" + QUEBRA_LINHA);
-        strOutScripts.append("connect_it.sql" + QUEBRA_LINHA);
-        strOutScripts.append("@\".\\compila_invalidos.sql\"" + QUEBRA_LINHA);
-
-        strOutScripts.append(QUEBRA_LINHA);
-        //strOutScripts.append("@define.sql" + QUEBRA_LINHA);
-        //strOutScripts.append("-- Conectar na base do INOUT para obter a data de fim do processamento" + QUEBRA_LINHA);
-        //strOutScripts.append("-- utilizar a mesma base utilizada no inicio do processamento" + QUEBRA_LINHA);
-        //strOutScripts.append("conn &INOUT_USER/&INOUT_PASS@&TNS" + QUEBRA_LINHA);
-        strOutScripts.append("prompt" + QUEBRA_LINHA);
-        strOutScripts.append("prompt =======================" + QUEBRA_LINHA);
-        strOutScripts.append("SELECT 'Finalizado em: '||TO_CHAR(SYSDATE,'DD/MM/YYYY HH24:MI:SS') AS \"DATA FIM\" FROM DUAL;" + QUEBRA_LINHA);
-        strOutScripts.append("prompt =======================" + QUEBRA_LINHA);
-        strOutScripts.append("prompt Fim do Processamento" + QUEBRA_LINHA);
-        strOutScripts.append("prompt =======================" + QUEBRA_LINHA);
-        strOutScripts.append("prompt" + QUEBRA_LINHA);
-        strOutScripts.append("@\"limpa_definicoes.sql\"" + QUEBRA_LINHA);
-        strOutScripts.append(QUEBRA_LINHA);
-
-        strOutScripts.append("spool off" + QUEBRA_LINHA);
-        strOutScripts.append("exit" + QUEBRA_LINHA);
-
-        valid.copy(new File(".\\definicoes\\define.sql"), new File(Diretorio.path + "\\" + Cliente.userNameSys + "\\Scripts\\" + "define.sql"));
-        valid.copy(new File(".\\definicoes\\Instrucoes.txt"), new File(Diretorio.path + "\\" + Cliente.userNameSys + "\\Scripts\\" + "Instrucoes.txt"));
-        valid.copy(new File(".\\definicoes\\limpa_definicoes.sql"), new File(Diretorio.path + "\\" + Cliente.userNameSys + "\\Scripts\\" + "limpa_definicoes.sql"));
-        valid.copy(new File(".\\definicoes\\processa_grants.sql"), new File(Diretorio.path + "\\" + Cliente.userNameSys + "\\Scripts\\" + "processa_grants.sql"));
-        valid.copy(new File(".\\definicoes\\compila_invalidos.sql"), new File(Diretorio.path + "\\" + Cliente.userNameSys + "\\Scripts\\" + "compila_invalidos.sql"));
-        valid.copy(new File(".\\definicoes\\instala_linux.sh"), new File(Diretorio.path + "\\" + Cliente.userNameSys + "\\Scripts\\" + "instala_linux.sh"));
-        valid.copy(new File(".\\definicoes\\Instala_win.bat"), new File(Diretorio.path + "\\" + Cliente.userNameSys + "\\Scripts\\" + "Instala_win.bat"));
-        valid.copy(new File(".\\definicoes\\dispara_script_instalacao.sql"), new File(Diretorio.path + "\\" + Cliente.userNameSys + "\\Scripts\\" + "dispara_script_instalacao.sql"));
-        valid.copy(new File(".\\definicoes\\connect_io.sql"), new File(Diretorio.path + "\\" + Cliente.userNameSys + "\\Scripts\\" + "connect_io.sql"));
-        valid.copy(new File(".\\definicoes\\connect_it.sql"), new File(Diretorio.path + "\\" + Cliente.userNameSys + "\\Scripts\\" + "connect_it.sql"));
-        valid.copy(new File(".\\definicoes\\processa_grants_sistema.sql"), new File(Diretorio.path + "\\" + Cliente.userNameSys + "\\Scripts\\" + "processa_grants_sistema.sql"));
-
-        File fileScripts = new File(Diretorio.path + "\\" + Cliente.userNameSys + "\\Scripts\\ordem_instalacao.sql");
-        if (!fileScripts.exists()) {
-            fileScripts.createNewFile();
-        }
-
-        FileWriter fwScripts = new FileWriter(fileScripts, false);
-        fwScripts.write(strOutScripts.toString(), 0, strOutScripts.length());
-        fwScripts.close();
-        SfwLogger.log("File .\\" + Cliente.userNameSys + "\\Scripts\\ordem_instalacao.sql was succesfull generated.");
-
-    }
-
-    /**************************************************************************
-     * <b>Remover diretórios</b>
-     **************************************************************************/
-    private void removeDiretorio() throws Exception {
-        File diretorio = new File(Diretorio.path + "\\" + Cliente.userNameSys);
-        File[] subdiretorios = diretorio.listFiles();
-        SfwLogger.debug("Removendo diretórios! ");
-        for (File subdir : subdiretorios) {
-            if (subdir.isDirectory()) {
-                //SfwLogger.debug(subdir.getName());
-                int nArqs = listaSubDir(subdir);
-                if (nArqs == 0) {
-                    if (subdir.delete()) {
-                        //SfwLogger.debug("Diretório deletado: " + subdir.getName());
-                    }
-                }
-            }
-        }
-    }
-
-    /**************************************************************************
-     * <b>Listar subDiretórios</b>
-     * @param subDir
-     **************************************************************************/
-    private int listaSubDir(File subDir) throws IOException {
-        int nArqs = 0;
-        File[] subdiretorios = subDir.listFiles();
-        for (File subdir : subdiretorios) {
-            if (subdir.isDirectory()) {
-                //System.out.println(subdir.getName());
-                if (listaSubDir(subdir) == 0) {
-                    if (subdir.delete()) {
-                        SfwLogger.debug("Diretório deletado: " + subdir.getName());
-                    }
-                }
-            } else {
-                nArqs += 1;
-            }
-        }
-        return nArqs;
     }
 
     /**
