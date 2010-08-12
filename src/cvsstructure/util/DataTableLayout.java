@@ -61,7 +61,7 @@ import java.sql.SQLException;
                             || resultSetUserTabColumns.getString("TypeName").equals("CHAR"))
                             && (resultSet.getString( resultSetUserTabColumns.getString("column_name")) != null)
                             ){
-                        bind.append( "'" + resultSet.getString( resultSetUserTabColumns.getString("column_name") ) + "'" );
+                        bind.append("'").append(resultSet.getString(resultSetUserTabColumns.getString("column_name"))).append( "'");
                     }else{
                         bind.append(resultSet.getString( resultSetUserTabColumns.getString("column_name") ));
                     }
