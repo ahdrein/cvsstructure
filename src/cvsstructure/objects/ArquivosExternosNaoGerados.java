@@ -252,15 +252,15 @@ public class ArquivosExternosNaoGerados extends Thread{
                                             strOutScripts.append("conn &&INOUT_USER/&&INOUT_PASS@&&TNS" + QUEBRA_LINHA + QUEBRA_LINHA);
                                         }
 
-                                        strOutScripts.append("--  ///////" + QUEBRA_LINHA);
-                                        strOutScripts.append("--  ///////     Script Gerado a partir do Sistema Gerenciador de Interfaces IN-OUT" + QUEBRA_LINHA);
-                                        strOutScripts.append("--  ///////     Arquivo Externo: " + rsArquivosExternos.getString("NOME_ARQUIVO") + QUEBRA_LINHA);
+                                        strOutScripts.append("--  ///////").append(QUEBRA_LINHA);
+                                        strOutScripts.append("--  ///////     Script Gerado a partir do Sistema Gerenciador de Interfaces IN-OUT").append(QUEBRA_LINHA);
+                                        strOutScripts.append("--  ///////     Arquivo Externo: ").append(rsArquivosExternos.getString("NOME_ARQUIVO")).append(QUEBRA_LINHA);
                                         strOutScripts.append("--  ///////" + QUEBRA_LINHA + QUEBRA_LINHA);
                                         strOutScripts.append("set define off" + QUEBRA_LINHA + QUEBRA_LINHA + QUEBRA_LINHA + QUEBRA_LINHA);
-                                        strOutScripts.append("delete from ARQUIVO_EXTERNO where NOME_ARQUIVO = '" + rsArquivosExternos.getString("NOME_ARQUIVO") + "';" + QUEBRA_LINHA + QUEBRA_LINHA);
-                                        strOutScripts.append("insert into ARQUIVO_EXTERNO" + QUEBRA_LINHA);
-                                        strOutScripts.append("(NOME_ARQUIVO, DESCRICAO, PATH_RELATIVO, CONTEUDO)" + QUEBRA_LINHA);
-                                        strOutScripts.append("values" + QUEBRA_LINHA);
+                                        strOutScripts.append("delete from ARQUIVO_EXTERNO where NOME_ARQUIVO = '").append(rsArquivosExternos.getString("NOME_ARQUIVO")).append("';" + QUEBRA_LINHA + QUEBRA_LINHA);
+                                        strOutScripts.append("insert into ARQUIVO_EXTERNO").append(QUEBRA_LINHA);
+                                        strOutScripts.append("(NOME_ARQUIVO, DESCRICAO, PATH_RELATIVO, CONTEUDO)").append(QUEBRA_LINHA);
+                                        strOutScripts.append("values").append(QUEBRA_LINHA);
 
                                         // We access to stream, as this way we don't have to use the CLOB.length() which is slower...
                                         brScripts = new BufferedReader(clob.getCharacterStream());
@@ -276,26 +276,26 @@ public class ArquivosExternosNaoGerados extends Thread{
                                             //auxScripts = auxScripts.replaceAll("|| '' ||",  "||");
 
                                             if (contador == 0) {
-                                                strOutScripts.append("('" + rsArquivosExternos.getString("NOME_ARQUIVO") + "'");
+                                                strOutScripts.append("('").append(rsArquivosExternos.getString("NOME_ARQUIVO")).append("'");
                                                 strOutScripts.append(",");
                                                 if (rsArquivosExternos.getString("NOME_ARQUIVO") == null) {
-                                                    strOutScripts.append("'" + (interfaces.getDescricao().length() > 50 ? interfaces.getDescricao().substring(0, 50) : interfaces.getDescricao().trim()) + "'");
+                                                    strOutScripts.append("'").append(interfaces.getDescricao().length() > 50 ? interfaces.getDescricao().substring(0, 50) : interfaces.getDescricao().trim()).append("'");
                                                 } else {
-                                                    strOutScripts.append("'" + rsArquivosExternos.getString("NOME_ARQUIVO") + "'");
+                                                    strOutScripts.append("'").append(rsArquivosExternos.getString("NOME_ARQUIVO")).append("'");
                                                 }
                                                 strOutScripts.append(",");
-                                                strOutScripts.append("'" + rsArquivosExternos.getString("PATH_RELATIVO") + "'");
+                                                strOutScripts.append("'").append(rsArquivosExternos.getString("PATH_RELATIVO")).append("'");
                                                 strOutScripts.append(",");
-                                                strOutScripts.append("'" + auxScripts + "'");
+                                                strOutScripts.append("'").append(auxScripts).append("'");
                                                 strOutScripts.append(" || CHR(13) || CHR(10)");
                                                 strOutScripts.append(");");
                                             } else {
-                                                //if(!auxScripts.equals("")){
-                                                strOutScripts.append(QUEBRA_LINHA + "" + QUEBRA_LINHA);
+                                                //if(!auxScripts.isEmpty()){
+                                                strOutScripts.append(QUEBRA_LINHA + "").append(QUEBRA_LINHA);
                                                 strOutScripts.append("exec CONCATENA_CONTEUDO (");
-                                                strOutScripts.append("'" + rsArquivosExternos.getString("NOME_ARQUIVO") + "'");
+                                                strOutScripts.append("'").append(rsArquivosExternos.getString("NOME_ARQUIVO")).append("'");
                                                 strOutScripts.append(",");
-                                                strOutScripts.append("'" + auxScripts + "'");
+                                                strOutScripts.append("'").append(auxScripts).append("'");
                                                 strOutScripts.append(" || CHR(13) || CHR(10)");
                                                 strOutScripts.append(");");
                                                 //}
@@ -303,13 +303,13 @@ public class ArquivosExternosNaoGerados extends Thread{
                                             }
                                             contador += 1;
                                         }
-                                        strOutScripts.append(QUEBRA_LINHA + "" + QUEBRA_LINHA);
+                                        strOutScripts.append(QUEBRA_LINHA + "").append(QUEBRA_LINHA);
                                         strOutScripts.append("commit;");
                                         strOutScripts.append(QUEBRA_LINHA + QUEBRA_LINHA + QUEBRA_LINHA + QUEBRA_LINHA);
                                         strOutScripts.append("set define on");
-                                        strOutScripts.append(QUEBRA_LINHA + "" + QUEBRA_LINHA);
-                                        strOutScripts.append("-- //////" + QUEBRA_LINHA);
-                                        strOutScripts.append("-- //////  Fim do Script" + QUEBRA_LINHA);
+                                        strOutScripts.append(QUEBRA_LINHA + "").append(QUEBRA_LINHA);
+                                        strOutScripts.append("-- //////").append(QUEBRA_LINHA);
+                                        strOutScripts.append("-- //////  Fim do Script").append(QUEBRA_LINHA);
                                         strOutScripts.append("-- //////");
                                     } else {
                                         SfwLogger.log("File " + fileName + " wasn't generated.");
@@ -364,7 +364,7 @@ public class ArquivosExternosNaoGerados extends Thread{
     }
 
     public String getNomePasta(String tipo) {
-        if (tipo.equals("") || chNomePasta.equals("N")) {
+        if (tipo.isEmpty() || chNomePasta.equals("N")) {
             return interfaces.getIdInterface();
         } else if (tipo.equals("IN")) {
             return interfaces.getIdSistema() + "_in_" + interfaces.getIdInterface();

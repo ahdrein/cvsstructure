@@ -133,7 +133,7 @@ public class IntMapeamento extends Thread {
                             rsInterfaceDaTabela = psSistemaInterfaceDaTabela.executeQuery();
                             rsInterfaceDaTabela.next();
 
-                            if (!cvsstructure.CVSStructure.id_sistema_it.equals("")) {
+                            if (!cvsstructure.CVSStructure.id_sistema_it.isEmpty()) {
                                 if (cvsstructure.CVSStructure.id_sistema_it.equals(rsInterfaceDaTabela.getString("ID_SISTEMA"))) {
                                     sisFlag = false;
                                 }
@@ -141,7 +141,7 @@ public class IntMapeamento extends Thread {
                         }
 
                         fileName = rsIntMapeamento.getString("LAYOUT").toLowerCase() + ".sql";
-                        if (idInterface == null || idInterface.equals("") || sisFlag) {
+                        if (idInterface == null || idInterface.isEmpty() || sisFlag) {
                             fileNameScripts = Diretorio.path + "\\" + Cliente.userNameSys + "\\Scripts\\comum\\INTEGRACAO\\Mapeamento\\" + fileName;
                         } else {
                             if (psDadosInterface == null) {
@@ -188,32 +188,32 @@ public class IntMapeamento extends Thread {
                             }
 
                             strOutScripts.append(QUEBRA_LINHA);
-                            strOutScripts.append("/*###############################" + QUEBRA_LINHA);
-                            strOutScripts.append(rsIntMapeamento.getString("LAYOUT") + QUEBRA_LINHA);
-                            strOutScripts.append("###############################*/" + QUEBRA_LINHA);
-                            strOutScripts.append("--garante que não existirão registros duplicados" + QUEBRA_LINHA);
-                            strOutScripts.append("declare" + QUEBRA_LINHA);
-                            strOutScripts.append("    n_id   number := null;" + QUEBRA_LINHA);
-                            strOutScripts.append("begin" + QUEBRA_LINHA);
-                            strOutScripts.append("    select l.id into n_id" + QUEBRA_LINHA);
-                            strOutScripts.append("      from int_mapeamento_layout l " + QUEBRA_LINHA);
-                            strOutScripts.append("     where layout = '" + rsIntMapeamento.getString("LAYOUT") + "' " + QUEBRA_LINHA);
-                            strOutScripts.append("       and api = '" + rsIntMapeamento.getString("API") + "'; " + QUEBRA_LINHA);
+                            strOutScripts.append("/*###############################").append(QUEBRA_LINHA);
+                            strOutScripts.append(rsIntMapeamento.getString("LAYOUT")).append(QUEBRA_LINHA);
+                            strOutScripts.append("###############################*/").append(QUEBRA_LINHA);
+                            strOutScripts.append("--garante que não existirão registros duplicados").append(QUEBRA_LINHA);
+                            strOutScripts.append("declare").append(QUEBRA_LINHA);
+                            strOutScripts.append("    n_id   number := null;").append(QUEBRA_LINHA);
+                            strOutScripts.append("begin").append(QUEBRA_LINHA);
+                            strOutScripts.append("    select l.id into n_id").append(QUEBRA_LINHA);
+                            strOutScripts.append("      from int_mapeamento_layout l ").append(QUEBRA_LINHA);
+                            strOutScripts.append("     where layout = '").append(rsIntMapeamento.getString("LAYOUT")).append("' ").append(QUEBRA_LINHA);
+                            strOutScripts.append("       and api = '").append(rsIntMapeamento.getString("API")).append("'; ").append(QUEBRA_LINHA);
                             strOutScripts.append(QUEBRA_LINHA);
-                            strOutScripts.append("    delete from int_mapeamento_coluna c where c.id = n_id;" + QUEBRA_LINHA);
-                            strOutScripts.append("    delete from int_mapeamento_layout l where l.id = n_id;" + QUEBRA_LINHA);
+                            strOutScripts.append("    delete from int_mapeamento_coluna c where c.id = n_id;").append(QUEBRA_LINHA);
+                            strOutScripts.append("    delete from int_mapeamento_layout l where l.id = n_id;").append(QUEBRA_LINHA);
                             strOutScripts.append(QUEBRA_LINHA);
-                            strOutScripts.append("    EXCEPTION" + QUEBRA_LINHA);
-                            strOutScripts.append("        WHEN NO_DATA_FOUND THEN" + QUEBRA_LINHA);
-                            strOutScripts.append("             null;" + QUEBRA_LINHA);
-                            strOutScripts.append("end;" + QUEBRA_LINHA);
-                            strOutScripts.append("/" + QUEBRA_LINHA);
-                            strOutScripts.append("insert into int_mapeamento_layout (id, layout, api, processa, ordem_processamento, tipo)" + QUEBRA_LINHA);
-                            //strOutScripts.append("values ( seq_int_mapeamento_layout.nextval, '" + rsIntMapeamento.getString("LAYOUT") + "', '" + rsIntMapeamento.getString("API") + "', '" + rsIntMapeamento.getString("PROCESSA") + "', "+rsIntMapeamento.getString("ORDEM_PROCESSAMENTO")+", '"+rsIntMapeamento.getString("TIPO")+"');" + QUEBRA_LINHA);
-                            strOutScripts.append("values ( " + rsIntMapeamento.getString("ID") + ", '" + rsIntMapeamento.getString("LAYOUT") + "', '" + rsIntMapeamento.getString("API") + "', '" + rsIntMapeamento.getString("PROCESSA") + "', " + rsIntMapeamento.getString("ORDEM_PROCESSAMENTO") + ", '" + rsIntMapeamento.getString("TIPO") + "');" + QUEBRA_LINHA);
+                            strOutScripts.append("    EXCEPTION").append(QUEBRA_LINHA);
+                            strOutScripts.append("        WHEN NO_DATA_FOUND THEN").append(QUEBRA_LINHA);
+                            strOutScripts.append("             null;").append(QUEBRA_LINHA);
+                            strOutScripts.append("end;").append(QUEBRA_LINHA);
+                            strOutScripts.append("/").append(QUEBRA_LINHA);
+                            strOutScripts.append("insert into int_mapeamento_layout (id, layout, api, processa, ordem_processamento, tipo)").append(QUEBRA_LINHA);
+                            //strOutScripts.append("values ( seq_int_mapeamento_layout.nextval, '" + rsIntMapeamento.getString("LAYOUT") + "', '" + rsIntMapeamento.getString("API") + "', '" + rsIntMapeamento.getString("PROCESSA") + "', "+rsIntMapeamento.getString("ORDEM_PROCESSAMENTO")+", '"+rsIntMapeamento.getString("TIPO")+"');").append(QUEBRA_LINHA);
+                            strOutScripts.append("values ( ").append(rsIntMapeamento.getString("ID")).append(", '").append(rsIntMapeamento.getString("LAYOUT")).append("', '").append(rsIntMapeamento.getString("API")).append("', '").append(rsIntMapeamento.getString("PROCESSA")).append("', ").append(rsIntMapeamento.getString("ORDEM_PROCESSAMENTO")).append(", '").append(rsIntMapeamento.getString("TIPO")).append("');").append(QUEBRA_LINHA);
                             strOutScripts.append(QUEBRA_LINHA);
-                            strOutScripts.append("--inserções de relacionamento das tags contidas dentro da tag " + rsIntMapeamento.getString("API") + QUEBRA_LINHA);
-                            strOutScripts.append("--relacionam a tag com uma coluna da tabela temporário do INOUT" + QUEBRA_LINHA);
+                            strOutScripts.append("--inserções de relacionamento das tags contidas dentro da tag ").append(rsIntMapeamento.getString("API")).append(QUEBRA_LINHA);
+                            strOutScripts.append("--relacionam a tag com uma coluna da tabela temporário do INOUT").append(QUEBRA_LINHA);
 
                             if (psIntMapeamentoColuna == null) {
                                 if (system.toUpperCase().equals("INOUT")) {
@@ -226,11 +226,11 @@ public class IntMapeamento extends Thread {
                             //rsIntMapeamentoColuna = psIntMapeamentoColuna.executeQuery();
                             //while(rsIntMapeamentoColuna.next()){
                             //    strOutScripts.append(QUEBRA_LINHA);
-                            //    strOutScripts.append("insert into int_mapeamento_coluna (id, api_coluna, layout_coluna,layout_formula)" + QUEBRA_LINHA);
-                            //    if(rsIntMapeamentoColuna.getString("LAYOUT_FORMULA")==null || rsIntMapeamentoColuna.getString("LAYOUT_FORMULA").equals("") || rsIntMapeamentoColuna.getString("LAYOUT_FORMULA").equals("null")){
-                            //         strOutScripts.append("values (seq_int_mapeamento_layout.currval, '" + rsIntMapeamentoColuna.getString("API_COLUNA") + "', '" + rsIntMapeamentoColuna.getString("LAYOUT_COLUNA") + "', '');      " + QUEBRA_LINHA);
+                            //    strOutScripts.append("insert into int_mapeamento_coluna (id, api_coluna, layout_coluna,layout_formula)").append(QUEBRA_LINHA);
+                            //    if(rsIntMapeamentoColuna.getString("LAYOUT_FORMULA")==null || rsIntMapeamentoColuna.getString("LAYOUT_FORMULA").isEmpty() || rsIntMapeamentoColuna.getString("LAYOUT_FORMULA").equals("null")){
+                            //         strOutScripts.append("values (seq_int_mapeamento_layout.currval, '" + rsIntMapeamentoColuna.getString("API_COLUNA") + "', '" + rsIntMapeamentoColuna.getString("LAYOUT_COLUNA") + "', '');      ").append(QUEBRA_LINHA);
                             //     }else{
-                            //         strOutScripts.append("values (seq_int_mapeamento_layout.currval, '" + rsIntMapeamentoColuna.getString("API_COLUNA") + "', '" + rsIntMapeamentoColuna.getString("LAYOUT_COLUNA") + "', '" + rsIntMapeamentoColuna.getString("LAYOUT_FORMULA") + "');      " + QUEBRA_LINHA);
+                            //         strOutScripts.append("values (seq_int_mapeamento_layout.currval, '" + rsIntMapeamentoColuna.getString("API_COLUNA") + "', '" + rsIntMapeamentoColuna.getString("LAYOUT_COLUNA") + "', '" + rsIntMapeamentoColuna.getString("LAYOUT_FORMULA") + "');      ").append(QUEBRA_LINHA);
                             //     }
                             // }
 
@@ -239,10 +239,10 @@ public class IntMapeamento extends Thread {
                                     psIntMapeamentoColuna).create());
 
                             strOutScripts.append(QUEBRA_LINHA);
-                            strOutScripts.append("commit;" + QUEBRA_LINHA);
+                            strOutScripts.append("commit;").append(QUEBRA_LINHA);
 
 
-                            if (strOutScripts != null && !strOutScripts.toString().equals("")) {
+                            if (strOutScripts != null && !strOutScripts.toString().isEmpty()) {
                                 fileScripts.saveArquivo(strOutScripts);
 
                                 Estatisticas.nTotalIntMapeamento++;
@@ -296,7 +296,7 @@ public class IntMapeamento extends Thread {
     public String getNomePasta(String tipo) {
         String pasta = "";
 
-        if (tipo.equals("") || chNomePasta.equals("N")) {
+        if (tipo.isEmpty() || chNomePasta.equals("N")) {
             pasta = getIdInterface();
         } else if (tipo.equals("IN")) {
             pasta = getIdSistema() + "_in_" + getIdInterface();

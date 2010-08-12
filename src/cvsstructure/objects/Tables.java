@@ -97,7 +97,7 @@ public class Tables {
                         brScripts = new BufferedReader(clob.getCharacterStream());
                         while ((auxScripts = brScripts.readLine()) != null) {
                             String tableOwner = "";
-                            if (!auxScripts.trim().equals("")) {
+                            if (!auxScripts.trim().isEmpty()) {
                                 if (auxScripts.contains("PCTFREE") && !pcFree) {
                                     pcFree = true;
                                     strOutScripts.append(")");
@@ -114,13 +114,13 @@ public class Tables {
                                     //.replace(tablespace, "&&SFW_DATA_1M");
                                     //.substring(0, (auxScripts.indexOf("PCFREE") == -1 ? auxScripts.length() -1 : auxScripts.indexOf("PCFREE")));
                                     //}
-                                    strOutScripts.append(auxScripts + QUEBRA_LINHA);
+                                    strOutScripts.append(auxScripts).append(QUEBRA_LINHA);
                                 }
                             }
                         }
                         //strOutScripts.append(QUEBRA_LINHA );
                         //strOutScripts.append(QUEBRA_LINHA);
-                        strOutScripts.append(";" + QUEBRA_LINHA);
+                        strOutScripts.append(";").append(QUEBRA_LINHA);
                         //strOutScripts.append("/");
                     } else {
                         SfwLogger.log("No data are being generated");
@@ -130,7 +130,7 @@ public class Tables {
                     }
                 }
 
-                if (strOutScripts != null && !strOutScripts.toString().equals("")) {
+                if (strOutScripts != null && !strOutScripts.toString().isEmpty()) {
                     fileScripts.saveArquivo(strOutScripts);
 
                     Estatisticas.nTotalTabelas++;

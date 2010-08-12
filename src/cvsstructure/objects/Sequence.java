@@ -82,15 +82,15 @@ public class Sequence extends Thread{
                             strOutScripts.append("conn &&INTEGRACAO_USER/&&INTEGRACAO_PASS@&&TNS" + QUEBRA_LINHA + QUEBRA_LINHA);
                         }
                     }
-                    strOutScripts.append("-- Create sequence " + QUEBRA_LINHA);
-                    strOutScripts.append("create sequence " + rsSequences.getString("SEQUENCE_NAME") + QUEBRA_LINHA);
-                    strOutScripts.append("  minvalue 1" + rsSequences.getString("MIN_VALUE") + QUEBRA_LINHA);
-                    strOutScripts.append("  maxvalue " + rsSequences.getString("MAX_VALUE") + QUEBRA_LINHA);
-                    strOutScripts.append("  start with " + rsSequences.getString("LAST_NUMBER") + QUEBRA_LINHA);
-                    strOutScripts.append("  increment by " + rsSequences.getString("INCREMENT_BY") + QUEBRA_LINHA);
-                    strOutScripts.append("  cache " + rsSequences.getString("CACHE_SIZE") + ";" + QUEBRA_LINHA);
+                    strOutScripts.append("-- Create sequence ").append(QUEBRA_LINHA);
+                    strOutScripts.append("create sequence ").append(rsSequences.getString("SEQUENCE_NAME")).append(QUEBRA_LINHA);
+                    strOutScripts.append("  minvalue 1").append(rsSequences.getString("MIN_VALUE")).append(QUEBRA_LINHA);
+                    strOutScripts.append("  maxvalue ").append(rsSequences.getString("MAX_VALUE")).append(QUEBRA_LINHA);
+                    strOutScripts.append("  start with ").append(rsSequences.getString("LAST_NUMBER")).append(QUEBRA_LINHA);
+                    strOutScripts.append("  increment by ").append(rsSequences.getString("INCREMENT_BY")).append(QUEBRA_LINHA);
+                    strOutScripts.append("  cache ").append(rsSequences.getString("CACHE_SIZE")).append(";").append(QUEBRA_LINHA);
 
-                    if (strOutScripts != null && !strOutScripts.toString().equals("")) {
+                    if (strOutScripts != null && !strOutScripts.toString().isEmpty()) {
                         fileScripts.createNewFile();
                         fwScripts = new FileWriter(fileScripts, false);
                         fwScripts.write(strOutScripts.toString(), 0, strOutScripts.length());
