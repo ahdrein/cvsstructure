@@ -1131,11 +1131,7 @@ public class CvsStructureFrame extends javax.swing.JFrame {
                                         try {
                                             //Conectando na Base do InOut
                                             try {
-                                                ConnectionInout.initialize(cliente.getDataBase(),
-                                                        cliente.getIoUser().getUser(),
-                                                        cliente.getIoUser().getPass(),
-                                                        cliente.getPort(),
-                                                        cliente.getService());
+                                                ConnectionInout.initialize(cliente);
 
                                                 if (ConnectionInout.getConnection() == null) {
                                                     JOptionPane.showMessageDialog(null, "Erro ao conectar no inout !");
@@ -1145,7 +1141,7 @@ public class CvsStructureFrame extends javax.swing.JFrame {
                                             }
 
                                             //Conectando na Base de Integração
-                                            if (cliente.getItUser().getUser() != null && !cliente.getItUser().getUser().equals("")) {
+                                            if (cliente.getItUser().getUser() != null && !cliente.getItUser().getUser().isEmpty()) {
                                                 try {
                                                     ConnectionIntegracao.initialize(cliente.getDataBase(),
                                                             cliente.getItUser().getUser(),
@@ -1208,29 +1204,29 @@ public class CvsStructureFrame extends javax.swing.JFrame {
         String conn = null;
         Cliente cliente =  new Cliente();
 
-        if (txService.getText().equals("") && txSid.getText().equals("")) {
+        if (txService.getText().isEmpty() && txSid.getText().isEmpty()) {
             JOptionPane.showMessageDialog(null, "Informe a Service/Sid");
         } else {
-            if (txIoUser.getText().equals("")) {
+            if (txIoUser.getText().isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Informe Usuario");
             } else {
-                if (txIoPass.getText().equals("")) {
+                if (txIoPass.getText().isEmpty()) {
                     JOptionPane.showMessageDialog(null, "Informe Password");
                 } else {
-                    if (txPort.getText().equals("")) {
+                    if (txPort.getText().isEmpty()) {
                         JOptionPane.showMessageDialog(null, "Informe a Porta para conexão");
                     } else {
-                        if (txHost.getText().equals("")) {
+                        if (txHost.getText().isEmpty()) {
                             JOptionPane.showMessageDialog(null, "Informe o Host conexão");
                         } else {
                             if (model.contains(txIoUser.getText() + "/" + txService.getText()) || model.contains(txIoUser.getText() + "/" + txSid.getText())) {
                                 JOptionPane.showMessageDialog(null, "Usuarios já cadastrado");
                             } else {
-                                if (txService.getText() != null || !txService.getText().equals("")) {
+                                if (txService.getText() != null || !txService.getText().isEmpty()) {
                                     cliente.setConn("jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=" + txHost.getText() + ")(PORT=" + txPort.getText() + ")))(CONNECT_DATA=(SERVICE_NAME=" + txService.getText() + ")))");
                                     model.addElement(txIoUser.getText().toLowerCase().trim() + "/" + txService.getText().toLowerCase().trim());
                                     cliente.setService(txService.getText());
-                                } else if (txSid.getText() != null || !txSid.getText().equals("")) {
+                                } else if (txSid.getText() != null || !txSid.getText().isEmpty()) {
                                     cliente.setConn("jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=" + txHost.getText() + ")(PORT=" + txPort.getText() + ")))(CONNECT_DATA=(SID=" + txSid.getText() + ")))");
                                     model.addElement(txIoUser.getText().toLowerCase().trim() + "/" + txSid.getText().toLowerCase().trim());
                                     cliente.setService(txSid.getText());
@@ -1335,40 +1331,60 @@ public class CvsStructureFrame extends javax.swing.JFrame {
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.OK_CANCEL_OPTION,
                 null, options, options[0]) == 0) {
 
-            StringBuffer strOutScripts = new StringBuffer();
+            StringBuilder strOutScripts = new StringBuilder();
             String fileNameScripts = ".\\ConfigCVSStructure.conf";
             for (Cliente cliente: collectionCliente) {
                 if (cliente.getIoUser().getUser() != null && cliente.getIoUser().getUser() != null) {
                     //String userArray = arrUsers[i][2].toUpperCase()+"/"+arrUsers[i][4].toUpperCase();
-                    strOutScripts.append(cliente.getIoUser().getUser() + ";"); //
-                    strOutScripts.append(cliente.getIoUser().getPass() + ";"); //
-                    strOutScripts.append(cliente.getItUser().getUser() + ";"); //
-                    strOutScripts.append(cliente.getItUser().getPass() + ";"); //
-                    strOutScripts.append(cliente.getConn() + ";"); //
+                    strOutScripts.append(cliente.getIoUser().getUser());
+                    strOutScripts.append(";");
+                    strOutScripts.append(cliente.getIoUser().getPass());
+                    strOutScripts.append(";");
+                    strOutScripts.append(cliente.getItUser().getUser());
+                    strOutScripts.append(";");
+                    strOutScripts.append(cliente.getItUser().getPass());
+                    strOutScripts.append(";");
+                    strOutScripts.append(cliente.getConn());
+                    strOutScripts.append(";");
 
-                    strOutScripts.append(cliente.getBgUser().getUser() + ";"); //
-                    strOutScripts.append(cliente.getBgUser().getPass() + ";"); //
+                    strOutScripts.append(cliente.getBgUser().getUser());
+                    strOutScripts.append(";");
+                    strOutScripts.append(cliente.getBgUser().getPass());
+                    strOutScripts.append(";");
 
-                    strOutScripts.append(cliente.getExUser().getUser() + ";"); //
-                    strOutScripts.append(cliente.getExUser().getPass() + ";"); //
+                    strOutScripts.append(cliente.getExUser().getUser());
+                    strOutScripts.append(";");
+                    strOutScripts.append(cliente.getExUser().getPass());
+                    strOutScripts.append(";");
 
-                    strOutScripts.append(cliente.getIsUser().getUser() + ";"); //
-                    strOutScripts.append(cliente.getIsUser().getPass() + ";"); //
+                    strOutScripts.append(cliente.getIsUser().getUser());
+                    strOutScripts.append(";");
+                    strOutScripts.append(cliente.getIsUser().getPass());
+                    strOutScripts.append(";");
 
-                    strOutScripts.append(cliente.getDbUser().getUser() + ";"); //
-                    strOutScripts.append(cliente.getDbUser().getPass() + ";"); //
+                    strOutScripts.append(cliente.getDbUser().getUser());
+                    strOutScripts.append(";");
+                    strOutScripts.append(cliente.getDbUser().getPass());
+                    strOutScripts.append(";");
 
-                    strOutScripts.append(cliente.getCeUser().getUser() + ";"); //
-                    strOutScripts.append(cliente.getCeUser().getPass() + ";"); //
+                    strOutScripts.append(cliente.getCeUser().getUser());
+                    strOutScripts.append(";");
+                    strOutScripts.append(cliente.getCeUser().getPass());
+                    strOutScripts.append(";");
 
-                    strOutScripts.append(cliente.getCiUser().getUser() + ";"); //
-                    strOutScripts.append(cliente.getCiUser().getPass() + ";"); //
+                    strOutScripts.append(cliente.getCiUser().getUser());
+                    strOutScripts.append(";");
+                    strOutScripts.append(cliente.getCiUser().getPass());
+                    strOutScripts.append(";");
 
-                    strOutScripts.append(cliente.getCaiUser().getUser() + ";"); //
-                    strOutScripts.append(cliente.getCaiUser().getPass() + ";"); //
+                    strOutScripts.append(cliente.getCaiUser().getUser());
+                    strOutScripts.append(";");
+                    strOutScripts.append(cliente.getCaiUser().getPass());
+                    strOutScripts.append(";");
 
-                    strOutScripts.append(cliente.getAppsUser().getUser() + ";"); //
-                    strOutScripts.append(cliente.getAppsUser().getPass()); //
+                    strOutScripts.append(cliente.getAppsUser().getUser());
+                    strOutScripts.append(";");
+                    strOutScripts.append(cliente.getAppsUser().getPass());
 
                     strOutScripts.append("\n");
                 }
@@ -1581,6 +1597,8 @@ public class CvsStructureFrame extends javax.swing.JFrame {
                     txAPPSUser.setText(cliente.getAppsUser().getUser());
                     txAPPSPass.setText(cliente.getAppsUser().getPass());
 
+                    Cliente.setInstance(cliente);
+
                     break;
                 }
             }
@@ -1590,7 +1608,7 @@ public class CvsStructureFrame extends javax.swing.JFrame {
 //        public void run() {
         try {
             ConnectionInout.disconnect();
-            ConnectionInout.initialize(txHost.getText().toString(), txIoUser.getText().toString(), txIoPass.getText().toString(), txPort.getText(), txService.getText());
+            ConnectionInout.initialize(Cliente.getInstance());
             modelInterfaces.removeAllElements();
             ArrayList interfaces = cvsStruct.readInterfaces();
             for (int i = 0; i < interfaces.size(); i++) {
@@ -1609,7 +1627,7 @@ public class CvsStructureFrame extends javax.swing.JFrame {
 
     private void btTesteConexaoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btTesteConexaoActionPerformed
         try {
-            ConnectionInout.initialize(txHost.getText().toString(), txIoUser.getText().toString(), txIoPass.getText().toString(), txPort.getText(), txService.getText());
+            ConnectionInout.initialize(Cliente.getInstance());
             if (ConnectionInout.getConnection() != null) {
                 JOptionPane.showMessageDialog(null, "OK !");
             } else {
@@ -1682,7 +1700,7 @@ public class CvsStructureFrame extends javax.swing.JFrame {
     private void txWhereInterfacesKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txWhereInterfacesKeyPressed
         modelInterfaces.removeAllElements();
         for (int i = 0; i < getArrInterfaces().size(); i++) {
-            if (txWhereInterfaces.getText().equals("") || getArrInterfaces().get(i).toUpperCase().contains(txWhereInterfaces.getText().toUpperCase())) {
+            if (txWhereInterfaces.getText().isEmpty() || getArrInterfaces().get(i).toUpperCase().contains(txWhereInterfaces.getText().toUpperCase())) {
                 modelInterfaces.addElement(getArrInterfaces().get(i));
             }
         }
@@ -1692,108 +1710,13 @@ public class CvsStructureFrame extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(final String args[]) {
-
         java.awt.EventQueue.invokeLater(new Runnable() {
-
+            @Override
             public void run() {
                 try {
-                    validateCommandLine();
+                    new CvsStructureFrame().setVisible(true);
                 } catch (Exception ex) {
                     Logger.getLogger(CvsStructureFrame.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-
-            private void validateCommandLine() throws Exception {
-                CVSStructure cvsStruct = new CVSStructure();
-                String sChave = null;
-                String s_User = null;
-                String s_Pass = null;
-                String s_ItUser = null;
-                String s_ItPass = null;
-                String sRole = null;
-                String sDebug = "N";
-                String sSessionSchema = null;
-                String s_Conn = null;
-
-                for (int i = 0; i < args.length; i++) {
-                    // valida parâmetro importacao
-                    //armazena o usuário e senha a utilizar durante o processamento
-                    sChave = "-user=";
-                    if (args[i].startsWith(sChave)) {
-                        String s_Usuario_Senha = args[i].substring(sChave.length(), args[i].length());
-                        s_User = s_Usuario_Senha.substring(0, s_Usuario_Senha.indexOf("/"));
-                        s_Pass = s_Usuario_Senha.substring(s_Usuario_Senha.indexOf("/") + 1);
-                    }
-                    // Valida parametro CONN
-                    //armazena dados sobre o TNS
-                    sChave = "-conn=";
-                    if (args[i].startsWith(sChave)) {
-                        s_Conn = args[i].substring(sChave.length(), args[i].length());
-                    }
-
-                    //armazena o schema a utilizar durante o processamento corrente
-                    sChave = "-sessionschema=";
-                    if (args[i].startsWith(sChave)) {
-                        sSessionSchema = args[i].substring(sChave.length(), args[i].length());
-                    }
-
-                    //armazena a ROLE utilizada durante o processamento
-                    sChave = "-role=";
-                    if (args[i].startsWith(sChave)) {
-                        sRole = args[i].substring(sChave.length(), args[i].length());
-                    }
-
-                    //armazena a ROLE utilizada durante o processamento
-                    sChave = "-debug=";
-                    if (args[i].startsWith(sChave)) {
-                        sDebug = args[i].substring(sChave.length(), args[i].length());
-                    }
-                }
-
-                if (s_Conn == null) {
-                    new CvsStructureFrame().setVisible(true);
-                } else {
-                    cvsStruct.s_Conn = s_Conn;
-                    cvsStruct.s_User = s_User;
-                    cvsStruct.s_Pass = s_Pass;
-                    cvsStruct.s_ItUser = s_ItUser;
-                    cvsStruct.s_ItPass = s_ItPass;
-
-                    ArrayList arrChecks = new ArrayList();
-                    arrChecks.add("T");
-
-                    if (sDebug != null && !sDebug.equals("")) {
-                        CVSStructure.sDebug = "S";
-                    }
-
-                    // Utilizado para execução da interface sem a camada de apresentação visual
-                    //Conectando na Base do InOut
-                            /*
-                    try {
-                    ConnectionInout.initialize(arrUsers[i][7], cvsStruct.s_User, cvsStruct.s_Pass, arrUsers[i][8], arrUsers[i][4]);
-
-                    if( ConnectionInout.getConnection() == null ){
-                    JOptionPane.showMessageDialog(null, "Erro ao conectar no inout !");
-                    }
-                    } catch (SQLException ex) {
-                    JOptionPane.showMessageDialog(null, "Erro na conexão inout !" + ex.getMessage());
-                    }
-
-                    //Conectando na Base de Integração
-                    if(cvsStruct.s_ItUser != null && !cvsStruct.s_ItUser.equals("")){
-                    try{
-                    ConnectionIntegracao.initialize(arrUsers[i][7], cvsStruct.s_ItUser, cvsStruct.s_ItPass, arrUsers[i][8], arrUsers[i][4]);
-
-                    if( ConnectionIntegracao.getConnection() == null ){
-                    JOptionPane.showMessageDialog(null, "Erro ao conectar na integracao !");
-                    }
-                    } catch (SQLException ex) {
-                    JOptionPane.showMessageDialog(null, "Erro na conexão integração !" + ex.getMessage());
-                    }
-                    }
-                    cvsStruct.connectOracle(s_User, s_Pass);
-                     * */
-                    cvsStruct.spoolCVSStruture(arrChecks);
                 }
             }
         });

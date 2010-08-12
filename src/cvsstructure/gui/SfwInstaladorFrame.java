@@ -1,5 +1,7 @@
 package cvsstructure.gui;
 
+import cvsstructure.instalador.CheckNode;
+import cvsstructure.instalador.CheckRenderer;
 import cvsstructure.instalador.model.InterfacesFactory;
 import cvsstructure.instalador.model.LayoutInterfaces;
 import java.awt.event.MouseAdapter;
@@ -10,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -19,8 +20,6 @@ import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
-import sfw.structure.instalador.CheckNode;
-import sfw.structure.instalador.CheckRenderer;
 
 
 /*

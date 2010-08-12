@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package sfw.structure.instalador;
+package cvsstructure.instalador;
 
 /* (swing1.1) */
 //package jp.gr.java_conf.tame.swing.examples;

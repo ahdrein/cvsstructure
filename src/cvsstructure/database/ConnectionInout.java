@@ -5,40 +5,24 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import cvsstructure.log.SfwLogger;
+import cvsstructure.model.Cliente;
 
 //Singleton for use just one connection
 public class ConnectionInout {
 
     private static Connection conn;
-    private static String dataBase;
-    private static String userName;
-    private static String passWord;
-    private static String port;
-    private static String service;
 
     private ConnectionInout() throws Exception {
     }
 
-    public static void initialize(String dataBase, String userName, String passWord, String port, String service) throws SQLException {
+    public static void initialize(Cliente cliente) throws SQLException {
 
         SfwLogger.debug("Conectando ao banco de dados...");
-
-        ConnectionInout.dataBase = dataBase;
-        ConnectionInout.userName = userName;
-        ConnectionInout.passWord = passWord;
-        ConnectionInout.port = port;
-        ConnectionInout.service = service;
-
-        ConnectionInout.getConnection();
-
-        SfwLogger.debug("Conexão com o banco de dados realizada com sucesso.");
-    }
-
-    public static Connection getConnection() throws SQLException {
 
         if (conn == null || conn.isClosed()) {
             SfwLogger.debug("Conexão não encontrada. Connectando ...");
 
+            
             try {
                 Class.forName("oracle.jdbc.OracleDriver");
                 DriverManager.registerDriver((java.sql.Driver) Class.forName("oracle.jdbc.OracleDriver").newInstance());
@@ -46,19 +30,27 @@ public class ConnectionInout {
                 SfwLogger.log("ERRO ao localizar o Driver 'oracle.jdbc.OracleDriver' da base de dados!");
                 throw new RuntimeException(e);
             }
+            
 
-            ConnectionInout.dataBase = "jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=" + ConnectionInout.dataBase + ")(PORT=" + ConnectionInout.port + ")))(CONNECT_DATA=(SERVICE_NAME=" + ConnectionInout.service + ")))";
-
-            SfwLogger.debug("Driver encontrado com sucesso");
+            //SfwLogger.debug("Driver encontrado com sucesso");
 
             try {
-                conn = DriverManager.getConnection(dataBase, userName, passWord);
+                conn = DriverManager.getConnection(cliente.getConn(), cliente.getIoUser().getUser(), cliente.getIoUser().getPass());
                 conn.setAutoCommit(false);
             } catch (Exception e) {
                 conn = null;
             }
 
             SfwLogger.debug("Conectado com sucesso");
+        }
+
+        SfwLogger.debug("Conexão com o banco de dados realizada com sucesso.");
+    }
+
+    public static Connection getConnection() throws SQLException {
+
+        if (conn == null || conn.isClosed()) {
+            SfwLogger.debug("Conexão não estabelacida");
         }
         return conn;
     }

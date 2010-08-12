@@ -1040,7 +1040,7 @@ public class SfwMapeamentoFrame extends javax.swing.JFrame {
         ///////String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
         boolean flag = true;
         // View/Tabela
-        //if(txViewTabela.getText().equals("")){
+        //if(txViewTabela.getText().isEmpty()){
         //    flag = false;
         //    JOptionPane.showMessageDialog(null, "View/Tabela não pode ser nulo!");
         //}
@@ -1472,7 +1472,7 @@ public class SfwMapeamentoFrame extends javax.swing.JFrame {
                    //         String aux;
 
                    //         while ((aux=brCtlFixo.readLine())!=null){
-                   //             strOutCltFixo.append("exec PRC_UPDATE_CONCATENA_LONG('TAB_INTERFACE','CTL_FIXO','TABLE_NAME','" + (txViewTabela.getText().equals("") ? "" : txViewTabela.getText()) + "','" + aux.replace("'", "''") + "');");
+                   //             strOutCltFixo.append("exec PRC_UPDATE_CONCATENA_LONG('TAB_INTERFACE','CTL_FIXO','TABLE_NAME','" + (txViewTabela.getText().isEmpty() ? "" : txViewTabela.getText()) + "','" + aux.replace("'", "''") + "');");
                    //             strOutCltFixo.append("\n\n");
                    //         }
                    //     }
@@ -1489,16 +1489,16 @@ public class SfwMapeamentoFrame extends javax.swing.JFrame {
                     strOut.append("delete from COLUNAS_TAB_INTERFACE where TABLE_NAME = '" + (arrTabelas[i][0].toUpperCase().toString()) + "';\n\n");
                     strOut.append("begin\n\n");
                     strOut.append("  update    TAB_INTERFACE\n");
-                    strOut.append("  set       DESCRICAO = '" + (txDescricao.getText().equals("") ? "" : txDescricao.getText()) + "',");
+                    strOut.append("  set       DESCRICAO = '" + (txDescricao.getText().isEmpty() ? "" : txDescricao.getText()) + "',");
                     strOut.append("\n");
                     strOut.append("         CTL_NAME = '" + (arrTabelas[i][0].toUpperCase().toString()) + "',\n");
-                    strOut.append("        PREFIX_FILE = '" + (txArquivoTexto.getText().equals("") ? "" : txArquivoTexto.getText()) + "',\n");
+                    strOut.append("        PREFIX_FILE = '" + (txArquivoTexto.getText().isEmpty() ? "" : txArquivoTexto.getText()) + "',\n");
                     strOut.append("        GERAR_CTL = '" + "S" + "',\n");
                     strOut.append("        PRIORIDADE = " + 0 + ",\n");
-                    strOut.append("        ODBC_SOURCE_NAME = '" + (arrTabelas[i][9].equals("") ? "" : arrTabelas[i][9]) + "',\n");
-                    strOut.append("        ODBC_USER = '" + (arrTabelas[i][10].equals("") ? "" : arrTabelas[i][10]) + "',\n");
-                    strOut.append("        ODBC_PASSWORD = '" + (arrTabelas[i][11].equals("") ? "" : arrTabelas[i][11]) + "',\n");
-                    strOut.append("        ODBC_TABLE_NAME = '" + (arrTabelas[i][13].equals("") ? "" : arrTabelas[i][13]) + "',\n");
+                    strOut.append("        ODBC_SOURCE_NAME = '" + (arrTabelas[i][9].isEmpty() ? "" : arrTabelas[i][9]) + "',\n");
+                    strOut.append("        ODBC_USER = '" + (arrTabelas[i][10].isEmpty() ? "" : arrTabelas[i][10]) + "',\n");
+                    strOut.append("        ODBC_PASSWORD = '" + (arrTabelas[i][11].isEmpty() ? "" : arrTabelas[i][11]) + "',\n");
+                    strOut.append("        ODBC_TABLE_NAME = '" + (arrTabelas[i][13].isEmpty() ? "" : arrTabelas[i][13]) + "',\n");
                     strOut.append("        ODBC_WHERE = '" + "" + "',\n");
                     strOut.append("        ODBC_SELECT_ESPECIFICO = '" + "" + "',\n");
                     strOut.append("        TIPO_INTERFACE = '" + "S" + "',\n");
@@ -1506,29 +1506,29 @@ public class SfwMapeamentoFrame extends javax.swing.JFrame {
                     strOut.append("        ORACLE_NEXT_EXTENT = '"+""+"',\n");
                     strOut.append("        ORACLE_INDEX_TABLESPACE = '"+""+"',\n");
                     strOut.append("        ELIMINAR_REG_EXECUCAO = '"+"N"+"',\n");
-                    strOut.append("        ID_SISTEMA = '"+(cbSistema.getSelectedItem().toString().equals("") ? "" : cbSistema.getSelectedItem().toString())+"',\n");
-                    strOut.append("        PROCEDURE_NAME = '"+(arrTabelas[i][3].equals("") ? "" : arrTabelas[i][3])+"',\n");
-                    strOut.append("        SEPARADOR = '"+(arrTabelas[i][6].equals("") ? "" : arrTabelas[i][6])+"',\n");
+                    strOut.append("        ID_SISTEMA = '"+(cbSistema.getSelectedItem().toString().isEmpty() ? "" : cbSistema.getSelectedItem().toString())+"',\n");
+                    strOut.append("        PROCEDURE_NAME = '"+(arrTabelas[i][3].isEmpty() ? "" : arrTabelas[i][3])+"',\n");
+                    strOut.append("        SEPARADOR = '"+(arrTabelas[i][6].isEmpty() ? "" : arrTabelas[i][6])+"',\n");
                     strOut.append("        CTL_FIXO = null,\n");
                     strOut.append("        TRIGGER1 = null,\n");
                     strOut.append("        TRIGGER2 = null,\n");
-                    strOut.append("        COMANDO_EXTRA_LOADER = '"+(arrTabelas[i][7].equals("") ? "" : arrTabelas[i][7])+"'\n");
-                    strOut.append("  where TABLE_NAME = '"+(arrTabelas[i][0].equals("") ? "" : arrTabelas[i][0])+"';\n\n");
+                    strOut.append("        COMANDO_EXTRA_LOADER = '"+(arrTabelas[i][7].isEmpty() ? "" : arrTabelas[i][7])+"'\n");
+                    strOut.append("  where TABLE_NAME = '"+(arrTabelas[i][0].isEmpty() ? "" : arrTabelas[i][0])+"';\n\n");
                     strOut.append("  if SQL%notfound then\n");
                     strOut.append("        insert into TAB_INTERFACE\n");
                     strOut.append("        (TABLE_NAME, \n        DESCRICAO, \n        CTL_NAME, \n        PREFIX_FILE, \n        GERAR_CTL, \n        PRIORIDADE, \n        ODBC_SOURCE_NAME, \n        ODBC_USER, \n        ODBC_PASSWORD, \n        ODBC_TABLE_NAME, \n        ODBC_WHERE, \n        ODBC_SELECT_ESPECIFICO, \n        TIPO_INTERFACE,\n");
                     strOut.append("        ORACLE_INITIAL_EXTENT, \n        ORACLE_NEXT_EXTENT, \n        ORACLE_INDEX_TABLESPACE, \n        ELIMINAR_REG_EXECUCAO, \n        COMANDO_EXTRA_LOADER, \n        ID_SISTEMA, \n        PROCEDURE_NAME, \n        SEPARADOR)\n");
                     strOut.append("        values\n");
-                    strOut.append("        ('" + (arrTabelas[i][0].equals("") ? "" : arrTabelas[i][0]) + "', \n        '");
-                    strOut.append((txDescricao.getText().equals("") ? "" : txDescricao.getText()) + "', \n        '");
-                    strOut.append((arrTabelas[i][8].equals("") ? "" : arrTabelas[i][8]) + "', \n        '");
-                    strOut.append((txArquivoTexto.getText().equals("") ? "" : txArquivoTexto.getText()) + "', \n        '");
+                    strOut.append("        ('" + (arrTabelas[i][0].isEmpty() ? "" : arrTabelas[i][0]) + "', \n        '");
+                    strOut.append((txDescricao.getText().isEmpty() ? "" : txDescricao.getText()) + "', \n        '");
+                    strOut.append((arrTabelas[i][8].isEmpty() ? "" : arrTabelas[i][8]) + "', \n        '");
+                    strOut.append((txArquivoTexto.getText().isEmpty() ? "" : txArquivoTexto.getText()) + "', \n        '");
                     strOut.append("S" + "', \n        ");
                     strOut.append(0 + ", \n        '");
-                    strOut.append((arrTabelas[i][9].equals("") ? "" : arrTabelas[i][9]) + "', \n        '");
-                    strOut.append((arrTabelas[i][10].equals("") ? "" : arrTabelas[i][10]) +"', \n        '");
-                    strOut.append((arrTabelas[i][11].equals("") ? "" : arrTabelas[i][11]) + "', \n        '");
-                    strOut.append((arrTabelas[i][13].equals("") ? "" : arrTabelas[i][13]) + "', \n        '");
+                    strOut.append((arrTabelas[i][9].isEmpty() ? "" : arrTabelas[i][9]) + "', \n        '");
+                    strOut.append((arrTabelas[i][10].isEmpty() ? "" : arrTabelas[i][10]) +"', \n        '");
+                    strOut.append((arrTabelas[i][11].isEmpty() ? "" : arrTabelas[i][11]) + "', \n        '");
+                    strOut.append((arrTabelas[i][13].isEmpty() ? "" : arrTabelas[i][13]) + "', \n        '");
                     strOut.append(""/*rsTabInterface.getString("ODBC_WHERE")*/ + "', \n        '");
                     strOut.append(""/*rsTabInterface.getString("ODBC_SELECT_ESPECIFICO")*/ + "', \n        '");
                     strOut.append(""/*rsTabInterface.getString("TIPO_INTERFACE")*/ + "',\n        ");
@@ -1536,10 +1536,10 @@ public class SfwMapeamentoFrame extends javax.swing.JFrame {
                     strOut.append(""/*rsTabInterface.getString("ORACLE_NEXT_EXTENT")*/ + "', \n        '");
                     strOut.append(""/*rsTabInterface.getString("ORACLE_INDEX_TABLESPACE")*/ + "',\n        '" );
                     strOut.append(""/*rsTabInterface.getString("ELIMINAR_REG_EXECUCAO")*/ + "',\n        '");
-                    strOut.append((arrTabelas[i][7].equals("") ? "" : arrTabelas[i][7]) + "',\n        ");
-                    strOut.append("        '" + (cbSistema.getSelectedItem().toString().equals("") ? "" : cbSistema.getSelectedItem().toString()) + "',\n        '");
-                    strOut.append("        '" + (arrTabelas[i][3].equals("") ? "" : arrTabelas[i][3]) + "',\n        '");
-                    strOut.append((arrTabelas[i][6].equals("") ? "" : arrTabelas[i][6]) + "')");
+                    strOut.append((arrTabelas[i][7].isEmpty() ? "" : arrTabelas[i][7]) + "',\n        ");
+                    strOut.append("        '" + (cbSistema.getSelectedItem().toString().isEmpty() ? "" : cbSistema.getSelectedItem().toString()) + "',\n        '");
+                    strOut.append("        '" + (arrTabelas[i][3].isEmpty() ? "" : arrTabelas[i][3]) + "',\n        '");
+                    strOut.append((arrTabelas[i][6].isEmpty() ? "" : arrTabelas[i][6]) + "')");
                     strOut.append("\n");
                     strOut.append("  end if;");
                     strOut.append("\n");
@@ -1556,7 +1556,7 @@ public class SfwMapeamentoFrame extends javax.swing.JFrame {
                         BufferedReader br2 = new BufferedReader(rsTabInterface.getCharacterStream("TRIGGER1"));
 
                         while ((aux=br2.readLine())!=null){
-                            strOut.append("exec PRC_UPDATE_CONCATENA_LONG('TAB_INTERFACE','TRIGGER1','TABLE_NAME','" + (txViewTabela.getText().equals("") ? "" : txViewTabela.getText()) + "','" + aux.replace("'", "''") + "');");
+                            strOut.append("exec PRC_UPDATE_CONCATENA_LONG('TAB_INTERFACE','TRIGGER1','TABLE_NAME','" + (txViewTabela.getText().isEmpty() ? "" : txViewTabela.getText()) + "','" + aux.replace("'", "''") + "');");
                             strOut.append("\n\n");
                         }
                     }
@@ -1567,7 +1567,7 @@ public class SfwMapeamentoFrame extends javax.swing.JFrame {
                         BufferedReader br = new BufferedReader(rsTabInterface.getCharacterStream("TRIGGER2"));
 
                         while ((aux=br.readLine())!=null){
-                            strOut.append("exec PRC_UPDATE_CONCATENA_LONG('TAB_INTERFACE','TRIGGER2','TABLE_NAME','" + (txViewTabela.getText().equals("") ? "" : txViewTabela.getText()) + "','" + aux.replace("'", "''") + "');");
+                            strOut.append("exec PRC_UPDATE_CONCATENA_LONG('TAB_INTERFACE','TRIGGER2','TABLE_NAME','" + (txViewTabela.getText().isEmpty() ? "" : txViewTabela.getText()) + "','" + aux.replace("'", "''") + "');");
                             strOut.append("\n\n");
                         }
                     }

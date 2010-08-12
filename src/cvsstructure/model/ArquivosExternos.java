@@ -66,7 +66,7 @@ public class ArquivosExternos {
             psPermissaoTabela = ConnectionInout.getConnection().prepareStatement("select id_interface, table_name from permissao_tabela where lower(table_name) != 'tmp_cvs_structure' and id_interface = ?");
         }
 
-        psPermissaoTabela.setString(1, idInterface);
+        psPermissaoTabela.setString(1, idInterface.toUpperCase());
         rsPermissaoTabela = psPermissaoTabela.executeQuery();
 
         return rsPermissaoTabela;

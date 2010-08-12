@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package sfw.structure.instalador;
+package cvsstructure.instalador;
 
 import java.awt.*;
 import javax.swing.*;
