@@ -106,7 +106,7 @@ public class ExportarArquivosExternos extends Thread {
     }
 
     public String getNomePasta(String tipo) {
-        if (tipo.equals("") || chNomePasta.equals("N")) {
+        if (tipo.isEmpty() || chNomePasta.equals("N")) {
             return interfaces.getIdInterface();
         } else if (tipo.equals("IN")) {
             return interfaces.getIdSistema() + "_in_" + interfaces.getIdInterface();

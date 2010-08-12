@@ -82,7 +82,7 @@ public class Packages {
                     strOutScripts.append(QUEBRA_LINHA);
                     strOutScripts.append("/");
 
-                    if (strOutScripts != null && !strOutScripts.toString().equals("")) {
+                    if (strOutScripts != null && !strOutScripts.toString().isEmpty()) {
                         fileScripts.createNewFile();
 
                         fwScripts = new FileWriter(fileScripts, false);

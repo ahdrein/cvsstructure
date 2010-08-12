@@ -48,7 +48,7 @@ public class ObjetosIntegracao extends Thread {
         PreparedStatement psCreateTableIT = null;
         try {
             if (ConnectionIntegracao.getConnection() != null) {
-                StringBuffer sbAllObjectsSystem = new StringBuffer();
+                StringBuilder sbAllObjectsSystem = new StringBuilder();
                 sbAllObjectsSystem.append("select object_name, OBJECT_TYPE tipo from user_objects a ");
                 sbAllObjectsSystem.append("where ");
                 sbAllObjectsSystem.append("object_type in ('PROCEDURE','FUNCTION','PACKAGE','TABLE')");
@@ -95,7 +95,8 @@ public class ObjetosIntegracao extends Thread {
                 sbAllObjectsSystem.append("'TMP_CVS_STRUCTURE'");
                 sbAllObjectsSystem.append(")");
                 psFoundObjectsIT = ConnectionIntegracao.getConnection().prepareStatement(sbAllObjectsSystem.toString());
-                StringBuffer sbCreateTableCvsStructure = new StringBuffer();
+
+                StringBuilder sbCreateTableCvsStructure = new StringBuilder();
                 sbCreateTableCvsStructure.append("create table TMP_CVS_STRUCTURE");
                 sbCreateTableCvsStructure.append("(");
                 //sbCreateTableCvsStructure.append(" LEVEL_OBJ        number,");
@@ -108,7 +109,8 @@ public class ObjetosIntegracao extends Thread {
                 //psCreateTable = ConnectionInout.getConnection().prepareCall(sbCreateTableCvsStructure.toString());
                 //psInsertReferencesObjects = ConnectionInout.getConnection().prepareCall(sbInsertTableCvsStructure.toString());
                 psCreateTableIT = ConnectionIntegracao.getConnection().prepareCall(sbCreateTableCvsStructure.toString());
-                StringBuffer sbInsertTableCvsStructure = new StringBuffer();
+
+                StringBuilder sbInsertTableCvsStructure = new StringBuilder();
                 //sbInsertTableCvsStructure.append("insert into TMP_CVS_STRUCTURE (");
                 //sbInsertTableCvsStructure.append("select *");
                 //sbInsertTableCvsStructure.append("  from (select distinct LEVEL,");

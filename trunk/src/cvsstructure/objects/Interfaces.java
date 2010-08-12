@@ -52,74 +52,75 @@ public class Interfaces extends Thread {
             if (!fileScripts.exists()) {
                 StringBuilder strOut = new StringBuilder();
 
-                //logMessage("Creating or appending to file " + fileNameScripts);
+                SfwLogger.log("Creating or appending to file " + fileNameScripts);
 
                 if (chConexaoPorArquivos.equals("S")) {
                     strOut.append("conn &&INOUT_USER/&&INOUT_PASS@&&TNS" + QUEBRA_LINHA + QUEBRA_LINHA);
                 }
-                strOut.append("--  ///////" + QUEBRA_LINHA);
-                strOut.append("--  ///////     Script Gerado a partir do Sistema Gerenciador de Interfaces IN-OUT" + QUEBRA_LINHA);
-                strOut.append("--  ///////     Interface: " + interfaces.getDescricao() + QUEBRA_LINHA);
+                strOut.append("--  ///////").append(QUEBRA_LINHA);
+                strOut.append("--  ///////     Script Gerado a partir do Sistema Gerenciador de Interfaces IN-OUT").append(QUEBRA_LINHA);
+                strOut.append("--  ///////     Interface: ").append(interfaces.getDescricao()).append(QUEBRA_LINHA);
                 strOut.append("--  ///////" + QUEBRA_LINHA + QUEBRA_LINHA + QUEBRA_LINHA);
-                strOut.append("delete from PERMISSAO_TABELA where ID_INTERFACE = '" + interfaces.getIdInterface() + "';" + QUEBRA_LINHA + QUEBRA_LINHA);
-                strOut.append("delete from SISTEMA_INTERFACE where ID_INTERFACE = '" + interfaces.getIdInterface() + "';" + QUEBRA_LINHA + QUEBRA_LINHA);
-                strOut.append("begin" + QUEBRA_LINHA);
-                strOut.append("   insert into    INTERFACES" + QUEBRA_LINHA);
-                strOut.append("      (ID_INTERFACE," + QUEBRA_LINHA);
-                strOut.append("      DESCRICAO," + QUEBRA_LINHA);
-                strOut.append("      NOME_MAQUINA," + QUEBRA_LINHA);
-                strOut.append("      EXECUTAVEL," + QUEBRA_LINHA);
-                strOut.append("      USERNAME," + QUEBRA_LINHA);
-                strOut.append("      TEMPO_MEDIO," + QUEBRA_LINHA);
+                strOut.append("delete from PERMISSAO_TABELA where ID_INTERFACE = '").append(interfaces.getIdInterface()).append("';" + QUEBRA_LINHA + QUEBRA_LINHA);
+                strOut.append("delete from SISTEMA_INTERFACE where ID_INTERFACE = '").append(interfaces.getIdInterface()).append("';" + QUEBRA_LINHA + QUEBRA_LINHA);
+                strOut.append("begin").append(QUEBRA_LINHA);
+                strOut.append("   insert into    INTERFACES").append(QUEBRA_LINHA);
+                strOut.append("      (ID_INTERFACE,").append(QUEBRA_LINHA);
+                strOut.append("      DESCRICAO,").append(QUEBRA_LINHA);
+                strOut.append("      NOME_MAQUINA,").append(QUEBRA_LINHA);
+                strOut.append("      EXECUTAVEL,").append(QUEBRA_LINHA);
+                strOut.append("      USERNAME,").append(QUEBRA_LINHA);
+                strOut.append("      TEMPO_MEDIO,").append(QUEBRA_LINHA);
                 strOut.append("      TIPO_INTERFACE");
 
-                if (interfaces.getInterfereProcessamentoDireto() != null && !interfaces.getInterfereProcessamentoDireto().equals("")) {
-                    strOut.append("," + QUEBRA_LINHA + "     INTERFERE_PROC_DIR)" + QUEBRA_LINHA);
+                if (interfaces.getInterfereProcessamentoDireto() != null && !interfaces.getInterfereProcessamentoDireto().isEmpty()) {
+                    strOut.append("," + QUEBRA_LINHA + "     INTERFERE_PROC_DIR)").append(QUEBRA_LINHA);
                 } else {
-                    strOut.append(")" + QUEBRA_LINHA);
+                    strOut.append(")").append(QUEBRA_LINHA);
                 }
 
-                strOut.append("      values" + QUEBRA_LINHA);
-                strOut.append("      ('" + interfaces.getIdInterface() + "'," + QUEBRA_LINHA);
-                strOut.append("      '" + interfaces.getDescricao() + "'," + QUEBRA_LINHA);
-                strOut.append("   	  '&&USER_MACHINE'," + QUEBRA_LINHA);
-                strOut.append("	  '" + interfaces.getExecutavelCompl() + "'," + QUEBRA_LINHA);
-                strOut.append("	  'ADM'," + QUEBRA_LINHA);
-                strOut.append("	  '0'," + QUEBRA_LINHA);
-                strOut.append("   '" + interfaces.getTipoInterface() + "'");
-                if (interfaces.getInterfereProcessamentoDireto() != null && !interfaces.getInterfereProcessamentoDireto().equals("")) {
+                strOut.append("      values").append(QUEBRA_LINHA);
+                strOut.append("      ('").append(interfaces.getIdInterface()).append("',").append(QUEBRA_LINHA);
+                strOut.append("      '").append(interfaces.getDescricao()).append("',").append(QUEBRA_LINHA);
+                strOut.append("   	  '&&USER_MACHINE',").append(QUEBRA_LINHA);
+                strOut.append("	  '").append(interfaces.getExecutavelCompl()).append("',").append(QUEBRA_LINHA);
+                strOut.append("	  'ADM',").append(QUEBRA_LINHA);
+                strOut.append("	  '0',").append(QUEBRA_LINHA);
+                strOut.append("   '").append(interfaces.getTipoInterface()).append("'");
+                if (interfaces.getInterfereProcessamentoDireto() != null && !interfaces.getInterfereProcessamentoDireto().isEmpty()) {
                     strOut.append(QUEBRA_LINHA);
-                    strOut.append("      ,'" + interfaces.getInterfereProcessamentoDireto() + "'" + QUEBRA_LINHA);
+                    strOut.append("      ,'").append(interfaces.getInterfereProcessamentoDireto()).append("'").append(QUEBRA_LINHA);
                 }
-                strOut.append(");" + QUEBRA_LINHA);
-                strOut.append("exception" + QUEBRA_LINHA);
-                strOut.append("    when dup_val_on_index then" + QUEBRA_LINHA);
-                strOut.append("        update INTERFACES" + QUEBRA_LINHA);
-                strOut.append("        set" + QUEBRA_LINHA);
-                strOut.append("                DESCRICAO = '" + interfaces.getDescricao() + "'," + QUEBRA_LINHA);
-                strOut.append("                NOME_MAQUINA = '&&USER_MACHINE'," + QUEBRA_LINHA);
-                strOut.append("                EXECUTAVEL = '" + interfaces.getExecutavelCompl() + "'," + QUEBRA_LINHA);
-                strOut.append("                USERNAME = 'ADM'," + QUEBRA_LINHA);
-                strOut.append("                TIPO_INTERFACE = '" + interfaces.getTipoInterface() + "'" + QUEBRA_LINHA);
-                strOut.append("        where id_interface  = '" + interfaces.getIdInterface() + "';" + QUEBRA_LINHA);
-                strOut.append("end;" + QUEBRA_LINHA);
+                strOut.append(");").append(QUEBRA_LINHA);
+                strOut.append("exception").append(QUEBRA_LINHA);
+                strOut.append("    when dup_val_on_index then").append(QUEBRA_LINHA);
+                strOut.append("        update INTERFACES").append(QUEBRA_LINHA);
+                strOut.append("        set").append(QUEBRA_LINHA);
+                strOut.append("                DESCRICAO = '").append(interfaces.getDescricao()).append("',").append(QUEBRA_LINHA);
+                strOut.append("                NOME_MAQUINA = '&&USER_MACHINE',").append(QUEBRA_LINHA);
+                strOut.append("                EXECUTAVEL = '").append(interfaces.getExecutavelCompl()).append("',").append(QUEBRA_LINHA);
+                strOut.append("                USERNAME = 'ADM',").append(QUEBRA_LINHA);
+                strOut.append("                TIPO_INTERFACE = '").append(interfaces.getTipoInterface()).append("'").append(QUEBRA_LINHA);
+                strOut.append("        where id_interface  = '").append(interfaces.getIdInterface()).append("';").append(QUEBRA_LINHA);
+                strOut.append("end;").append(QUEBRA_LINHA);
                 strOut.append("/" + QUEBRA_LINHA + QUEBRA_LINHA);
 
                 PreparedStatement psPermissaoTabela = cvsstructure.model.ArquivosExternos.getInstance().getPermissaoTabelaByIdInterface();
-                psPermissaoTabela.setString(1, interfaces.getIdInterface());
+                psPermissaoTabela.setString(1, interfaces.getIdInterface().toUpperCase());
                 strOut.append(new DataTableLayout("INOUT",
                         "permissao_tabela",
                         psPermissaoTabela).create());
 
-                strOut.append("delete from INTERFACE_SAIDA where ID_INTERFACE =  '" + interfaces.getIdInterface() + "';" + QUEBRA_LINHA + QUEBRA_LINHA);
-                strOut.append("insert into SISTEMA_INTERFACE (ID_INTERFACE, ID_SISTEMA) values ('" + interfaces.getIdInterface() + "' , '" + (interfaces.getIdSistema().toUpperCase().equals("SFW") ? "BG" : interfaces.getIdSistema().toUpperCase()) + "');" + QUEBRA_LINHA + QUEBRA_LINHA);
+                strOut.append("delete from INTERFACE_SAIDA where ID_INTERFACE =  '").append(interfaces.getIdInterface()).append("';" + QUEBRA_LINHA + QUEBRA_LINHA);
+                strOut.append("insert into SISTEMA_INTERFACE (ID_INTERFACE, ID_SISTEMA) values ('").append(interfaces.getIdInterface()).append("' , '").append(interfaces.getIdSistema().toUpperCase().equals("SFW") ? "BG" : interfaces.getIdSistema().toUpperCase()).append("');" + QUEBRA_LINHA + QUEBRA_LINHA);
                 strOut.append("commit;" + QUEBRA_LINHA + QUEBRA_LINHA + QUEBRA_LINHA);
-                strOut.append("-- //////" + QUEBRA_LINHA);
-                strOut.append("-- //////  FIM DO SCRIPT" + QUEBRA_LINHA);
+                strOut.append("-- //////").append(QUEBRA_LINHA);
+                strOut.append("-- //////  FIM DO SCRIPT").append(QUEBRA_LINHA);
                 strOut.append("-- //////");
 
-                if (strOut != null && !strOut.toString().equals("")) {
+                if (strOut != null && !strOut.toString().isEmpty()) {
                     fileScripts.saveArquivo(strOut);
+                    SfwLogger.log("File interface " + fileName + " was succesfull generated.");
                 }
 
                 Estatisticas.nTotalInterfaces++;
@@ -132,7 +133,7 @@ public class Interfaces extends Thread {
     }
 
     public String getNomePasta(String tipo) {
-        if (tipo.equals("") || chNomePasta.equals("N")) {
+        if (tipo.isEmpty() || chNomePasta.equals("N")) {
             return interfaces.getIdInterface();
         } else if (tipo.equals("IN")) {
             return interfaces.getIdSistema() + "_in_" + interfaces.getIdInterface();

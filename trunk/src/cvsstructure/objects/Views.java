@@ -65,7 +65,7 @@ public class Views extends Thread {
 
                 String longText = rsView.getString("TEXT");
 
-                if (longText != null && !longText.toString().equals("")) {
+                if (longText != null && !longText.toString().isEmpty()) {
                     SfwLogger.log("Creating or appending to file " + fileNameScripts);
 
                     strOutScripts = new StringBuilder();
@@ -78,9 +78,9 @@ public class Views extends Thread {
                             strOutScripts.append("conn &&INTEGRACAO_USER/&&INTEGRACAO_PASS@&&TNS" + QUEBRA_LINHA + QUEBRA_LINHA);
                         }
                     }
-                    strOutScripts.append("create or replace force view " + rsView.getString("VIEW_NAME") + " as " + QUEBRA_LINHA);
-                    strOutScripts.append(longText.trim().replace((cliente.getItUser().getUser() + ".").toUpperCase(), "").replace((Cliente.userNameSys + ".").toUpperCase(), "") + QUEBRA_LINHA);
-                    strOutScripts.append(";" + QUEBRA_LINHA);
+                    StringBuilder append = strOutScripts.append("create or replace force view ").append(rsView.getString("VIEW_NAME")).append(" as ").append(QUEBRA_LINHA);
+                    strOutScripts.append(longText.trim().replace((cliente.getItUser().getUser() + ".").toUpperCase(), "").replace((Cliente.userNameSys + ".").toUpperCase(), "")).append(QUEBRA_LINHA);
+                    strOutScripts.append(";").append(QUEBRA_LINHA);
 
                     try {
                         fileScripts = new CvsStructureFile(fileNameScripts);
@@ -93,7 +93,6 @@ public class Views extends Thread {
                     } catch (IOException ioex) {
                         SfwLogger.log("File " + fileNameScripts + " was error generated.");
                         SfwLogger.debug(ioex.getClass().toString(), ioex.getStackTrace());
-                        ioex.printStackTrace();
                     }
                 }
             }

@@ -144,7 +144,7 @@ public class SapMapeamento extends Thread {
                             rsSistemaInterfaceDaTabela = psSistemaInterfaceDaTabela.executeQuery();
                             rsSistemaInterfaceDaTabela.next();
 
-                            if (!cvsstructure.CVSStructure.id_sistema_it.equals("")) {
+                            if (!cvsstructure.CVSStructure.id_sistema_it.isEmpty()) {
                                 if (cvsstructure.CVSStructure.id_sistema_it.equals(rsSistemaInterfaceDaTabela.getString("ID_SISTEMA"))) {
                                     sisFlag = false;
                                 }
@@ -152,7 +152,7 @@ public class SapMapeamento extends Thread {
                         }
 
                         fileName = rsSapMapeamento.getString("IO_TABLE").toLowerCase() + ".sql";
-                        if (idInterface == null || idInterface.equals("") || !sisFlag) {
+                        if (idInterface == null || idInterface.isEmpty() || !sisFlag) {
                             fileNameScripts = Diretorio.path + "\\" + Cliente.userNameSys + "\\Scripts\\comum\\INTEGRACAO\\Mapeamento_SAP\\" + fileName;
                         } else {
                             rsDadosInterface = PrepararConsultas.getDadosInterface(idInterface);
@@ -177,7 +177,7 @@ public class SapMapeamento extends Thread {
                         }
                     }
 
-                    if (fileNameScripts.equals("")) {
+                    if (fileNameScripts.isEmpty()) {
                         fileName = rsSapMapeamento.getString("SAP_TABLE").toLowerCase() + ".sql";
                         fileNameScripts = Diretorio.path + "\\" + Cliente.userNameSys + "\\Scripts\\comum\\INTEGRACAO\\Mapeamento_SAP\\" + fileName;
                         sap_saida = "S";
@@ -203,98 +203,98 @@ public class SapMapeamento extends Thread {
 
                             strOutScripts.append(QUEBRA_LINHA);
 
-                            strOutScripts.append("SET SERVEROUTPUT ON" + QUEBRA_LINHA);
+                            strOutScripts.append("SET SERVEROUTPUT ON").append(QUEBRA_LINHA);
                             strOutScripts.append(QUEBRA_LINHA);
-                            strOutScripts.append("--desabilitando todas as trigger da tabela" + QUEBRA_LINHA);
-                            strOutScripts.append("alter table sap_interface_tables disable all triggers;" + QUEBRA_LINHA);
-                            strOutScripts.append("alter table sap_interface_blocks disable all triggers;" + QUEBRA_LINHA);
+                            strOutScripts.append("--desabilitando todas as trigger da tabela").append(QUEBRA_LINHA);
+                            strOutScripts.append("alter table sap_interface_tables disable all triggers;").append(QUEBRA_LINHA);
+                            strOutScripts.append("alter table sap_interface_blocks disable all triggers;").append(QUEBRA_LINHA);
                             strOutScripts.append(QUEBRA_LINHA);
-                            strOutScripts.append("alter table sap_interface_tables disable constraint fk_sap_interface_tables;" + QUEBRA_LINHA);
-                            strOutScripts.append("alter table sap_interface_tables disable constraint fk_sap_interface_block;" + QUEBRA_LINHA);
-                            strOutScripts.append("alter table sap_interface_blocks disable constraint pk_sap_if_blocks;" + QUEBRA_LINHA);
+                            strOutScripts.append("alter table sap_interface_tables disable constraint fk_sap_interface_tables;").append(QUEBRA_LINHA);
+                            strOutScripts.append("alter table sap_interface_tables disable constraint fk_sap_interface_block;").append(QUEBRA_LINHA);
+                            strOutScripts.append("alter table sap_interface_blocks disable constraint pk_sap_if_blocks;").append(QUEBRA_LINHA);
                             strOutScripts.append(QUEBRA_LINHA);
 
-                            strOutScripts.append("/*###############################" + QUEBRA_LINHA);
-                            strOutScripts.append((sap_saida.equals("S") ? rsSapMapeamento.getString("SAP_TABLE") : rsSapMapeamento.getString("IO_TABLE")) + QUEBRA_LINHA);
-                            strOutScripts.append("###############################*/" + QUEBRA_LINHA);
-                            strOutScripts.append("--garante que não existirão registros duplicados" + QUEBRA_LINHA);
-                            strOutScripts.append("declare" + QUEBRA_LINHA);
-                            strOutScripts.append("    n_id   number := null;" + QUEBRA_LINHA);
-                            strOutScripts.append("    err_msg 			varchar2(200);" + QUEBRA_LINHA);
-                            strOutScripts.append("    n_parent_table_id	number := null;" + QUEBRA_LINHA);
-                            strOutScripts.append("    n_id_header number := null;" + QUEBRA_LINHA);
-                            strOutScripts.append("begin" + QUEBRA_LINHA);
+                            strOutScripts.append("/*###############################").append(QUEBRA_LINHA);
+                            strOutScripts.append(sap_saida.equals("S") ? rsSapMapeamento.getString("SAP_TABLE") : rsSapMapeamento.getString("IO_TABLE")).append(QUEBRA_LINHA);
+                            strOutScripts.append("###############################*/").append(QUEBRA_LINHA);
+                            strOutScripts.append("--garante que não existirão registros duplicados").append(QUEBRA_LINHA);
+                            strOutScripts.append("declare").append(QUEBRA_LINHA);
+                            strOutScripts.append("    n_id   number := null;").append(QUEBRA_LINHA);
+                            strOutScripts.append("    err_msg 			varchar2(200);").append(QUEBRA_LINHA);
+                            strOutScripts.append("    n_parent_table_id	number := null;").append(QUEBRA_LINHA);
+                            strOutScripts.append("    n_id_header number := null;").append(QUEBRA_LINHA);
+                            strOutScripts.append("begin").append(QUEBRA_LINHA);
 
                             if (rsSapMapeamento.getString("PARENT_TABLE_ID") != null) {
                                 // Bloco para verificar se já existe o mapeamento na int mapeamento
-                                strOutScripts.append("-- buscando tabela mapeada" + QUEBRA_LINHA);
-                                strOutScripts.append("    begin" + QUEBRA_LINHA);
-                                strOutScripts.append("        select l.table_id into n_id_header" + QUEBRA_LINHA);
-                                strOutScripts.append("          from sap_interface_tables l " + QUEBRA_LINHA);
-                                strOutScripts.append("         where sap_table = '" + (sap_saida.equals("S") ? rsSapMapeamento.getString("SAP_TABLE") : rsSapMapeamento.getString("IO_TABLE")) + "'" + QUEBRA_LINHA);
-                                strOutScripts.append("           and block_name = '" + rsSapMapeamento.getString("BLOCK_NAME") + "'; " + QUEBRA_LINHA);
-                                strOutScripts.append("        exception" + QUEBRA_LINHA);
-                                strOutScripts.append("            when NO_DATA_FOUND then" + QUEBRA_LINHA);
-                                strOutScripts.append("                 err_msg := substr(SQLERRM, 1, 200);" + QUEBRA_LINHA);
-                                strOutScripts.append("                 dbms_output.put_line('An error was encountered NO_DATA_FOUND: " + (sap_saida.equals("S") ? rsSapMapeamento.getString("SAP_TABLE") : rsSapMapeamento.getString("IO_TABLE")) + " - ' || err_msg);" + QUEBRA_LINHA);
-                                strOutScripts.append("            when OTHERS then" + QUEBRA_LINHA);
-                                strOutScripts.append("            	 err_msg := substr(SQLERRM, 1, 200);" + QUEBRA_LINHA);
-                                strOutScripts.append("            	 dbms_output.put_line('An error was encountered: " + (sap_saida.equals("S") ? rsSapMapeamento.getString("SAP_TABLE") : rsSapMapeamento.getString("IO_TABLE")) + " - ' || err_msg);" + QUEBRA_LINHA);
-                                strOutScripts.append("    end;" + QUEBRA_LINHA);
+                                strOutScripts.append("-- buscando tabela mapeada").append(QUEBRA_LINHA);
+                                strOutScripts.append("    begin").append(QUEBRA_LINHA);
+                                strOutScripts.append("        select l.table_id into n_id_header").append(QUEBRA_LINHA);
+                                strOutScripts.append("          from sap_interface_tables l ").append(QUEBRA_LINHA);
+                                strOutScripts.append("         where sap_table = '").append(sap_saida.equals("S") ? rsSapMapeamento.getString("SAP_TABLE") : rsSapMapeamento.getString("IO_TABLE")).append("'").append(QUEBRA_LINHA);
+                                strOutScripts.append("           and block_name = '").append(rsSapMapeamento.getString("BLOCK_NAME")).append("'; ").append(QUEBRA_LINHA);
+                                strOutScripts.append("        exception").append(QUEBRA_LINHA);
+                                strOutScripts.append("            when NO_DATA_FOUND then").append(QUEBRA_LINHA);
+                                strOutScripts.append("                 err_msg := substr(SQLERRM, 1, 200);").append(QUEBRA_LINHA);
+                                strOutScripts.append("                 dbms_output.put_line('An error was encountered NO_DATA_FOUND: ").append(sap_saida.equals("S") ? rsSapMapeamento.getString("SAP_TABLE") : rsSapMapeamento.getString("IO_TABLE")).append(" - ' || err_msg);").append(QUEBRA_LINHA);
+                                strOutScripts.append("            when OTHERS then").append(QUEBRA_LINHA);
+                                strOutScripts.append("            	 err_msg := substr(SQLERRM, 1, 200);").append(QUEBRA_LINHA);
+                                strOutScripts.append("            	 dbms_output.put_line('An error was encountered: ").append(sap_saida.equals("S") ? rsSapMapeamento.getString("SAP_TABLE") : rsSapMapeamento.getString("IO_TABLE")).append(" - ' || err_msg);").append(QUEBRA_LINHA);
+                                strOutScripts.append("    end;").append(QUEBRA_LINHA);
                                 strOutScripts.append(QUEBRA_LINHA);
                             }
 
                             // Bloco para verificar se já existe o mapeamento na int mapeamento
-                            strOutScripts.append("    begin" + QUEBRA_LINHA);
-                            strOutScripts.append("        -- buscando tabela mapeada" + QUEBRA_LINHA);
-                            strOutScripts.append("        select l.table_id, l.parent_table_id into n_id, n_parent_table_id" + QUEBRA_LINHA);
-                            strOutScripts.append("          from sap_interface_tables l " + QUEBRA_LINHA);
-                            strOutScripts.append("         where sap_table = '" + (sap_saida.equals("S") ? rsSapMapeamento.getString("SAP_TABLE") : rsSapMapeamento.getString("IO_TABLE")) + "'" + QUEBRA_LINHA);
-                            strOutScripts.append("           and block_name = '" + rsSapMapeamento.getString("BLOCK_NAME") + "'; " + QUEBRA_LINHA);
-                            strOutScripts.append("        exception" + QUEBRA_LINHA);
-                            strOutScripts.append("            when NO_DATA_FOUND then" + QUEBRA_LINHA);
-                            strOutScripts.append("                 err_msg := substr(SQLERRM, 1, 200);" + QUEBRA_LINHA);
-                            strOutScripts.append("                 dbms_output.put_line('An error was encountered NO_DATA_FOUND: " + (sap_saida.equals("S") ? rsSapMapeamento.getString("SAP_TABLE") : rsSapMapeamento.getString("IO_TABLE")) + " - ' || err_msg);" + QUEBRA_LINHA);
-                            strOutScripts.append("            when OTHERS then" + QUEBRA_LINHA);
-                            strOutScripts.append("            	 err_msg := substr(SQLERRM, 1, 200);" + QUEBRA_LINHA);
-                            strOutScripts.append("            	 dbms_output.put_line('An error was encountered: " + (sap_saida.equals("S") ? rsSapMapeamento.getString("SAP_TABLE") : rsSapMapeamento.getString("IO_TABLE")) + " - ' || err_msg);" + QUEBRA_LINHA);
-                            strOutScripts.append("    end;" + QUEBRA_LINHA);
+                            strOutScripts.append("    begin").append(QUEBRA_LINHA);
+                            strOutScripts.append("        -- buscando tabela mapeada").append(QUEBRA_LINHA);
+                            strOutScripts.append("        select l.table_id, l.parent_table_id into n_id, n_parent_table_id").append(QUEBRA_LINHA);
+                            strOutScripts.append("          from sap_interface_tables l ").append(QUEBRA_LINHA);
+                            strOutScripts.append("         where sap_table = '").append(sap_saida.equals("S") ? rsSapMapeamento.getString("SAP_TABLE") : rsSapMapeamento.getString("IO_TABLE")).append("'").append(QUEBRA_LINHA);
+                            strOutScripts.append("           and block_name = '").append(rsSapMapeamento.getString("BLOCK_NAME")).append("'; ").append(QUEBRA_LINHA);
+                            strOutScripts.append("        exception").append(QUEBRA_LINHA);
+                            strOutScripts.append("            when NO_DATA_FOUND then").append(QUEBRA_LINHA);
+                            strOutScripts.append("                 err_msg := substr(SQLERRM, 1, 200);").append(QUEBRA_LINHA);
+                            strOutScripts.append("                 dbms_output.put_line('An error was encountered NO_DATA_FOUND: ").append(sap_saida.equals("S") ? rsSapMapeamento.getString("SAP_TABLE") : rsSapMapeamento.getString("IO_TABLE")).append(" - ' || err_msg);").append(QUEBRA_LINHA);
+                            strOutScripts.append("            when OTHERS then").append(QUEBRA_LINHA);
+                            strOutScripts.append("            	 err_msg := substr(SQLERRM, 1, 200);").append(QUEBRA_LINHA);
+                            strOutScripts.append("            	 dbms_output.put_line('An error was encountered: ").append(sap_saida.equals("S") ? rsSapMapeamento.getString("SAP_TABLE") : rsSapMapeamento.getString("IO_TABLE")).append(" - ' || err_msg);").append(QUEBRA_LINHA);
+                            strOutScripts.append("    end;").append(QUEBRA_LINHA);
                             strOutScripts.append(QUEBRA_LINHA);
 
                             // Bloco para excluir os registros da int mapeamento
-                            strOutScripts.append("    if n_id != 0 then" + QUEBRA_LINHA);
-                            strOutScripts.append("        begin" + QUEBRA_LINHA);
-                            strOutScripts.append("            -- deletando as tabelas e colunas" + QUEBRA_LINHA);
-                            strOutScripts.append("            delete from sap_interface_columns c where c.table_id = n_id;" + QUEBRA_LINHA);
-                            strOutScripts.append("            delete from sap_interface_tables l where l.table_id = n_id;" + QUEBRA_LINHA);
+                            strOutScripts.append("    if n_id != 0 then").append(QUEBRA_LINHA);
+                            strOutScripts.append("        begin").append(QUEBRA_LINHA);
+                            strOutScripts.append("            -- deletando as tabelas e colunas").append(QUEBRA_LINHA);
+                            strOutScripts.append("            delete from sap_interface_columns c where c.table_id = n_id;").append(QUEBRA_LINHA);
+                            strOutScripts.append("            delete from sap_interface_tables l where l.table_id = n_id;").append(QUEBRA_LINHA);
                             strOutScripts.append(QUEBRA_LINHA);
 
                             // deletando os filhos encontrados
                             if (rsSapMapeamento.getString("PARENT_TABLE_ID") == null) {
-                                strOutScripts.append("            -- deletando os filhos encontrados" + QUEBRA_LINHA);
-                                strOutScripts.append("            for tables_sap in (select table_id from sap_interface_tables l where l.parent_table_id = n_parent_table_id) " + QUEBRA_LINHA);
-                                strOutScripts.append("            loop" + QUEBRA_LINHA);
-                                strOutScripts.append("            	delete from sap_interface_columns c where c.parent_table_id = tables_sap.table_id;" + QUEBRA_LINHA);
-                                strOutScripts.append("            end loop;" + QUEBRA_LINHA);
-                                strOutScripts.append("            delete from sap_interface_tables l where l.parent_table_id = n_parent_table_id;" + QUEBRA_LINHA);
+                                strOutScripts.append("            -- deletando os filhos encontrados").append(QUEBRA_LINHA);
+                                strOutScripts.append("            for tables_sap in (select table_id from sap_interface_tables l where l.parent_table_id = n_parent_table_id) ").append(QUEBRA_LINHA);
+                                strOutScripts.append("            loop").append(QUEBRA_LINHA);
+                                strOutScripts.append("            	delete from sap_interface_columns c where c.parent_table_id = tables_sap.table_id;").append(QUEBRA_LINHA);
+                                strOutScripts.append("            end loop;").append(QUEBRA_LINHA);
+                                strOutScripts.append("            delete from sap_interface_tables l where l.parent_table_id = n_parent_table_id;").append(QUEBRA_LINHA);
                                 strOutScripts.append(QUEBRA_LINHA);
-                                strOutScripts.append("            commit;" + QUEBRA_LINHA);
+                                strOutScripts.append("            commit;").append(QUEBRA_LINHA);
                             }
 
                             strOutScripts.append(QUEBRA_LINHA);
-                            strOutScripts.append("            exception" + QUEBRA_LINHA);
-                            strOutScripts.append("                when NO_DATA_FOUND then" + QUEBRA_LINHA);
-                            strOutScripts.append("                     err_msg := substr(SQLERRM, 1, 200);" + QUEBRA_LINHA);
-                            strOutScripts.append("                     dbms_output.put_line('An error was encountered NO_DATA_FOUND: " + (sap_saida.equals("S") ? rsSapMapeamento.getString("SAP_TABLE") : rsSapMapeamento.getString("IO_TABLE")) + " on sap_interface_tables - ' || err_msg);" + QUEBRA_LINHA);
-                            strOutScripts.append("                when OTHERS then" + QUEBRA_LINHA);
-                            strOutScripts.append("                    	 err_msg := substr(SQLERRM, 1, 200);" + QUEBRA_LINHA);
-                            strOutScripts.append("                	 dbms_output.put_line('An error was encountered: When deleting " + (sap_saida.equals("S") ? rsSapMapeamento.getString("SAP_TABLE") : rsSapMapeamento.getString("IO_TABLE")) + " on sap_interface_tables - ' || err_msg);" + QUEBRA_LINHA);
-                            strOutScripts.append("        end;" + QUEBRA_LINHA);
+                            strOutScripts.append("            exception").append(QUEBRA_LINHA);
+                            strOutScripts.append("                when NO_DATA_FOUND then").append(QUEBRA_LINHA);
+                            strOutScripts.append("                     err_msg := substr(SQLERRM, 1, 200);").append(QUEBRA_LINHA);
+                            strOutScripts.append("                     dbms_output.put_line('An error was encountered NO_DATA_FOUND: ").append(sap_saida.equals("S") ? rsSapMapeamento.getString("SAP_TABLE") : rsSapMapeamento.getString("IO_TABLE")).append(" on sap_interface_tables - ' || err_msg);").append(QUEBRA_LINHA);
+                            strOutScripts.append("                when OTHERS then").append(QUEBRA_LINHA);
+                            strOutScripts.append("                    	 err_msg := substr(SQLERRM, 1, 200);").append(QUEBRA_LINHA);
+                            strOutScripts.append("                	 dbms_output.put_line('An error was encountered: When deleting ").append(sap_saida.equals("S") ? rsSapMapeamento.getString("SAP_TABLE") : rsSapMapeamento.getString("IO_TABLE")).append(" on sap_interface_tables - ' || err_msg);").append(QUEBRA_LINHA);
+                            strOutScripts.append("        end;").append(QUEBRA_LINHA);
                             strOutScripts.append(QUEBRA_LINHA);
-                            strOutScripts.append("    else" + QUEBRA_LINHA);
-                            strOutScripts.append("    	-- encontrando o maior numero do table_id para a primeira inserssão" + QUEBRA_LINHA);
-                            strOutScripts.append("    	select max(l.table_id)+1 into n_id from sap_interface_tables l;" + QUEBRA_LINHA);
-                            strOutScripts.append("    end if;" + QUEBRA_LINHA);
+                            strOutScripts.append("    else").append(QUEBRA_LINHA);
+                            strOutScripts.append("    	-- encontrando o maior numero do table_id para a primeira inserssão").append(QUEBRA_LINHA);
+                            strOutScripts.append("    	select max(l.table_id)+1 into n_id from sap_interface_tables l;").append(QUEBRA_LINHA);
+                            strOutScripts.append("    end if;").append(QUEBRA_LINHA);
                             strOutScripts.append(QUEBRA_LINHA);
 
                             // Interfaces de Saida Genérica SAP
@@ -302,19 +302,19 @@ public class SapMapeamento extends Thread {
                             if ((rsSapMapeamento.getString("BLOCK_NAME") != null)
                                     && (rsSapMapeamento.getString("PARENT_TABLE_ID") == null)) {
 
-                                strOutScripts.append("	begin" + QUEBRA_LINHA);
-                                strOutScripts.append("		-- deletando o bloco caso ele exista" + QUEBRA_LINHA);
-                                strOutScripts.append("		delete from sap_interface_blocks b where b.block_name = '" + rsSapMapeamento.getString("BLOCK_NAME") + "';" + QUEBRA_LINHA);
-                                strOutScripts.append("		" + QUEBRA_LINHA);
-                                strOutScripts.append("		commit;" + QUEBRA_LINHA);
-                                strOutScripts.append("    exception" + QUEBRA_LINHA);
-                                strOutScripts.append("        when NO_DATA_FOUND then" + QUEBRA_LINHA);
-                                strOutScripts.append("			 err_msg := substr(SQLERRM, 1, 200);" + QUEBRA_LINHA);
-                                strOutScripts.append("             dbms_output.put_line('An error was encountered NO_DATA_FOUND: " + rsSapMapeamento.getString("BLOCK_NAME") + " on sap_interface_blocks - ' || err_msg);" + QUEBRA_LINHA);
-                                strOutScripts.append("		when OTHERS then" + QUEBRA_LINHA);
-                                strOutScripts.append("			 err_msg := substr(SQLERRM, 1, 200);" + QUEBRA_LINHA);
-                                strOutScripts.append("			 dbms_output.put_line('An error was encountered: When deleting " + rsSapMapeamento.getString("BLOCK_NAME") + " on sap_interface_blocks - ' || err_msg);" + QUEBRA_LINHA);
-                                strOutScripts.append("	end;" + QUEBRA_LINHA);
+                                strOutScripts.append("	begin").append(QUEBRA_LINHA);
+                                strOutScripts.append("		-- deletando o bloco caso ele exista").append(QUEBRA_LINHA);
+                                strOutScripts.append("		delete from sap_interface_blocks b where b.block_name = '").append(rsSapMapeamento.getString("BLOCK_NAME")).append("';").append(QUEBRA_LINHA);
+                                strOutScripts.append("		").append(QUEBRA_LINHA);
+                                strOutScripts.append("		commit;").append(QUEBRA_LINHA);
+                                strOutScripts.append("    exception").append(QUEBRA_LINHA);
+                                strOutScripts.append("        when NO_DATA_FOUND then").append(QUEBRA_LINHA);
+                                strOutScripts.append("			 err_msg := substr(SQLERRM, 1, 200);").append(QUEBRA_LINHA);
+                                strOutScripts.append("             dbms_output.put_line('An error was encountered NO_DATA_FOUND: ").append(rsSapMapeamento.getString("BLOCK_NAME")).append(" on sap_interface_blocks - ' || err_msg);").append(QUEBRA_LINHA);
+                                strOutScripts.append("		when OTHERS then").append(QUEBRA_LINHA);
+                                strOutScripts.append("			 err_msg := substr(SQLERRM, 1, 200);").append(QUEBRA_LINHA);
+                                strOutScripts.append("			 dbms_output.put_line('An error was encountered: When deleting ").append(rsSapMapeamento.getString("BLOCK_NAME")).append(" on sap_interface_blocks - ' || err_msg);").append(QUEBRA_LINHA);
+                                strOutScripts.append("	end;").append(QUEBRA_LINHA);
 
                                 if (psSapBlocks == null) {
                                     if (system.toUpperCase().equals("INOUT")) {
@@ -328,7 +328,7 @@ public class SapMapeamento extends Thread {
                                         "sap_interface_blocks",
                                         psSapBlocks).create());
 
-                                strOutScripts.append("	commit;" + QUEBRA_LINHA);
+                                strOutScripts.append("	commit;").append(QUEBRA_LINHA);
                                 strOutScripts.append(QUEBRA_LINHA);
                             }
 
@@ -346,8 +346,8 @@ public class SapMapeamento extends Thread {
                                     psSapMapeamentoTabela).create());
 
 
-                            strOutScripts.append("--inserções de relacionamento das tags contidas dentro da tag " + rsSapMapeamento.getString("BLOCK_NAME") + QUEBRA_LINHA);
-                            strOutScripts.append("--relacionam a tag com uma coluna da tabela temporário do INOUT" + QUEBRA_LINHA);
+                            strOutScripts.append("--inserções de relacionamento das tags contidas dentro da tag ").append(rsSapMapeamento.getString("BLOCK_NAME")).append(QUEBRA_LINHA);
+                            strOutScripts.append("--relacionam a tag com uma coluna da tabela temporário do INOUT").append(QUEBRA_LINHA);
 
                             if (psSapMapeamentoColuna == null) {
                                 if (system.toUpperCase().equals("INOUT")) {
@@ -364,21 +364,21 @@ public class SapMapeamento extends Thread {
                                     psSapMapeamentoColuna).create());
 
                             strOutScripts.append(QUEBRA_LINHA);
-                            strOutScripts.append("commit;" + QUEBRA_LINHA);
+                            strOutScripts.append("commit;").append(QUEBRA_LINHA);
 
-                            strOutScripts.append("end;" + QUEBRA_LINHA);
-                            strOutScripts.append("/" + QUEBRA_LINHA);
+                            strOutScripts.append("end;").append(QUEBRA_LINHA);
+                            strOutScripts.append("/").append(QUEBRA_LINHA);
                             strOutScripts.append(QUEBRA_LINHA);
 
-                            strOutScripts.append("--habilitando as triggers" + QUEBRA_LINHA);
-                            strOutScripts.append("alter table sap_interface_tables enable all triggers;" + QUEBRA_LINHA);
-                            strOutScripts.append("alter table sap_interface_blocks enable all triggers;" + QUEBRA_LINHA);
-                            strOutScripts.append("" + QUEBRA_LINHA);
-                            strOutScripts.append("alter table sap_interface_blocks enable constraint pk_sap_if_blocks;" + QUEBRA_LINHA);
-                            strOutScripts.append("alter table sap_interface_tables enable constraint fk_sap_interface_tables;" + QUEBRA_LINHA);
-                            strOutScripts.append("alter table sap_interface_tables enable constraint fk_sap_interface_block;" + QUEBRA_LINHA);
+                            strOutScripts.append("--habilitando as triggers").append(QUEBRA_LINHA);
+                            strOutScripts.append("alter table sap_interface_tables enable all triggers;").append(QUEBRA_LINHA);
+                            strOutScripts.append("alter table sap_interface_blocks enable all triggers;").append(QUEBRA_LINHA);
+                            strOutScripts.append("").append(QUEBRA_LINHA);
+                            strOutScripts.append("alter table sap_interface_blocks enable constraint pk_sap_if_blocks;").append(QUEBRA_LINHA);
+                            strOutScripts.append("alter table sap_interface_tables enable constraint fk_sap_interface_tables;").append(QUEBRA_LINHA);
+                            strOutScripts.append("alter table sap_interface_tables enable constraint fk_sap_interface_block;").append(QUEBRA_LINHA);
 
-                            if (strOutScripts != null && !strOutScripts.toString().equals("")) {
+                            if (strOutScripts != null && !strOutScripts.toString().isEmpty()) {
                                 fileScripts.saveArquivo(strOutScripts);
                                 Estatisticas.nTotalSapMapeamento++;
                                 SfwLogger.log("File " + fileNameScripts + " was succesfull generated.");
@@ -431,7 +431,7 @@ public class SapMapeamento extends Thread {
     public String getNomePasta(String tipo) {
         String pasta = "";
 
-        if (tipo.equals("") || chNomePasta.equals("N")) {
+        if (tipo.isEmpty() || chNomePasta.equals("N")) {
             pasta = getIdInterface();
         } else if (tipo.equals("IN")) {
             pasta = getIdSistema() + "_in_" + getIdInterface();

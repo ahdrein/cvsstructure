@@ -190,8 +190,8 @@ public class Synonyms extends Thread {
                                 }
                             }
 
-                            strOutScripts.append("-- Create the synonym" + QUEBRA_LINHA);
-                            strOutScripts.append("create or replace synonym " + rsSynonyms.getString("SYNONYM_NAME") + QUEBRA_LINHA);
+                            strOutScripts.append("-- Create the synonym").append(QUEBRA_LINHA);
+                            strOutScripts.append("create or replace synonym ").append(rsSynonyms.getString("SYNONYM_NAME")).append(QUEBRA_LINHA);
 
                             String tableOwner = "";
                             if (rsSynonyms.getString("TABLE_OWNER") == null && rsSynonyms.getString("DB_LINK") == null) {
@@ -224,8 +224,8 @@ public class Synonyms extends Thread {
 
                             //strOutScripts.append("  for &&" + rsSynonyms.getString("TABLE_OWNER") );
                             strOutScripts.append("  for ");
-                            if (!tableOwner.equals("")) {
-                                strOutScripts.append("&&" + tableOwner + "..");
+                            if (!tableOwner.isEmpty()) {
+                                strOutScripts.append("&&").append(tableOwner).append("..");
                             }
 
                             strOutScripts.append(rsSynonyms.getString("TABLE_NAME"));
@@ -239,7 +239,7 @@ public class Synonyms extends Thread {
 
                             }
                             //strOutScripts.append(rsSynonyms.getString("DB_LINK") != null ? "@" + rsSynonyms.getString("DB_LINK") + QUEBRA_LINHA : "");
-                            strOutScripts.append(";" + QUEBRA_LINHA);
+                            strOutScripts.append(";").append(QUEBRA_LINHA);
 
                             fwScripts = new FileWriter(fileScripts, false);
                             fwScripts.write(strOutScripts.toString(), 0, strOutScripts.length());
@@ -305,7 +305,7 @@ public class Synonyms extends Thread {
     public String getNomePasta(String tipo) {
         String pasta = "";
 
-        if (tipo.equals("") || chNomePasta.equals("N")) {
+        if (tipo.isEmpty() || chNomePasta.equals("N")) {
             pasta = getIdInterface();
         } else if (tipo.equals("IN")) {
             pasta = getIdSistema() + "_in_" + getIdInterface();
