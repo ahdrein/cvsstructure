@@ -110,7 +110,7 @@ public class ReadExcel {
                         cellNomeArquivo = sheet.getCell(1, j);
                         System.out.println("Arquivo " + cellNomeArquivo.getContents());
                         nomeArquivoNovo = cellNomeArquivo.getContents().toString().trim();
-                        if (nomeArquivo.equals("")) {
+                        if (nomeArquivo.isEmpty()) {
                             nomeArquivo = cellNomeArquivo.getContents().toString().trim();
                         }
                     }
@@ -125,7 +125,7 @@ public class ReadExcel {
                     if (flagCampos) {
                         Cell cellTamanho = sheet.getCell(2, j);
                         Cell cellTipo = sheet.getCell(1, j);
-                        if (!cellTamanho.getContents().trim().equals("")) {
+                        if (!cellTamanho.getContents().trim().isEmpty()) {
                             if (cellTamanho.getType() == CellType.NUMBER) {
 
                                 //
@@ -266,7 +266,7 @@ public class ReadExcel {
                         cellNomeArquivo = sheet.getCell(1, j);
                         System.out.println("Arquivo " + cellNomeArquivo.getContents());
                         nomeArquivoNovo = cellNomeArquivo.getContents().toString().trim();
-                        if (nomeArquivo.equals("")) {
+                        if (nomeArquivo.isEmpty()) {
                             nomeArquivo = cellNomeArquivo.getContents().toString().trim();
                         }
                     }
@@ -282,7 +282,7 @@ public class ReadExcel {
                     if (flagCampos) {
                         Cell cellTamanho = sheet.getCell(2, j);
                         Cell cellTipo = sheet.getCell(1, j);
-                        if (!cellTamanho.getContents().trim().equals("")) {
+                        if (!cellTamanho.getContents().trim().isEmpty()) {
                             if (cellTamanho.getType() == CellType.NUMBER) {
                                 contador += 1;
                                 //
@@ -416,7 +416,7 @@ public class ReadExcel {
                         //flag = true;
                         Cell cellTabela = sheet.getCell(1, j);
                         sTabelaNova = cellTabela.getContents().toString().trim();
-                        if (sTabela.equals("")) {
+                        if (sTabela.isEmpty()) {
                             sTabela = cellTabela.getContents().toString().trim();
                         }
                         System.out.println("Tabela " + cellTabela.getContents());
@@ -432,7 +432,7 @@ public class ReadExcel {
                         cellNomeArquivo = sheet.getCell(1, j);
                         System.out.println("Arquivo " + cellNomeArquivo.getContents());
                         nomeArquivoNovo = cellNomeArquivo.getContents().toString().trim();
-                        if (nomeArquivo.equals("")) {
+                        if (nomeArquivo.isEmpty()) {
                             nomeArquivo = cellNomeArquivo.getContents().toString().trim();
                         }
                     }
@@ -448,7 +448,7 @@ public class ReadExcel {
                     if (flagCampos) {
                         Cell cellTamanho = sheet.getCell(2, j);
                         Cell cellTipo = sheet.getCell(1, j);
-                        if (!cellTamanho.getContents().trim().equals("")) {
+                        if (!cellTamanho.getContents().trim().isEmpty()) {
                             if (cellTamanho.getType() == CellType.NUMBER) {
                                 contador += 1;
                                 // Exemplo
@@ -557,7 +557,7 @@ public class ReadExcel {
             String service = "desenv10.sfw.com.br";
             String port = "1510";
 
-            ConnectionInout.initialize(conn, user, pass, port, service);
+            //ConnectionInout.initialize(conn, user, pass, port, service);
 
             StringBuffer sbUpdateColumns = new StringBuffer();
             sbUpdateColumns.append("update colunas_tab_interface set tamanho = ? and ordem = ? where table_name = ? and column_name = ?");
@@ -599,7 +599,7 @@ public class ReadExcel {
                         //flag = true;
                         Cell cellTabela = sheet.getCell(1, j);
                         sTabelaNova = cellTabela.getContents().toString().trim();
-                        if (sTabela.equals("")) {
+                        if (sTabela.isEmpty()) {
                             sTabela = cellTabela.getContents().toString().trim();
                         }
                         strOutScripts.append("Tabela " + cellTabela.getContents() + "\r\n");
@@ -621,7 +621,7 @@ public class ReadExcel {
                         cellNomeArquivo = sheet.getCell(1, j);
                         strOutScripts.append("Arquivo " + cellNomeArquivo.getContents() + "\r\n");
                         nomeArquivoNovo = cellNomeArquivo.getContents().toString().trim();
-                        if (nomeArquivo.equals("")) {
+                        if (nomeArquivo.isEmpty()) {
                             nomeArquivo = cellNomeArquivo.getContents().toString().trim();
                         }
                     }
@@ -651,7 +651,7 @@ public class ReadExcel {
                     if (flagCampos) {
                         Cell cellTamanho = sheet.getCell(2, j);
                         Cell cellTipo = sheet.getCell(1, j);
-                        if (!cellTamanho.getContents().trim().equals("")) {
+                        if (!cellTamanho.getContents().trim().isEmpty()) {
                             if (cellTamanho.getType() == CellType.NUMBER) {
                                 contador += 1;
                                 // Exemplo
@@ -665,7 +665,7 @@ public class ReadExcel {
                                 rsSqlInterface.next();
 
                                 try {
-                                    if (rsSqlInterface.getString("TABLE_NAME") != null && !rsSqlInterface.getString("TABLE_NAME").equals("")) {
+                                    if (rsSqlInterface.getString("TABLE_NAME") != null && !rsSqlInterface.getString("TABLE_NAME").isEmpty()) {
 
 
 
@@ -696,7 +696,7 @@ public class ReadExcel {
                                         //    rsSqlFieldPackage = psSqlFieldsPackage.executeQuery();
                                         //    rsSqlFieldPackage.next();
 
-                                        //    if(rsSqlFieldPackage.getString("ARGUMENT_NAME") == null || rsSqlFieldPackage.getString("ARGUMENT_NAME").equals("")){
+                                        //    if(rsSqlFieldPackage.getString("ARGUMENT_NAME") == null || rsSqlFieldPackage.getString("ARGUMENT_NAME").isEmpty()){
                                         //        strOutScripts.append("Argumento não encontrado " + cellCampo.getContents() + " não confere. Ordem EXCEL: Ordem. INOUT: \r\n");
                                         //    }else if(!rsSqlFieldPackage.getString("ARGUMENT_NAME").equals(rsSqlInterface.getString("COLUMN_NAME"))){
                                         //        strOutScripts.append("Argumento não encontrado " + cellCampo.getContents() + " não confere. Ordem EXCEL: Ordem. INOUT: \r\n");
@@ -792,7 +792,7 @@ public class ReadExcel {
             String service = "desenv10.sfw.com.br";
             String port = "1510";
 
-            ConnectionInout.initialize(conn, user, pass, port, service);
+            //ConnectionInout.initialize(conn, user, pass, port, service);
 
             ConnectionIntegracao.initialize("192.168.61.9", "sfwit2010", "sfwit2010", "1510", "desenv10.sfw.com.br");
 
@@ -841,7 +841,7 @@ public class ReadExcel {
                         //flag = true;
                         Cell cellTabela = sheet.getCell(1, j);
                         sTabelaNova = cellTabela.getContents().toString().trim();
-                        if (sTabela.equals("")) {
+                        if (sTabela.isEmpty()) {
                             sTabela = cellTabela.getContents().toString().trim();
                         }
                         strOutScripts.append("Tabela " + cellTabela.getContents() + "\r\n");
@@ -863,7 +863,7 @@ public class ReadExcel {
                         cellNomeArquivo = sheet.getCell(1, j);
                         strOutScripts.append("Arquivo " + cellNomeArquivo.getContents() + "\r\n");
                         nomeArquivoNovo = cellNomeArquivo.getContents().toString().trim();
-                        if (nomeArquivo.equals("")) {
+                        if (nomeArquivo.isEmpty()) {
                             nomeArquivo = cellNomeArquivo.getContents().toString().trim();
                         }
                     }
@@ -897,7 +897,7 @@ public class ReadExcel {
                     if (flagCampos) {
                         Cell cellTamanho = sheet.getCell(2, j);
                         Cell cellTipo = sheet.getCell(1, j);
-                        if (!cellTamanho.getContents().trim().equals("")) {
+                        if (!cellTamanho.getContents().trim().isEmpty()) {
                             if (cellTamanho.getType() == CellType.NUMBER) {
                                 contador += 1;
                                 // Exemplo
@@ -916,7 +916,7 @@ public class ReadExcel {
                                 rsSqlInterfaceInt.next();
 
                                 try {
-                                    if (rsSqlInterface.getString("TABLE_NAME") != null && !rsSqlInterface.getString("TABLE_NAME").equals("")) {
+                                    if (rsSqlInterface.getString("TABLE_NAME") != null && !rsSqlInterface.getString("TABLE_NAME").isEmpty()) {
 
                                         //while(rsSqlInterface.next()){
                                         if (!rsSqlInterface.getString("TAMANHO").equals(cellTamanho.getContents().trim())) {
@@ -935,9 +935,9 @@ public class ReadExcel {
                                             rsSqlFieldPackage = psSqlFieldsPackage.executeQuery();
                                             rsSqlFieldPackage.next();
 
-                                            if (rsSqlInterface.getString("ARG_NAME").equals("")) {
+                                            if (rsSqlInterface.getString("ARG_NAME").isEmpty()) {
                                                 strOutScripts.append("Argumento VAZIO  " + cellCampo.getContents() + " não confere. \r\n");
-                                            } else if (rsSqlFieldPackage.getString("ARGUMENT_NAME") == null || rsSqlFieldPackage.getString("ARGUMENT_NAME").equals("")) {
+                                            } else if (rsSqlFieldPackage.getString("ARGUMENT_NAME") == null || rsSqlFieldPackage.getString("ARGUMENT_NAME").isEmpty()) {
                                                 strOutScripts.append("Argumento não encontrado " + cellCampo.getContents() + " não confere. NULO \r\n");
                                             } else if (!rsSqlFieldPackage.getString("ARGUMENT_NAME").equals(rsSqlInterface.getString("ARG_NAME"))) {
                                                 strOutScripts.append("Argumento não encontrado " + cellCampo.getContents() + " não confere. " + rsSqlInterface.getString("ARG_NAME") + "\r\n");
@@ -948,7 +948,7 @@ public class ReadExcel {
                                         }
 
                                         try {
-                                            if (rsSqlInterfaceInt.getString("API_COLUNA") == null || rsSqlInterfaceInt.getString("API_COLUNA").equals("")) {
+                                            if (rsSqlInterfaceInt.getString("API_COLUNA") == null || rsSqlInterfaceInt.getString("API_COLUNA").isEmpty()) {
                                                 strOutScripts.append("Campo " + cellCampo.getContents() + " não encontrado no IntMapeamento" + "\r\n");
                                             }
                                         } catch (Exception ex) {
@@ -1078,7 +1078,7 @@ public class ReadExcel {
                     // Buscando campo do excel
                     if (flagCampos && flagTabela) {
                         Cell cellTamanho = sheet.getCell(2, j);
-                        if (!cellTamanho.getContents().trim().equals("")) {
+                        if (!cellTamanho.getContents().trim().isEmpty()) {
                             sFieldsSeparated.add(sLinha.substring(contador, Integer.parseInt(cellTamanho.getContents().toString().trim()) + contador));
                             contador += Integer.parseInt(cellTamanho.getContents().toString().trim());
                         } else {
@@ -1146,7 +1146,7 @@ public class ReadExcel {
                     // Buscando campo do excel
                     if (flagCampos && flagTabela) {
                         Cell cellTamanho = sheet.getCell(2, j);
-                        if (!cellTamanho.getContents().trim().equals("")) {
+                        if (!cellTamanho.getContents().trim().isEmpty()) {
                             contador += 1;
                             System.out.println("Campo " + cellCampo.getContents() + " não encontrado no InOut");
 

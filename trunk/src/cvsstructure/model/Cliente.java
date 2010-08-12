@@ -24,13 +24,11 @@ public class Cliente {
     private Usuario appsUser;
     private String dbLinkCai;
     private String dbLinkApps;
-
     private String conn;
     private String dataBase;
     private String tns;
     private String port;
     private String service;
-
     private static Cliente instance;
 
     static {
@@ -40,8 +38,12 @@ public class Cliente {
     public Cliente() {
     }
 
-    public static Cliente getInstance(){
-            return instance;
+    public static Cliente getInstance() {
+        return instance;
+    }
+
+    public static void setInstance(Cliente cliente) {
+        instance = cliente;
     }
 
     /**
