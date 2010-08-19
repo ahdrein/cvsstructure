@@ -1,6 +1,5 @@
 package cvsstructure.util;
 
-import cvsstructure.util.PrepararConsultas;
 import cvsstructure.database.ConnectionInout;
 import cvsstructure.database.ConnectionIntegracao;
 import java.sql.PreparedStatement;

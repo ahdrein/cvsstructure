@@ -21,7 +21,7 @@ import java.sql.ResultSet;
  *
  * @author ahdrein
  */
-public class ExportarArquivosExternos extends Thread {
+public class ExportarArquivosExternos implements Runnable {
 
     Interface interfaces;
     private PreparedStatement psExportarArquivosExternos;
@@ -89,7 +89,7 @@ public class ExportarArquivosExternos extends Thread {
                         //logMessage("File " + fileName + " was succesfull generated.");
 
                     } catch (IOException ioex) {
-                        SfwLogger.log("File " + fileNameScripts + " was error generated.");
+                        SfwLogger.log("File " + fileName + " was error generated.");
                         SfwLogger.debug(ioex.getClass().toString(), ioex.getStackTrace());
                         ioex.printStackTrace();
                     }
@@ -102,6 +102,8 @@ public class ExportarArquivosExternos extends Thread {
             SfwLogger.log("Error generating " + fileName);
             SfwLogger.log(ex.getLocalizedMessage());
             SfwLogger.debug(ex.getClass().toString(), ex.getStackTrace());
+        }finally{
+            cvsstructure.model.ArquivosExternos.getInstance().close();
         }
     }
 

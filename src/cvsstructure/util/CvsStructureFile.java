@@ -19,6 +19,7 @@ public class CvsStructureFile extends File{
     }
 
     public void saveArquivo(StringBuilder strOutScripts) throws IOException {
+        Diretorio.verifyExistAndCreatDir(this);
         this.createNewFile();
 
         FileWriter fwScripts = new FileWriter(this, false);

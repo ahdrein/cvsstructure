@@ -21,6 +21,7 @@ public class Estatisticas {
     public static int nTotalSapMapeamento = 0;
     public static int nTotalIntMapeamento = 0;
     public static int nTotalFunctionsProcedures = 0;
+    public static int nTotalTabelasTemporarias = 0;
 
     public static void zeraEstatisticas(){
         Estatisticas.nTotalInterfaces = 0;
@@ -33,6 +34,7 @@ public class Estatisticas {
         Estatisticas.nTotalIntMapeamento = 0;
         Estatisticas.nTotalFunctionsProcedures = 0;
         Estatisticas.nTotalSistemas = 0;
+        Estatisticas.nTotalTabelasTemporarias = 0;
     }
 
 }

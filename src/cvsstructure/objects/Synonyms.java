@@ -10,20 +10,20 @@ import cvsstructure.util.Estatisticas;
 import cvsstructure.database.ConnectionInout;
 import cvsstructure.database.ConnectionIntegracao;
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import cvsstructure.log.SfwLogger;
 import cvsstructure.model.Cliente;
+import cvsstructure.model.Interface;
+import cvsstructure.util.CvsStructureFile;
 
 /**
  *
  * @author andrein
  */
-public class Synonyms extends Thread {
+public class Synonyms implements Runnable {
 
     private String idInterface = "";
     private String idSistema = "";
@@ -46,20 +46,11 @@ public class Synonyms extends Thread {
 
     @Override
     public void run() {
-        // Informações InOut
-        String executavel = "";
-        String tipoInterface = "";
-
-        String descricao = "";
-        String userName = "";
-        String tempoMedio = "";
-        String executavelCompl = "";
-
+        Interface interfaces;
         String fileNameScripts = "";
         String fileName = "";
 
-        File fileScripts;
-        FileWriter fwScripts;
+        CvsStructureFile fileScripts;
         StringBuilder strOutScripts;
         BufferedReader brScripts;
 
@@ -109,7 +100,9 @@ public class Synonyms extends Thread {
                     rsCountArquivosSynonyms.next();
                     totalArquivos = rsCountArquivosSynonyms.getInt("TOTAL_ARQUIVOS");
                 } else {
-                    psCountArquivosSynonyms = ConnectionIntegracao.getConnection().prepareStatement(PrepararConsultas.getCountArquivosExternos().toString());
+                    if (psCountArquivosSynonyms == null) {
+                        psCountArquivosSynonyms = ConnectionIntegracao.getConnection().prepareStatement(PrepararConsultas.getCountArquivosExternos().toString());
+                    }
                 }
 
                 if (psSynonyms == null) {
@@ -122,6 +115,7 @@ public class Synonyms extends Thread {
                 psSynonyms.setString(1, rsArquivosSynonyms.getString("SYNONYM_NAME"));
                 rsSynonyms = psSynonyms.executeQuery();
                 while (rsSynonyms.next()) {
+                    interfaces = new Interface();
                     int totalInterfacesBySql = 0;
                     fileName = rsArquivosSynonyms.getString("SYNONYM_NAME").toLowerCase() + ".sql";
                     if (totalArquivos > 1 || totalArquivos == 0) {
@@ -147,20 +141,20 @@ public class Synonyms extends Thread {
                         if (totalInterfacesBySql == 1) {
                             rsDadosInterface = PrepararConsultas.getDadosInterface(idInterface.toUpperCase());
                             while (rsDadosInterface.next()) {
-                                executavel = rsDadosInterface.getString("EXECUTAVEL");
-                                tipoInterface = rsDadosInterface.getString("TIPO_INTERFACE");
-                                idSistema = rsDadosInterface.getString("ID_SISTEMA").toLowerCase();
-                                descricao = rsDadosInterface.getString("DESCRICAO");
-                                userName = rsDadosInterface.getString("USERNAME");
-                                tempoMedio = rsDadosInterface.getString("TEMPO_MEDIO");
-                                executavelCompl = rsDadosInterface.getString("EXECUTAVELCOMPL");
+                                interfaces.setExecutavel( rsDadosInterface.getString("EXECUTAVEL"));
+                                interfaces.setTipoInterface(rsDadosInterface.getString("TIPO_INTERFACE"));
+                                interfaces.setIdSistema(rsDadosInterface.getString("ID_SISTEMA").toLowerCase());
+                                interfaces.setDescricao(rsDadosInterface.getString("DESCRICAO"));
+                                //interfaces.setUserName(rsDadosInterface.getString("USERNAME"));
+                                interfaces.setTempoMedio(rsDadosInterface.getString("TEMPO_MEDIO"));
+                                interfaces.setExecutavelCompl(rsDadosInterface.getString("EXECUTAVELCOMPL"));
 
                                 totalSistemasByInterface += 1;
                             }
 
-                            if (tipoInterface.trim().equals("S")) {
+                            if (interfaces.getTipoInterface().trim().equals("S")) {
                                 fileNameScripts = Diretorio.path + "\\" + Cliente.userNameSys + "\\Scripts\\" + getNomePasta("OUT") + "\\" + getSystem().toUpperCase() + "\\Synonyms\\" + fileName;
-                            } else if (tipoInterface.trim().equals("E")) {
+                            } else if (interfaces.getTipoInterface().trim().equals("E")) {
                                 fileNameScripts = Diretorio.path + "\\" + Cliente.userNameSys + "\\Scripts\\" + getNomePasta("IN") + "\\" + getSystem().toUpperCase() + "\\Synonyms\\" + fileName;
                             } else {
                                 fileNameScripts = Diretorio.path + "\\" + Cliente.userNameSys + "\\Scripts\\" + idInterface + "\\" + getSystem().toUpperCase() + "\\Synonyms\\" + fileName;
@@ -171,9 +165,8 @@ public class Synonyms extends Thread {
                     }
 
                     try {
-                        fileScripts = new File(fileNameScripts);
+                        fileScripts = new CvsStructureFile(fileNameScripts);
                         if (!fileScripts.exists()) {
-                            fileScripts.createNewFile();
 
                             SfwLogger.log("Creating or appending to file " + fileNameScripts);
 
@@ -191,7 +184,7 @@ public class Synonyms extends Thread {
                             }
 
                             strOutScripts.append("-- Create the synonym").append(QUEBRA_LINHA);
-                            strOutScripts.append("create or replace synonym ").append(rsSynonyms.getString("SYNONYM_NAME")).append(QUEBRA_LINHA);
+                            strOutScripts.append(" create or replace synonym ").append(rsSynonyms.getString("SYNONYM_NAME")).append(QUEBRA_LINHA);
 
                             String tableOwner = "";
                             if (rsSynonyms.getString("TABLE_OWNER") == null && rsSynonyms.getString("DB_LINK") == null) {
@@ -241,19 +234,37 @@ public class Synonyms extends Thread {
                             //strOutScripts.append(rsSynonyms.getString("DB_LINK") != null ? "@" + rsSynonyms.getString("DB_LINK") + QUEBRA_LINHA : "");
                             strOutScripts.append(";").append(QUEBRA_LINHA);
 
-                            fwScripts = new FileWriter(fileScripts, false);
-                            fwScripts.write(strOutScripts.toString(), 0, strOutScripts.length());
-                            fwScripts.close();
+                            if(!strOutScripts.toString().isEmpty()){
+                                fileScripts.saveArquivo(strOutScripts);
+                                Estatisticas.nTotalSynonyms++;
+                                SfwLogger.log("File " + fileNameScripts + " was succesfull generated.");
+                            }
 
-                            Estatisticas.nTotalSynonyms++;
-                            SfwLogger.log("File " + fileNameScripts + " was succesfull generated.");
                         }
                     } catch (IOException ioex) {
-                        SfwLogger.log("File " + fileNameScripts + " was error generated.");
+                        SfwLogger.log("*** File " + fileNameScripts + " was error generated.");
                         SfwLogger.debug(ioex.getClass().toString(), ioex.getStackTrace());
                         ioex.printStackTrace();
                     }
                 }
+                if (psSynonyms != null) {
+                    psSynonyms.close();
+                    psSynonyms = null;
+                }
+                if (rsSynonyms != null) {
+                    rsSynonyms.close();
+                    rsSynonyms = null;
+                }
+
+                if (psCountArquivosSynonyms != null) {
+                    psCountArquivosSynonyms.close();
+                    psCountArquivosSynonyms = null;
+                }
+                if (rsCountArquivosSynonyms != null) {
+                    rsCountArquivosSynonyms.close();
+                    rsCountArquivosSynonyms = null;
+                }
+
             }
         } catch (Exception ex) {
             SfwLogger.log(ex.getLocalizedMessage());

@@ -5,7 +5,6 @@ import static cvsstructure.CVSStructure.chConexaoPorArquivos;
 import cvsstructure.database.ConnectionInout;
 import cvsstructure.database.ConnectionIntegracao;
 import java.io.BufferedReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Clob;
 import java.sql.PreparedStatement;
@@ -14,6 +13,9 @@ import cvsstructure.log.SfwLogger;
 import cvsstructure.model.Cliente;
 import cvsstructure.util.CvsStructureFile;
 import cvsstructure.util.Estatisticas;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -26,21 +28,22 @@ public class Tables {
     private ResultSet rsTableSource = null;
     private Cliente cliente;
 
-    //private static PreparedStatement psTablespace = null;
-    //private static ResultSet rsTablespace = null;
-    //StringBuilder sbTablespace = null;
-    //ArrayList<String> arrTablespace = new ArrayList();
+    public Tables(Cliente cliente){
+        this.cliente = cliente;
+    }
+
     public Tables(String system,
             String referencedName,
             String fileName,
-            String fileNameScripts) {
+            String fileNameScripts,
+            Cliente cliente) {
 
         CvsStructureFile fileScripts;
-        FileWriter fwScripts;
         StringBuilder strOutScripts;
         BufferedReader brScripts;
         String auxScripts;
 
+        this.cliente = cliente;
         boolean pcFree = false;
 
         try {
@@ -145,7 +148,30 @@ public class Tables {
             SfwLogger.log("File " + fileNameScripts + " was error generated.");
             SfwLogger.debug(ex.getClass().toString(), ex.getStackTrace());
             ex.printStackTrace();
+        } finally{
+            try {
+                if (psTableSource != null) {
+                    psTableSource.close();
+                    psTableSource = null;
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(Tables.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
 
+    }
+
+    /**
+     * @return the cliente
+     */
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    /**
+     * @param cliente the cliente to set
+     */
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
     }
 }

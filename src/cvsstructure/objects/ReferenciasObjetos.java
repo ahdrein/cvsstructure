@@ -22,7 +22,9 @@ public class ReferenciasObjetos {
     private ResultSet rsGerarReferenciasObjetos = null;
     private static StringBuilder sbReferenciasObjetos;
 
-    public ReferenciasObjetos(String system, String objectName) {
+    public ReferenciasObjetos(String system, 
+                              String objectName,
+                              Cliente cliente) {
         String fileNameScripts = "";
         String fileName = "";
 
@@ -75,7 +77,8 @@ public class ReferenciasObjetos {
                             rsGerarReferenciasObjetos.getString("TIPO"),
                             rsGerarReferenciasObjetos.getString("REFERENCED_NAME"),
                             fileName,
-                            fileNameScripts);
+                            fileNameScripts,
+                            cliente);
 
                 } else if (rsGerarReferenciasObjetos.getString("REFERENCED_TYPE").toLowerCase().equals("table")) {
 
@@ -83,7 +86,8 @@ public class ReferenciasObjetos {
                     new Tables(system,
                             rsGerarReferenciasObjetos.getString("REFERENCED_NAME"),
                             fileName,
-                            fileNameScripts);
+                            fileNameScripts,
+                            cliente);
 
                 } else if (rsGerarReferenciasObjetos.getString("REFERENCED_TYPE").toLowerCase().equals("package")
                         || rsGerarReferenciasObjetos.getString("REFERENCED_TYPE").toLowerCase().equals("package body")) {

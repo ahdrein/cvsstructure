@@ -54,7 +54,7 @@ public class Interface {
      * Obtem o IDInterface
      */
     public String getIdInterface() {
-        return idInterface.trim().replace("(", "").replace(")", ")").replace(".", "").replace(" ", "").replace("[", "").replace("]", "").replace("{", "").replace("}", "").replace(">", "").replace("<", "").replace("-", "_").trim().toLowerCase();
+        return idInterface.trim().replace("(", "").replace(")", ")").replace(".", "").replace(" ", "").replace("[", "").replace("]", "").replace("{", "").replace("}", "").replace(">", "").replace("<", "").replace("-", "_").replace("$", "S#").trim().toLowerCase();
     }
 
     /*
