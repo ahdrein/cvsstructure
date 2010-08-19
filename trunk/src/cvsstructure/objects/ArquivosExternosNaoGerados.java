@@ -26,7 +26,7 @@ import java.sql.SQLException;
  *
  * @author ahdrein
  */
-public class ArquivosExternosNaoGerados extends Thread{
+public class ArquivosExternosNaoGerados implements Runnable{
     Cliente cliente;
     Interface interfaces;
 
@@ -337,7 +337,8 @@ public class ArquivosExternosNaoGerados extends Thread{
                                 rsGerarArquivosExternosNaoGerados.getString("TIPO"),
                                 rsGerarArquivosExternosNaoGerados.getString("NOME_ARQUIVO"),
                                 fileName,
-                                fileNameScripts);
+                                fileNameScripts,
+                                cliente);
 
                     } else if (tipoArquivo.equals("package")
                             || tipoArquivo.equals("package body")) {
@@ -357,6 +358,7 @@ public class ArquivosExternosNaoGerados extends Thread{
         } finally {
             try {
                 cvsstructure.model.ArquivosExternos.getInstance().dropTableTmpCvsStructure();
+                cvsstructure.model.ArquivosExternos.getInstance().close();
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }

@@ -27,7 +27,7 @@ import cvsstructure.model.Cliente;
  *
  * @author andrein
  */
-public class SapMapeamento extends Thread {
+public class SapMapeamento implements Runnable {
 
     private String idInterface = "";
     private String idSistema = "";

@@ -20,7 +20,7 @@ import java.sql.PreparedStatement;
  *
  * @author ahdrein
  */
-public class Interfaces extends Thread {
+public class Interfaces implements Runnable {
 
     private Interface interfaces;
 
@@ -120,7 +120,7 @@ public class Interfaces extends Thread {
 
                 if (strOut != null && !strOut.toString().isEmpty()) {
                     fileScripts.saveArquivo(strOut);
-                    SfwLogger.log("File interface " + fileName + " was succesfull generated.");
+                    SfwLogger.log("File interface " + fileNameScripts + " was succesfull generated.");
                 }
 
                 Estatisticas.nTotalInterfaces++;

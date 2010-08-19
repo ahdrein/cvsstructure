@@ -12,12 +12,14 @@ import cvsstructure.log.SfwLogger;
 import cvsstructure.model.Cliente;
 import cvsstructure.util.CvsStructureFile;
 import cvsstructure.util.Diretorio;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author andrein
  */
-public class Sistemas extends Thread {
+public class Sistemas implements Runnable {
 
     private Cliente cliente;
 
@@ -30,10 +32,13 @@ public class Sistemas extends Thread {
         String fileNameScripts = "";
         String fileName = "";
 
+        PreparedStatement psSistemas = null;
+        ResultSet rsSistemas = null;
+
         try {
             String sSelectSistemas = "select * from sistema";
-            PreparedStatement psSistemas = ConnectionInout.getConnection().prepareStatement(sSelectSistemas);
-            ResultSet rsSistemas = psSistemas.executeQuery();
+            psSistemas = ConnectionInout.getConnection().prepareStatement(sSelectSistemas);
+            rsSistemas = psSistemas.executeQuery();
 
             while (rsSistemas.next()) {
 
@@ -146,6 +151,19 @@ public class Sistemas extends Thread {
             SfwLogger.log(ex.getLocalizedMessage());
             SfwLogger.debug(ex.getClass().toString(), ex.getStackTrace());
             ex.printStackTrace();
+        }finally{
+            try {
+                if (psSistemas != null && !psSistemas.isClosed()) {
+                    psSistemas.close();
+                    psSistemas = null;
+                }
+                if (rsSistemas != null && !rsSistemas.isClosed()) {
+                    rsSistemas.close();
+                    rsSistemas = null;
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(Sistemas.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
 
     }

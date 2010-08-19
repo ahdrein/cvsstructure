@@ -20,14 +20,14 @@ import java.util.logging.Logger;
  *
  * @author ahdrein
  */
-public class ObjetosIntegracao extends Thread {
+public class ObjetosIntegracao implements Runnable {
 
     Cliente cliente;
 
-    public void GerarObjetosIntegraca() {
+    public ObjetosIntegracao() {
     }
 
-    public void GerarObjetosIntegracao(Cliente cliente) {
+    public ObjetosIntegracao(Cliente cliente) {
         this.cliente = cliente;
     }
 
@@ -290,7 +290,8 @@ public class ObjetosIntegracao extends Thread {
                                     rsFoundObjectsIT.getString("TIPO"),
                                     rsFoundObjectsIT.getString("OBJECT_NAME"),
                                     fileName,
-                                    fileNameScripts);
+                                    fileNameScripts,
+                                    cliente);
 
                         } else if (rsFoundObjectsIT.getString("TIPO").toLowerCase().equals("table")) {
 
@@ -298,7 +299,8 @@ public class ObjetosIntegracao extends Thread {
                             new Tables("INTEGRACAO",
                                     rsFoundObjectsIT.getString("OBJECT_NAME"),
                                     fileName,
-                                    fileNameScripts);
+                                    fileNameScripts,
+                                    cliente);
 
                         } else if (rsFoundObjectsIT.getString("TIPO").toLowerCase().equals("package")
                                 || rsFoundObjectsIT.getString("TIPO").toLowerCase().equals("package body")) {

@@ -1160,10 +1160,12 @@ public class CvsStructureFrame extends javax.swing.JFrame {
                                             cvsStruct.setSSelectInterfaces(jListInterfaces.getSelectedValues());
                                             cvsStruct.setCliente(cliente);
                                             cvsStruct.setCaminhoGeracao(getTxCaminhaGeracao());
-                                            cvsStruct.spoolCVSStruture(arrChecks);
-                                        } catch (SQLException ex) {
-                                            Logger.getLogger(CvsStructureFrame.class.getName()).log(Level.SEVERE, null, ex);
-                                        } catch (IOException ex) {
+                                            cvsStruct.setOpocoesExecucao(arrChecks);
+                                            Thread t = new Thread(cvsStruct);
+                                            t.setName("CvsStructure Main ");
+                                            t.start();
+                                            t.join();
+                                        } catch (Exception ex) {
                                             Logger.getLogger(CvsStructureFrame.class.getName()).log(Level.SEVERE, null, ex);
                                         }
                                         cont_user += 1;
@@ -1171,9 +1173,10 @@ public class CvsStructureFrame extends javax.swing.JFrame {
                                         setTextArea("\n#################################################################\n");
                                         setTextArea("## GERAÇÃO DOS SCRIPTS CONCLUIDA - " + userArray + "\n");
                                         setTextArea("## Data Hora Fim " + sdf.format(cal.getTime()) + " \n");
+                                        setTextArea("\n#################################################################\n");
                                         setTextArea("## Total Sistemas Extraidas: " + Estatisticas.nTotalSistemas + "\n");
                                         setTextArea("## Total Interfaces Extraidas: " + Estatisticas.nTotalInterfaces + "\n");
-                                        setTextArea("## Total Tabelas Temporarias Extraidas: " + Estatisticas.nTotalTabelas + "\n");
+                                        setTextArea("## Total Tabelas Temporarias Extraidas: " + Estatisticas.nTotalTabelasTemporarias + "\n");
                                         setTextArea("## Total Views Extraidas: " + Estatisticas.nTotalViews + "\n");
                                         setTextArea("## Total Synonyms Extraidas: " + Estatisticas.nTotalSynonyms + "\n");
                                         setTextArea("## Total Sequences Extraidas: " + Estatisticas.nTotalSequences + "\n");
@@ -1181,6 +1184,7 @@ public class CvsStructureFrame extends javax.swing.JFrame {
                                         setTextArea("## Total SapMapeamento Extraidas: " + Estatisticas.nTotalSapMapeamento + "\n");
                                         setTextArea("## Total IntMapeamento Extraidas: " + Estatisticas.nTotalIntMapeamento + "\n");
                                         setTextArea("## Total Functions\\Procedures Extraidas: " + Estatisticas.nTotalFunctionsProcedures + "\n");
+                                        setTextArea("## Total Tabelas Extraidas: " + Estatisticas.nTotalTabelas + "\n");
                                         setTextArea("#################################################################\n\n");
                                         jProgressBar1.setIndeterminate(false);
 

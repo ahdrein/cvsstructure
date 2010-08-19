@@ -16,23 +16,27 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.sql.Clob;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author andrein
  */
-public class ArquivosExternos {
+public class ArquivosExternos implements Runnable{
     private Interface interfaces;
     private Clob clob;
 
-    private void ArquivosExternos(Interface interfaces) throws Exception {
+    public ArquivosExternos(Interface interfaces) throws Exception {
         this.interfaces = interfaces;
     }
 
     /**************************************************************************
      * <b>Gerar scripts dos arquivos externos</b>
      **************************************************************************/
-    private void ArquivosExternos() throws Exception {
+    @Override
+    public void run() {
         CvsStructureFile fileScripts;
         StringBuilder strOutScripts = null;
         BufferedReader brScripts;
@@ -89,10 +93,10 @@ public class ArquivosExternos {
                             strOutScripts.append("conn &&INOUT_USER/&&INOUT_PASS@&&TNS" + QUEBRA_LINHA + QUEBRA_LINHA);
                             strOutScripts.append("--  ///////").append(QUEBRA_LINHA);
                             strOutScripts.append("--  ///////     Script Gerado a partir do Sistema Gerenciador de Interfaces IN-OUT").append(QUEBRA_LINHA);
-                            strOutScripts.append("--  ///////     Arquivo Externo: " + rsArquivosExternos.getString("NOME_ARQUIVO") + QUEBRA_LINHA);
+                            strOutScripts.append("--  ///////     Arquivo Externo: ").append(rsArquivosExternos.getString("NOME_ARQUIVO")).append(QUEBRA_LINHA);
                             strOutScripts.append("--  ///////" + QUEBRA_LINHA + QUEBRA_LINHA);
                             strOutScripts.append("set define off" + QUEBRA_LINHA + QUEBRA_LINHA + QUEBRA_LINHA + QUEBRA_LINHA);
-                            strOutScripts.append("delete from ARQUIVO_EXTERNO where NOME_ARQUIVO = '" + rsArquivosExternos.getString("NOME_ARQUIVO") + "';" + QUEBRA_LINHA + QUEBRA_LINHA);
+                            strOutScripts.append("delete from ARQUIVO_EXTERNO where NOME_ARQUIVO = '").append(rsArquivosExternos.getString("NOME_ARQUIVO")).append("';" + QUEBRA_LINHA + QUEBRA_LINHA);
                             strOutScripts.append("insert into ARQUIVO_EXTERNO").append(QUEBRA_LINHA);
                             strOutScripts.append("(NOME_ARQUIVO, DESCRICAO, PATH_RELATIVO, CONTEUDO)").append(QUEBRA_LINHA);
                             strOutScripts.append("values").append(QUEBRA_LINHA);
@@ -169,8 +173,8 @@ public class ArquivosExternos {
 
                             if (strOutScripts != null) {
                                 fileScripts.saveArquivo(strOutScripts);
+                                SfwLogger.log("File " + fileNameScripts + " was succesfull generated.");
                             }
-                            SfwLogger.log("File " + fileNameScripts + " was succesfull generated.");
                         }
                     } catch (IOException ioex) {
                         SfwLogger.log("File " + fileNameScripts + " was error generated.");
@@ -188,7 +192,15 @@ public class ArquivosExternos {
             SfwLogger.log(ex.getLocalizedMessage());
             SfwLogger.debug(ex.getClass().toString(), ex.getStackTrace());
         } finally {
-            //rsCountInterface.close();
+            cvsstructure.model.ArquivosExternos.getInstance().close();
+            if(rsArquivosExternos != null){
+                try {
+                    rsArquivosExternos.close();
+                    rsArquivosExternos = null;
+                } catch (SQLException ex) {
+                    Logger.getLogger(ArquivosExternos.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
         }
     }
 

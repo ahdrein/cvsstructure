@@ -9,6 +9,8 @@ import cvsstructure.database.ConnectionInout;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -151,5 +153,23 @@ public class ArquivosExternosNaoGerados {
         }
 
         return psArquivosExternosNaoGerados.executeQuery();
+    }
+
+    public void close(){
+        try {
+            if (instance.psInsertReferencesObjects != null) {
+                instance.psInsertReferencesObjects.close();
+                instance.psInsertReferencesObjects = null;
+            }
+            if (instance.psArquivosExternosNaoGerados != null) {
+                instance.psArquivosExternosNaoGerados.close();
+                instance.psArquivosExternosNaoGerados = null;
+            }
+            instance.sbCreateTableCvsStructure = null;
+            instance.sbInsertTableCvsStructure = null;
+            instance.sbArquivosExternosNaoGerados = null;
+        } catch (SQLException ex) {
+            Logger.getLogger(ArquivosExternosNaoGerados.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

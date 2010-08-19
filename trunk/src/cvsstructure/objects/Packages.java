@@ -7,9 +7,8 @@ import cvsstructure.util.Estatisticas;
 import cvsstructure.database.ConnectionInout;
 import cvsstructure.database.ConnectionIntegracao;
 import cvsstructure.log.SfwLogger;
+import cvsstructure.util.CvsStructureFile;
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -29,8 +28,8 @@ public class Packages {
             String fileName,
             String fileNameScripts) throws SQLException {
 
-        File fileScripts;
-        FileWriter fwScripts;
+        CvsStructureFile fileScripts;
+
         StringBuilder strOutScripts;
         BufferedReader brScripts;
         String auxScripts;
@@ -51,9 +50,8 @@ public class Packages {
                     fileNameScripts = fileNameScripts.replace("Package", "PackageBody");
                 }
 
-                fileScripts = new File(fileNameScripts);
+                fileScripts = new CvsStructureFile(fileNameScripts);
                 if (!fileScripts.exists()) {
-
 
                     psUserSource.setString(2, referencedName.toUpperCase());
                     rsUserSource = psUserSource.executeQuery();
@@ -83,12 +81,7 @@ public class Packages {
                     strOutScripts.append("/");
 
                     if (strOutScripts != null && !strOutScripts.toString().isEmpty()) {
-                        fileScripts.createNewFile();
-
-                        fwScripts = new FileWriter(fileScripts, false);
-                        fwScripts.write(strOutScripts.toString(), 0, strOutScripts.length());
-                        fwScripts.close();
-
+                        fileScripts.saveArquivo(strOutScripts);
                         Estatisticas.nTotalPackages++;
                         SfwLogger.log("File " + fileNameScripts + " was succesfull generated.");
                     }
@@ -102,6 +95,16 @@ public class Packages {
                 SfwLogger.log("Error generating ");
                 SfwLogger.debug(ex.getClass().toString(), ex.getStackTrace());
                 ex.printStackTrace();
+            }finally{
+                if (psUserSource != null) {
+                    psUserSource.close();
+                    psUserSource = null;
+                }
+
+                if (rsUserSource != null) {
+                    rsUserSource.close();
+                    rsUserSource = null;
+                }
             }
         }
 

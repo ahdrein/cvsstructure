@@ -11,12 +11,15 @@ import cvsstructure.util.Estatisticas;
 import cvsstructure.database.ConnectionInout;
 import cvsstructure.database.ConnectionIntegracao;
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import cvsstructure.log.SfwLogger;
+import cvsstructure.model.Cliente;
+import cvsstructure.util.CvsStructureFile;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -31,15 +34,16 @@ public class FunctionProcedure {
             String tipo,
             String referenceName,
             String fileName,
-            String fileNameScripts) throws IOException {
+            String fileNameScripts,
+            Cliente cliente) throws IOException {
 
-        File fileScripts;
-        FileWriter fwScripts;
+        CvsStructureFile fileScripts;
+
         StringBuilder strOutScripts = null;
         BufferedReader brScripts;
 
         try {
-            fileScripts = new File(fileNameScripts);
+            fileScripts = new CvsStructureFile(fileNameScripts);
             if (!fileScripts.exists()) {
 
                 strOutScripts = new StringBuilder();
@@ -75,12 +79,7 @@ public class FunctionProcedure {
                 strOutScripts.append("/");
 
                 if (strOutScripts != null && !strOutScripts.toString().isEmpty()) {
-                    fileScripts.createNewFile();
-
-                    fwScripts = new FileWriter(fileScripts, false);
-                    fwScripts.write(strOutScripts.toString(), 0, strOutScripts.length());
-                    fwScripts.close();
-
+                    fileScripts.saveArquivo(strOutScripts);
                     Estatisticas.nTotalFunctionsProcedures++;
                     SfwLogger.log("File " + fileNameScripts + " was succesfull generated.");
                 }
@@ -94,6 +93,20 @@ public class FunctionProcedure {
             SfwLogger.log("Error generating " + fileName);
             SfwLogger.log(ex.getLocalizedMessage());
             SfwLogger.debug(ex.getClass().toString(), ex.getStackTrace());
+        }finally{
+            try {
+                if(psUserSource != null){
+                    psUserSource.close();
+                    psUserSource = null;
+                }
+
+                if(rsUserSource != null){
+                    rsUserSource.close();
+                    rsUserSource = null;
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(FunctionProcedure.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
 
     }

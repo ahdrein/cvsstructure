@@ -25,25 +25,31 @@ public final class TabInterfaces {
 
     private String idInterface;
     private String idSistema;
-    private static PreparedStatement psTabInterface;
+    private PreparedStatement psTabInterface;
     private ResultSet rsTabInterface = null;
-    private static PreparedStatement psColunasTabInterface;
+
+    private PreparedStatement psColunasTabInterface;
     private ResultSet rsColunasTabInterface = null;
-    private static PreparedStatement psDependHeaderItem;
-    private static PreparedStatement psDependHeaderItemTrigger;
+
+    private PreparedStatement psDependHeaderItem;
+    private PreparedStatement psDependHeaderItemTrigger;
     private ResultSet rsDependHeaderItemTrigger = null;
-    private static PreparedStatement psCountPermissaoTabela;
+
+    private PreparedStatement psCountPermissaoTabela;
     private ResultSet rsCountPermissaoTabela = null;
-    private static PreparedStatement psPermissaoTabela = null;
-    private static ResultSet rsPermissaoTabela = null;
-    private static StringBuilder sbTabInterface;
-    private static StringBuilder sbColunasTabInterface;
-    private static StringBuilder sbDependHeaderItem;
-    private static StringBuilder sbDependHeaderItemTrigger;
-    private static StringBuilder sbCountPermissaoTabela;
+
+    private PreparedStatement psPermissaoTabela = null;
+    private ResultSet rsPermissaoTabela = null;
+
+    private StringBuilder sbTabInterface = null;
+    private StringBuilder sbColunasTabInterface = null;
+    private StringBuilder sbDependHeaderItem = null;
+    private StringBuilder sbDependHeaderItemTrigger = null;
+    private StringBuilder sbCountPermissaoTabela = null;
 
     public TabInterfaces(String tableName,
-            Object[] selectInterfaces) throws SQLException, IOException {
+                         Object[] selectInterfaces) throws SQLException, IOException {
+
         String fileName = "";
         String fileNameScripts = "";
         Interface interfaces = new Interface();
@@ -118,8 +124,7 @@ public final class TabInterfaces {
             rsCountPermissaoTabela = psCountPermissaoTabela.executeQuery();
             rsCountPermissaoTabela.next();
 
-            psTabInterface.setString(1, tableName);
-            rsTabInterface = psTabInterface.executeQuery();
+
 
             if (rsCountPermissaoTabela.getInt("TOTAL_INTERFACES") >= 1) {
                 //
@@ -178,314 +183,314 @@ public final class TabInterfaces {
 
                     SfwLogger.log("Creating or appending to file " + fileName);
 
-                    while (rsTabInterface.next()) {
+                    psTabInterface.setString(1, tableName);
+                    rsTabInterface = psTabInterface.executeQuery();
+                    rsTabInterface.next();
 
-                        StringBuilder strOutCltFixo = new StringBuilder();
+                    StringBuilder strOutCltFixo = new StringBuilder();
 
-                        if (rsTabInterface.getCharacterStream("CTL_FIXO") != null) {
-                            BufferedReader brCtlFixo = new BufferedReader(rsTabInterface.getCharacterStream("CTL_FIXO"));
+                    if (rsTabInterface.getCharacterStream("CTL_FIXO") != null) {
+                        BufferedReader brCtlFixo = new BufferedReader(rsTabInterface.getCharacterStream("CTL_FIXO"));
 
-                            if (brCtlFixo != null) {
-                                String aux;
+                        if (brCtlFixo != null) {
+                            String aux;
 
-                                while ((aux = brCtlFixo.readLine()) != null) {
-                                    strOutCltFixo.append("exec PRC_UPDATE_CONCATENA_LONG('TAB_INTERFACE','CTL_FIXO','TABLE_NAME','").append(rsTabInterface.getString("TABLE_NAME")).append("','").append(aux.replace("'", "''")).append("');");
-                                    strOutCltFixo.append(QUEBRA_LINHA);
-                                    strOutCltFixo.append(QUEBRA_LINHA);
-                                }
+                            while ((aux = brCtlFixo.readLine()) != null) {
+                                strOutCltFixo.append("exec PRC_UPDATE_CONCATENA_LONG('TAB_INTERFACE','CTL_FIXO','TABLE_NAME','").append(rsTabInterface.getString("TABLE_NAME")).append("','").append(aux.replace("'", "''")).append("');");
+                                strOutCltFixo.append(QUEBRA_LINHA);
+                                strOutCltFixo.append(QUEBRA_LINHA);
                             }
                         }
+                    }
 
-                        if (chConexaoPorArquivos.equals("S")) {
-                            strOut.append("conn &&INOUT_USER/&&INOUT_PASS@&&TNS");
+                    if (chConexaoPorArquivos.equals("S")) {
+                        strOut.append("conn &&INOUT_USER/&&INOUT_PASS@&&TNS");
+                    }
+
+                    strOut.append(QUEBRA_LINHA);
+                    strOut.append(QUEBRA_LINHA);
+                    strOut.append("--  ///////").append(QUEBRA_LINHA);
+                    strOut.append("--  ///////     Script Gerado a partir do Sistema Gerenciador de Interfaces IN-OUT").append(QUEBRA_LINHA);
+                    strOut.append("--  ///////     TABELA: ").append(rsTabInterface.getString("TABLE_NAME")).append(QUEBRA_LINHA);
+                    strOut.append("--  ///////" + QUEBRA_LINHA + QUEBRA_LINHA);
+                    strOut.append("delete from DEPEND_HEADER_ITEM_TMP;" + QUEBRA_LINHA + QUEBRA_LINHA);
+                    strOut.append("delete from COLUNAS_TAB_INTERFACE where TABLE_NAME = '").append(rsTabInterface.getString("TABLE_NAME")).append("';" + QUEBRA_LINHA + QUEBRA_LINHA);
+                    strOut.append("begin" + QUEBRA_LINHA + QUEBRA_LINHA);
+                    strOut.append("  update    TAB_INTERFACE").append(QUEBRA_LINHA);
+                    strOut.append("  set");
+                    strOut.append(trataUpdateCamposTabInterface("DESCRICAO", rsTabInterface.getString("DESCRICAO")));
+                    strOut.append(trataUpdateCamposTabInterface("CTL_NAME", rsTabInterface.getString("CTL_NAME")));
+                    strOut.append(trataUpdateCamposTabInterface("PREFIX_FILE", rsTabInterface.getString("PREFIX_FILE")));
+                    strOut.append(trataUpdateCamposTabInterface("GERAR_CTL", rsTabInterface.getString("GERAR_CTL")));
+                    strOut.append(trataUpdateCamposTabInterface("PRIORIDADE", rsTabInterface.getString("PRIORIDADE")));
+                    strOut.append(trataUpdateCamposTabInterface("ODBC_SOURCE_NAME", rsTabInterface.getString("ODBC_SOURCE_NAME")));
+                    strOut.append(trataUpdateCamposTabInterface("ODBC_PASSWORD", rsTabInterface.getString("ODBC_PASSWORD")));
+                    strOut.append(trataUpdateCamposTabInterface("ODBC_TABLE_NAME", rsTabInterface.getString("ODBC_TABLE_NAME")));
+                    strOut.append(trataUpdateCamposTabInterface("ODBC_WHERE", rsTabInterface.getString("ODBC_WHERE")));
+                    strOut.append(trataUpdateCamposTabInterface("ODBC_SELECT_ESPECIFICO", rsTabInterface.getString("ODBC_SELECT_ESPECIFICO")));
+                    strOut.append(trataUpdateCamposTabInterface("TIPO_INTERFACE", rsTabInterface.getString("TIPO_INTERFACE")));
+                    strOut.append(trataUpdateCamposTabInterface("ORACLE_INITIAL_EXTENT", rsTabInterface.getString("ORACLE_INITIAL_EXTENT")));
+                    strOut.append(trataUpdateCamposTabInterface("ORACLE_NEXT_EXTENT", rsTabInterface.getString("ORACLE_NEXT_EXTENT")));
+                    strOut.append(trataUpdateCamposTabInterface("ORACLE_INDEX_TABLESPACE", rsTabInterface.getString("ORACLE_INDEX_TABLESPACE")));
+                    strOut.append(trataUpdateCamposTabInterface("ELIMINAR_REG_EXECUCAO", rsTabInterface.getString("ELIMINAR_REG_EXECUCAO")));
+                    strOut.append(trataUpdateCamposTabInterface("ID_SISTEMA", rsTabInterface.getString("ID_SISTEMA")));
+                    strOut.append(trataUpdateCamposTabInterface("PROCEDURE_NAME", rsTabInterface.getString("PROCEDURE_NAME")));
+                    strOut.append(trataUpdateCamposTabInterface("SEPARADOR", rsTabInterface.getString("SEPARADOR")));
+                    strOut.append("        CTL_FIXO = null,");
+                    strOut.append(QUEBRA_LINHA);
+                    strOut.append("        TRIGGER1 = null,");
+                    strOut.append(QUEBRA_LINHA);
+                    strOut.append("        TRIGGER2 = null,");
+                    strOut.append(QUEBRA_LINHA);
+                    if (rsTabInterface.getString("COMANDO_EXTRA_LOADER") == null) {
+                        strOut.append("        COMANDO_EXTRA_LOADER = ''");
+                    } else {
+                        strOut.append("        COMANDO_EXTRA_LOADER = '").append(rsTabInterface.getString("COMANDO_EXTRA_LOADER")).append("'");
+                    }
+                    strOut.append(QUEBRA_LINHA);
+                    strOut.append("  where TABLE_NAME = '").append(rsTabInterface.getString("TABLE_NAME")).append("';" + QUEBRA_LINHA + QUEBRA_LINHA);
+                    strOut.append("  if SQL%notfound then").append(QUEBRA_LINHA);
+                    strOut.append("        insert into TAB_INTERFACE").append(QUEBRA_LINHA);
+                    strOut.append("        (TABLE_NAME, " + QUEBRA_LINHA + "        DESCRICAO, " + QUEBRA_LINHA + "        CTL_NAME, " + QUEBRA_LINHA + "        PREFIX_FILE, " + QUEBRA_LINHA + "        GERAR_CTL, " + QUEBRA_LINHA + "        PRIORIDADE, " + QUEBRA_LINHA + "        ODBC_SOURCE_NAME, " + QUEBRA_LINHA + "        ODBC_USER, " + QUEBRA_LINHA + "        ODBC_PASSWORD, " + QUEBRA_LINHA + "        ODBC_TABLE_NAME, " + QUEBRA_LINHA + "        ODBC_WHERE, " + QUEBRA_LINHA + "        ODBC_SELECT_ESPECIFICO, " + QUEBRA_LINHA + "        TIPO_INTERFACE,").append(QUEBRA_LINHA);
+                    strOut.append("        ORACLE_INITIAL_EXTENT, " + QUEBRA_LINHA + "        ORACLE_NEXT_EXTENT, " + QUEBRA_LINHA + "        ORACLE_INDEX_TABLESPACE, " + QUEBRA_LINHA + "        ELIMINAR_REG_EXECUCAO, " + QUEBRA_LINHA + "        COMANDO_EXTRA_LOADER, " + QUEBRA_LINHA + "        ID_SISTEMA, " + QUEBRA_LINHA + "        PROCEDURE_NAME, " + QUEBRA_LINHA + "        SEPARADOR)").append(QUEBRA_LINHA);
+                    strOut.append("        values").append(QUEBRA_LINHA);
+                    //strOut.append("        ('" + rsTabInterface.getString("TABLE_NAME") + "', '" + rsTabInterface.getString("CTL_NAME") + "', '" + rsTabInterface.getString("PREFIX_FILE") + "', '" + rsTabInterface.getString("GERAR_CTL") + "', " + rsTabInterface.getString("PRIORIDADE") + ", '" + rsTabInterface.getString("ODBC_SOURCE_NAME") + "', '" + rsTabInterface.getString("ODBC_USER") +"', '" + rsTabInterface.getString("ODBC_PASSWORD") + "', '" + rsTabInterface.getString("ODBC_TABLE_NAME") + "', '" + rsTabInterface.getString("ODBC_WHERE") + "', '" + rsTabInterface.getString("ODBC_SELECT_ESPECIFICO") + "', '" + rsTabInterface.getString("TIPO_INTERFACE") + "',");
+                    if (rsTabInterface.getString("TABLE_NAME") == null) {
+                        strOut.append("        ('', " + QUEBRA_LINHA + "        '");
+                    } else {
+                        strOut.append("        ('").append(rsTabInterface.getString("TABLE_NAME")).append("', " + QUEBRA_LINHA + "        '");
+                    }
+
+                    strOut.append(trataCamposTabInterface(rsTabInterface.getString("DESCRICAO")));
+                    strOut.append(trataCamposTabInterface(rsTabInterface.getString("CTL_NAME")));
+                    strOut.append(trataCamposTabInterface(rsTabInterface.getString("PREFIX_FILE")));
+                    strOut.append(trataCamposTabInterface(rsTabInterface.getString("GERAR_CTL")));
+                    strOut.append(trataCamposTabInterface(rsTabInterface.getString("PRIORIDADE")));
+                    strOut.append(trataCamposTabInterface(rsTabInterface.getString("ODBC_SOURCE_NAME")));
+                    strOut.append(trataCamposTabInterface(rsTabInterface.getString("ODBC_USER")));
+                    strOut.append(trataCamposTabInterface(rsTabInterface.getString("ODBC_PASSWORD")));
+                    strOut.append(trataCamposTabInterface(rsTabInterface.getString("ODBC_TABLE_NAME")));
+                    strOut.append(trataCamposTabInterface(rsTabInterface.getString("ODBC_WHERE")));
+                    strOut.append(trataCamposTabInterface(rsTabInterface.getString("ODBC_SELECT_ESPECIFICO")));
+                    strOut.append(trataCamposTabInterface(rsTabInterface.getString("TIPO_INTERFACE")));
+                    strOut.append(trataCamposTabInterface(rsTabInterface.getString("ORACLE_INITIAL_EXTENT")));
+                    strOut.append(trataCamposTabInterface(rsTabInterface.getString("ORACLE_NEXT_EXTENT")));
+                    strOut.append(trataCamposTabInterface(rsTabInterface.getString("ORACLE_INDEX_TABLESPACE")));
+                    strOut.append(trataCamposTabInterface(rsTabInterface.getString("ELIMINAR_REG_EXECUCAO")));
+                    strOut.append(trataCamposTabInterface(rsTabInterface.getString("COMANDO_EXTRA_LOADER")));
+                    strOut.append(trataCamposTabInterface(rsTabInterface.getString("ID_SISTEMA")));
+                    strOut.append(trataCamposTabInterface(rsTabInterface.getString("PROCEDURE_NAME")));
+
+                    if (rsTabInterface.getString("SEPARADOR") == null) {
+                        strOut.append("');");
+                    } else {
+                        strOut.append(rsTabInterface.getString("SEPARADOR")).append("')");
+                    }
+
+                    strOut.append(QUEBRA_LINHA);
+                    strOut.append("  end if;");
+                    strOut.append(QUEBRA_LINHA);
+                    strOut.append("end;");
+                    strOut.append(QUEBRA_LINHA);
+                    strOut.append("/");
+                    strOut.append(QUEBRA_LINHA + "").append(QUEBRA_LINHA);
+
+                    strOut.append(strOutCltFixo);
+
+                    if (rsTabInterface.getCharacterStream("TRIGGER1") != null) {
+                        String aux;
+                        BufferedReader br2 = new BufferedReader(rsTabInterface.getCharacterStream("TRIGGER1"));
+
+                        while ((aux = br2.readLine()) != null) {
+                            strOut.append("exec PRC_UPDATE_CONCATENA_LONG('TAB_INTERFACE','TRIGGER1','TABLE_NAME','").append(rsTabInterface.getString("TABLE_NAME")).append("','").append(aux.replace("'", "''")).append("');");
+                            strOut.append(QUEBRA_LINHA + "").append(QUEBRA_LINHA);
                         }
+                    }
 
+
+                    if (rsTabInterface.getCharacterStream("TRIGGER2") != null) {
+                        String aux;
+                        BufferedReader br = new BufferedReader(rsTabInterface.getCharacterStream("TRIGGER2"));
+
+                        while ((aux = br.readLine()) != null) {
+                            strOut.append("exec PRC_UPDATE_CONCATENA_LONG('TAB_INTERFACE','TRIGGER2','TABLE_NAME','").append(rsTabInterface.getString("TABLE_NAME")).append("','").append(aux.replace("'", "''")).append("');");
+                            strOut.append(QUEBRA_LINHA + "").append(QUEBRA_LINHA);
+                        }
+                    }
+
+                    //psColunasTabInterface = ConnectionInout.getConnection().prepareStatement(sSelectColunasTabInterface);
+                    psColunasTabInterface.setString(1, rsTabInterface.getString("TABLE_NAME"));
+                    rsColunasTabInterface = psColunasTabInterface.executeQuery();
+
+                    while (rsColunasTabInterface.next()) {
+                        strOut.append("insert into COLUNAS_TAB_INTERFACE");
                         strOut.append(QUEBRA_LINHA);
+                        strOut.append("(TABLE_NAME, COLUMN_NAME, TIPO_LOADER, FORMATO, COMANDO_EXTRA, TAMANHO, ORDEM, DESCRICAO, ARG_NAME, ARG_FUNCTION)");
                         strOut.append(QUEBRA_LINHA);
-                        strOut.append("--  ///////").append(QUEBRA_LINHA);
-                        strOut.append("--  ///////     Script Gerado a partir do Sistema Gerenciador de Interfaces IN-OUT").append(QUEBRA_LINHA);
-                        strOut.append("--  ///////     TABELA: ").append(rsTabInterface.getString("TABLE_NAME")).append(QUEBRA_LINHA);
-                        strOut.append("--  ///////" + QUEBRA_LINHA + QUEBRA_LINHA);
-                        strOut.append("delete from DEPEND_HEADER_ITEM_TMP;" + QUEBRA_LINHA + QUEBRA_LINHA);
-                        strOut.append("delete from COLUNAS_TAB_INTERFACE where TABLE_NAME = '").append(rsTabInterface.getString("TABLE_NAME")).append("';" + QUEBRA_LINHA + QUEBRA_LINHA);
-                        strOut.append("begin" + QUEBRA_LINHA + QUEBRA_LINHA);
-                        strOut.append("  update    TAB_INTERFACE").append(QUEBRA_LINHA);
-                        strOut.append("  set");
-                        strOut.append(trataUpdateCamposTabInterface("DESCRICAO", rsTabInterface.getString("DESCRICAO")));
-                        strOut.append(trataUpdateCamposTabInterface("CTL_NAME", rsTabInterface.getString("CTL_NAME")));
-                        strOut.append(trataUpdateCamposTabInterface("PREFIX_FILE", rsTabInterface.getString("PREFIX_FILE")));
-                        strOut.append(trataUpdateCamposTabInterface("GERAR_CTL", rsTabInterface.getString("GERAR_CTL")));
-                        strOut.append(trataUpdateCamposTabInterface("PRIORIDADE", rsTabInterface.getString("PRIORIDADE")));
-                        strOut.append(trataUpdateCamposTabInterface("ODBC_SOURCE_NAME", rsTabInterface.getString("ODBC_SOURCE_NAME")));
-                        strOut.append(trataUpdateCamposTabInterface("ODBC_PASSWORD", rsTabInterface.getString("ODBC_PASSWORD")));
-                        strOut.append(trataUpdateCamposTabInterface("ODBC_TABLE_NAME", rsTabInterface.getString("ODBC_TABLE_NAME")));
-                        strOut.append(trataUpdateCamposTabInterface("ODBC_WHERE", rsTabInterface.getString("ODBC_WHERE")));
-                        strOut.append(trataUpdateCamposTabInterface("ODBC_SELECT_ESPECIFICO", rsTabInterface.getString("ODBC_SELECT_ESPECIFICO")));
-                        strOut.append(trataUpdateCamposTabInterface("TIPO_INTERFACE", rsTabInterface.getString("TIPO_INTERFACE")));
-                        strOut.append(trataUpdateCamposTabInterface("ORACLE_INITIAL_EXTENT", rsTabInterface.getString("ORACLE_INITIAL_EXTENT")));
-                        strOut.append(trataUpdateCamposTabInterface("ORACLE_NEXT_EXTENT", rsTabInterface.getString("ORACLE_NEXT_EXTENT")));
-                        strOut.append(trataUpdateCamposTabInterface("ORACLE_INDEX_TABLESPACE", rsTabInterface.getString("ORACLE_INDEX_TABLESPACE")));
-                        strOut.append(trataUpdateCamposTabInterface("ELIMINAR_REG_EXECUCAO", rsTabInterface.getString("ELIMINAR_REG_EXECUCAO")));
-                        strOut.append(trataUpdateCamposTabInterface("ID_SISTEMA", rsTabInterface.getString("ID_SISTEMA")));
-                        strOut.append(trataUpdateCamposTabInterface("PROCEDURE_NAME", rsTabInterface.getString("PROCEDURE_NAME")));
-                        strOut.append(trataUpdateCamposTabInterface("SEPARADOR", rsTabInterface.getString("SEPARADOR")));
-                        strOut.append("        CTL_FIXO = null,");
+                        strOut.append("values");
                         strOut.append(QUEBRA_LINHA);
-                        strOut.append("        TRIGGER1 = null,");
-                        strOut.append(QUEBRA_LINHA);
-                        strOut.append("        TRIGGER2 = null,");
-                        strOut.append(QUEBRA_LINHA);
-                        if (rsTabInterface.getString("COMANDO_EXTRA_LOADER") == null) {
-                            strOut.append("        COMANDO_EXTRA_LOADER = ''");
+
+                        if (rsColunasTabInterface.getString("TABLE_NAME") == null) {
+                            strOut.append("('', '");
                         } else {
-                            strOut.append("        COMANDO_EXTRA_LOADER = '").append(rsTabInterface.getString("COMANDO_EXTRA_LOADER")).append("'");
-                        }
-                        strOut.append(QUEBRA_LINHA);
-                        strOut.append("  where TABLE_NAME = '").append(rsTabInterface.getString("TABLE_NAME")).append("';" + QUEBRA_LINHA + QUEBRA_LINHA);
-                        strOut.append("  if SQL%notfound then").append(QUEBRA_LINHA);
-                        strOut.append("        insert into TAB_INTERFACE").append(QUEBRA_LINHA);
-                        strOut.append("        (TABLE_NAME, " + QUEBRA_LINHA + "        DESCRICAO, " + QUEBRA_LINHA + "        CTL_NAME, " + QUEBRA_LINHA + "        PREFIX_FILE, " + QUEBRA_LINHA + "        GERAR_CTL, " + QUEBRA_LINHA + "        PRIORIDADE, " + QUEBRA_LINHA + "        ODBC_SOURCE_NAME, " + QUEBRA_LINHA + "        ODBC_USER, " + QUEBRA_LINHA + "        ODBC_PASSWORD, " + QUEBRA_LINHA + "        ODBC_TABLE_NAME, " + QUEBRA_LINHA + "        ODBC_WHERE, " + QUEBRA_LINHA + "        ODBC_SELECT_ESPECIFICO, " + QUEBRA_LINHA + "        TIPO_INTERFACE,").append(QUEBRA_LINHA);
-                        strOut.append("        ORACLE_INITIAL_EXTENT, " + QUEBRA_LINHA + "        ORACLE_NEXT_EXTENT, " + QUEBRA_LINHA + "        ORACLE_INDEX_TABLESPACE, " + QUEBRA_LINHA + "        ELIMINAR_REG_EXECUCAO, " + QUEBRA_LINHA + "        COMANDO_EXTRA_LOADER, " + QUEBRA_LINHA + "        ID_SISTEMA, " + QUEBRA_LINHA + "        PROCEDURE_NAME, " + QUEBRA_LINHA + "        SEPARADOR)").append(QUEBRA_LINHA);
-                        strOut.append("        values").append(QUEBRA_LINHA);
-                        //strOut.append("        ('" + rsTabInterface.getString("TABLE_NAME") + "', '" + rsTabInterface.getString("CTL_NAME") + "', '" + rsTabInterface.getString("PREFIX_FILE") + "', '" + rsTabInterface.getString("GERAR_CTL") + "', " + rsTabInterface.getString("PRIORIDADE") + ", '" + rsTabInterface.getString("ODBC_SOURCE_NAME") + "', '" + rsTabInterface.getString("ODBC_USER") +"', '" + rsTabInterface.getString("ODBC_PASSWORD") + "', '" + rsTabInterface.getString("ODBC_TABLE_NAME") + "', '" + rsTabInterface.getString("ODBC_WHERE") + "', '" + rsTabInterface.getString("ODBC_SELECT_ESPECIFICO") + "', '" + rsTabInterface.getString("TIPO_INTERFACE") + "',");
-                        if (rsTabInterface.getString("TABLE_NAME") == null) {
-                            strOut.append("        ('', " + QUEBRA_LINHA + "        '");
-                        } else {
-                            strOut.append("        ('").append(rsTabInterface.getString("TABLE_NAME")).append("', " + QUEBRA_LINHA + "        '");
+                            strOut.append("('").append(rsColunasTabInterface.getString("TABLE_NAME")).append("', '");
                         }
 
-                        strOut.append(trataCamposTabInterface(rsTabInterface.getString("DESCRICAO")));
-                        strOut.append(trataCamposTabInterface(rsTabInterface.getString("CTL_NAME")));
-                        strOut.append(trataCamposTabInterface(rsTabInterface.getString("PREFIX_FILE")));
-                        strOut.append(trataCamposTabInterface(rsTabInterface.getString("GERAR_CTL")));
-                        strOut.append(trataCamposTabInterface(rsTabInterface.getString("PRIORIDADE")));
-                        strOut.append(trataCamposTabInterface(rsTabInterface.getString("ODBC_SOURCE_NAME")));
-                        strOut.append(trataCamposTabInterface(rsTabInterface.getString("ODBC_USER")));
-                        strOut.append(trataCamposTabInterface(rsTabInterface.getString("ODBC_PASSWORD")));
-                        strOut.append(trataCamposTabInterface(rsTabInterface.getString("ODBC_TABLE_NAME")));
-                        strOut.append(trataCamposTabInterface(rsTabInterface.getString("ODBC_WHERE")));
-                        strOut.append(trataCamposTabInterface(rsTabInterface.getString("ODBC_SELECT_ESPECIFICO")));
-                        strOut.append(trataCamposTabInterface(rsTabInterface.getString("TIPO_INTERFACE")));
-                        strOut.append(trataCamposTabInterface(rsTabInterface.getString("ORACLE_INITIAL_EXTENT")));
-                        strOut.append(trataCamposTabInterface(rsTabInterface.getString("ORACLE_NEXT_EXTENT")));
-                        strOut.append(trataCamposTabInterface(rsTabInterface.getString("ORACLE_INDEX_TABLESPACE")));
-                        strOut.append(trataCamposTabInterface(rsTabInterface.getString("ELIMINAR_REG_EXECUCAO")));
-                        strOut.append(trataCamposTabInterface(rsTabInterface.getString("COMANDO_EXTRA_LOADER")));
-                        strOut.append(trataCamposTabInterface(rsTabInterface.getString("ID_SISTEMA")));
-                        strOut.append(trataCamposTabInterface(rsTabInterface.getString("PROCEDURE_NAME")));
+                        strOut.append(trataCamposColunasTabInterface(rsColunasTabInterface.getString("COLUMN_NAME")));
+                        strOut.append(trataCamposColunasTabInterface(rsColunasTabInterface.getString("TIPO_LOADER")));
+                        strOut.append(trataCamposColunasTabInterface(rsColunasTabInterface.getString("FORMATO")));
+                        strOut.append(trataCamposColunasTabInterface(rsColunasTabInterface.getString("COMANDO_EXTRA")));
+                        strOut.append(trataCamposColunasTabInterface(rsColunasTabInterface.getString("TAMANHO")));
+                        strOut.append(trataCamposColunasTabInterface(rsColunasTabInterface.getString("ORDEM")));
+                        strOut.append(trataCamposColunasTabInterface(rsColunasTabInterface.getString("DESCRICAO")));
+                        strOut.append(trataCamposColunasTabInterface(rsColunasTabInterface.getString("ARG_NAME")));
 
-                        if (rsTabInterface.getString("SEPARADOR") == null) {
+                        if (rsColunasTabInterface.getString("ARG_FUNCTION") == null) {
                             strOut.append("');");
                         } else {
-                            strOut.append(rsTabInterface.getString("SEPARADOR")).append("')");
-                        }
-
-                        strOut.append(QUEBRA_LINHA);
-                        strOut.append("  end if;");
-                        strOut.append(QUEBRA_LINHA);
-                        strOut.append("end;");
-                        strOut.append(QUEBRA_LINHA);
-                        strOut.append("/");
-                        strOut.append(QUEBRA_LINHA + "").append(QUEBRA_LINHA);
-
-                        strOut.append(strOutCltFixo);
-
-                        if (rsTabInterface.getCharacterStream("TRIGGER1") != null) {
-                            String aux;
-                            BufferedReader br2 = new BufferedReader(rsTabInterface.getCharacterStream("TRIGGER1"));
-
-                            while ((aux = br2.readLine()) != null) {
-                                strOut.append("exec PRC_UPDATE_CONCATENA_LONG('TAB_INTERFACE','TRIGGER1','TABLE_NAME','").append(rsTabInterface.getString("TABLE_NAME")).append("','").append(aux.replace("'", "''")).append("');");
-                                strOut.append(QUEBRA_LINHA + "").append(QUEBRA_LINHA);
-                            }
-                        }
-
-
-                        if (rsTabInterface.getCharacterStream("TRIGGER2") != null) {
-                            String aux;
-                            BufferedReader br = new BufferedReader(rsTabInterface.getCharacterStream("TRIGGER2"));
-
-                            while ((aux = br.readLine()) != null) {
-                                strOut.append("exec PRC_UPDATE_CONCATENA_LONG('TAB_INTERFACE','TRIGGER2','TABLE_NAME','").append(rsTabInterface.getString("TABLE_NAME")).append("','").append(aux.replace("'", "''")).append("');");
-                                strOut.append(QUEBRA_LINHA + "").append(QUEBRA_LINHA);
-                            }
-                        }
-
-                        //psColunasTabInterface = ConnectionInout.getConnection().prepareStatement(sSelectColunasTabInterface);
-                        psColunasTabInterface.setString(1, rsTabInterface.getString("TABLE_NAME"));
-                        rsColunasTabInterface = psColunasTabInterface.executeQuery();
-
-                        while (rsColunasTabInterface.next()) {
-                            strOut.append("insert into COLUNAS_TAB_INTERFACE");
-                            strOut.append(QUEBRA_LINHA);
-                            strOut.append("(TABLE_NAME, COLUMN_NAME, TIPO_LOADER, FORMATO, COMANDO_EXTRA, TAMANHO, ORDEM, DESCRICAO, ARG_NAME, ARG_FUNCTION)");
-                            strOut.append(QUEBRA_LINHA);
-                            strOut.append("values");
-                            strOut.append(QUEBRA_LINHA);
-
-                            if (rsColunasTabInterface.getString("TABLE_NAME") == null) {
-                                strOut.append("('', '");
-                            } else {
-                                strOut.append("('").append(rsColunasTabInterface.getString("TABLE_NAME")).append("', '");
-                            }
-
-                            strOut.append(trataCamposColunasTabInterface(rsColunasTabInterface.getString("COLUMN_NAME")));
-                            strOut.append(trataCamposColunasTabInterface(rsColunasTabInterface.getString("TIPO_LOADER")));
-                            strOut.append(trataCamposColunasTabInterface(rsColunasTabInterface.getString("FORMATO")));
-                            strOut.append(trataCamposColunasTabInterface(rsColunasTabInterface.getString("COMANDO_EXTRA")));
-                            strOut.append(trataCamposColunasTabInterface(rsColunasTabInterface.getString("TAMANHO")));
-                            strOut.append(trataCamposColunasTabInterface(rsColunasTabInterface.getString("ORDEM")));
-                            strOut.append(trataCamposColunasTabInterface(rsColunasTabInterface.getString("DESCRICAO")));
-                            strOut.append(trataCamposColunasTabInterface(rsColunasTabInterface.getString("ARG_NAME")));
-
-                            if (rsColunasTabInterface.getString("ARG_FUNCTION") == null) {
-                                strOut.append("');");
-                            } else {
-                                strOut.append(rsColunasTabInterface.getString("ARG_FUNCTION")).append("');");
-                            }
-
-                            strOut.append(QUEBRA_LINHA + "").append(QUEBRA_LINHA);
-
-                            // Depend Header Item
-                            psDependHeaderItem.setString(1, rsColunasTabInterface.getString("TABLE_NAME"));
-                            psDependHeaderItem.setString(2, rsColunasTabInterface.getString("COLUMN_NAME"));
-                            strOut.append(new DataTableLayout("INOUT",
-                                    "depend_header_item",
-                                    psDependHeaderItem).create());
-
-                        }
-
-                        strOut.append("commit;");
-                        strOut.append(QUEBRA_LINHA + "").append(QUEBRA_LINHA);
-                        strOut.append("set serveroutput on");
-                        strOut.append(QUEBRA_LINHA);
-                        strOut.append("exec PRC_SINCRONIZA_TABELA('").append(rsTabInterface.getString("TABLE_NAME")).append("');");
-                        strOut.append(QUEBRA_LINHA + "").append(QUEBRA_LINHA);
-
-
-                        if (rsTabInterface.getCharacterStream("TRIGGER1") != null) {
-                            String aux;
-                            BufferedReader br = new BufferedReader(rsTabInterface.getCharacterStream("TRIGGER1"));
-
-                            while ((aux = br.readLine()) != null) {
-                                strOut.append(aux);
-                                strOut.append(QUEBRA_LINHA);
-                            }
-                            strOut.append("/" + QUEBRA_LINHA + QUEBRA_LINHA);
-                        }
-
-
-                        if (rsTabInterface.getCharacterStream("TRIGGER2") != null) {
-                            String aux;
-                            BufferedReader br = new BufferedReader(rsTabInterface.getCharacterStream("TRIGGER2"));
-
-                            while ((aux = br.readLine()) != null) {
-                                strOut.append(aux);
-                                strOut.append(QUEBRA_LINHA);
-                            }
-                            strOut.append("/").append(QUEBRA_LINHA);
+                            strOut.append(rsColunasTabInterface.getString("ARG_FUNCTION")).append("');");
                         }
 
                         strOut.append(QUEBRA_LINHA + "").append(QUEBRA_LINHA);
-                        strOut.append("CREATE OR REPLACE");
-                        strOut.append(QUEBRA_LINHA);
-                        strOut.append("TRIGGER TI_").append(rsTabInterface.getString("TABLE_NAME"));
-                        strOut.append(QUEBRA_LINHA);
-                        strOut.append("BEFORE INSERT ON ").append(rsTabInterface.getString("TABLE_NAME"));
-                        strOut.append(QUEBRA_LINHA);
-                        strOut.append("REFERENCING OLD AS old NEW AS new");
-                        strOut.append(QUEBRA_LINHA);
-                        strOut.append("FOR EACH ROW");
-                        strOut.append(QUEBRA_LINHA);
-                        strOut.append("begin");
-                        strOut.append(QUEBRA_LINHA);
-                        strOut.append("    select seq_id_interface.nextval into :new.id from dual;");
 
-                        //buscando o header
-
-                        psDependHeaderItemTrigger.setString(1, rsTabInterface.getString("TABLE_NAME"));
-                        rsDependHeaderItemTrigger = psDependHeaderItemTrigger.executeQuery();
-                        if (rsDependHeaderItemTrigger.next() && rsDependHeaderItemTrigger.getString("TABLE_NAME") != null) {
-                            strOut.append(QUEBRA_LINHA + QUEBRA_LINHA);
-                            strOut.append("  begin").append(QUEBRA_LINHA);
-                            strOut.append("    select id").append(QUEBRA_LINHA);
-                            strOut.append("    into :new.id_ref").append(QUEBRA_LINHA);
-                            strOut.append("    from ").append(rsDependHeaderItemTrigger.getString("TABLE_NAME_HEADER")).append(QUEBRA_LINHA);
-                            strOut.append("    where id_importacao = :new.id_importacao").append(QUEBRA_LINHA);
-                            strOut.append("    and ").append(rsDependHeaderItemTrigger.getString("COLUMN_NAME")).append(" = :new.").append(rsDependHeaderItemTrigger.getString("COLUMN_NAME"));
-                            while (rsDependHeaderItemTrigger.next()) {
-                                strOut.append(QUEBRA_LINHA);
-                                strOut.append("    and ").append(rsDependHeaderItemTrigger.getString("COLUMN_NAME")).append(" = :new.").append(rsDependHeaderItemTrigger.getString("COLUMN_NAME"));
-                            }
-                            strOut.append(";").append(QUEBRA_LINHA);
-                            strOut.append("  exception").append(QUEBRA_LINHA);
-                            strOut.append("    when no_data_found then").append(QUEBRA_LINHA);
-                            strOut.append("      :new.id_ref := null;").append(QUEBRA_LINHA);
-                            strOut.append("    when others then").append(QUEBRA_LINHA);
-                            strOut.append("      raise_application_error(-20001,'Falha em busca de header: ' || sqlerrm(sqlcode()));").append(QUEBRA_LINHA);
-                            strOut.append("  end;").append(QUEBRA_LINHA);
-                        }
-
-                        strOut.append(QUEBRA_LINHA + "").append(QUEBRA_LINHA);
-                        strOut.append("end;");
-                        strOut.append(QUEBRA_LINHA);
-                        strOut.append("/");
-                        strOut.append(QUEBRA_LINHA + "").append(QUEBRA_LINHA);
-                        strOut.append(QUEBRA_LINHA + "").append(QUEBRA_LINHA);
-                        strOut.append("CREATE OR REPLACE");
-                        strOut.append(QUEBRA_LINHA);
-                        strOut.append("TRIGGER TIA_").append(rsTabInterface.getString("TABLE_NAME"));
-                        strOut.append(QUEBRA_LINHA);
-                        strOut.append("AFTER INSERT ON ").append(rsTabInterface.getString("TABLE_NAME"));
-                        strOut.append(QUEBRA_LINHA);
-                        strOut.append("REFERENCING OLD AS old NEW AS new");
-                        strOut.append(QUEBRA_LINHA);
-                        strOut.append("FOR EACH ROW");
-                        strOut.append(QUEBRA_LINHA);
-                        strOut.append("begin");
-                        strOut.append(QUEBRA_LINHA);
-                        strOut.append("    insert into REGISTROS_INTERFACES (ID, ID_IMPORTACAO, TABLE_NAME, ID_REF)");
-                        strOut.append(QUEBRA_LINHA);
-                        strOut.append("    values (:new.id, :new.id_importacao, '").append(rsTabInterface.getString("TABLE_NAME")).append("', :new.id_ref);");
-                        strOut.append(QUEBRA_LINHA);
-                        strOut.append("end;");
-                        strOut.append(QUEBRA_LINHA);
-                        strOut.append("/");
-                        strOut.append(QUEBRA_LINHA + "").append(QUEBRA_LINHA);
-                        strOut.append(QUEBRA_LINHA + "").append(QUEBRA_LINHA);
-                        strOut.append("CREATE OR REPLACE");
-                        strOut.append(QUEBRA_LINHA);
-                        strOut.append("TRIGGER TD_").append(rsTabInterface.getString("TABLE_NAME"));
-                        strOut.append(QUEBRA_LINHA);
-                        strOut.append("BEFORE DELETE ON ").append(rsTabInterface.getString("TABLE_NAME"));
-                        strOut.append(QUEBRA_LINHA);
-                        strOut.append("REFERENCING OLD AS old NEW AS new");
-                        strOut.append(QUEBRA_LINHA);
-                        strOut.append("FOR EACH ROW");
-                        strOut.append(QUEBRA_LINHA);
-                        strOut.append("begin");
-                        strOut.append(QUEBRA_LINHA);
-                        strOut.append("    delete from REGISTROS_INTERFACES where id = :old.id;");
-                        strOut.append(QUEBRA_LINHA);
-                        strOut.append("end;");
-                        strOut.append(QUEBRA_LINHA);
-                        strOut.append("/");
-                        strOut.append(QUEBRA_LINHA + "").append(QUEBRA_LINHA);
-                        strOut.append(QUEBRA_LINHA + "").append(QUEBRA_LINHA);
-                        strOut.append(QUEBRA_LINHA + "").append(QUEBRA_LINHA);
-                        strOut.append("-- //////");
-                        strOut.append(QUEBRA_LINHA);
-                        strOut.append("-- //////  Não esqueça de reprocessar todos os GRANTS para todos os sistemas");
-                        strOut.append(QUEBRA_LINHA);
-                        strOut.append("-- //////");
+                        // Depend Header Item
+                        psDependHeaderItem.setString(1, rsColunasTabInterface.getString("TABLE_NAME"));
+                        psDependHeaderItem.setString(2, rsColunasTabInterface.getString("COLUMN_NAME"));
+                        strOut.append(new DataTableLayout("INOUT",
+                                "depend_header_item",
+                                psDependHeaderItem).create());
 
                     }
+
+                    strOut.append("commit;");
+                    strOut.append(QUEBRA_LINHA + "").append(QUEBRA_LINHA);
+                    strOut.append("set serveroutput on");
+                    strOut.append(QUEBRA_LINHA);
+                    strOut.append("exec PRC_SINCRONIZA_TABELA('").append(rsTabInterface.getString("TABLE_NAME")).append("');");
+                    strOut.append(QUEBRA_LINHA + "").append(QUEBRA_LINHA);
+
+
+                    if (rsTabInterface.getCharacterStream("TRIGGER1") != null) {
+                        String aux;
+                        BufferedReader br = new BufferedReader(rsTabInterface.getCharacterStream("TRIGGER1"));
+
+                        while ((aux = br.readLine()) != null) {
+                            strOut.append(aux);
+                            strOut.append(QUEBRA_LINHA);
+                        }
+                        strOut.append("/" + QUEBRA_LINHA + QUEBRA_LINHA);
+                    }
+
+
+                    if (rsTabInterface.getCharacterStream("TRIGGER2") != null) {
+                        String aux;
+                        BufferedReader br = new BufferedReader(rsTabInterface.getCharacterStream("TRIGGER2"));
+
+                        while ((aux = br.readLine()) != null) {
+                            strOut.append(aux);
+                            strOut.append(QUEBRA_LINHA);
+                        }
+                        strOut.append("/").append(QUEBRA_LINHA);
+                    }
+
+                    strOut.append(QUEBRA_LINHA + "").append(QUEBRA_LINHA);
+                    strOut.append("CREATE OR REPLACE");
+                    strOut.append(QUEBRA_LINHA);
+                    strOut.append("TRIGGER TI_").append(rsTabInterface.getString("TABLE_NAME"));
+                    strOut.append(QUEBRA_LINHA);
+                    strOut.append("BEFORE INSERT ON ").append(rsTabInterface.getString("TABLE_NAME"));
+                    strOut.append(QUEBRA_LINHA);
+                    strOut.append("REFERENCING OLD AS old NEW AS new");
+                    strOut.append(QUEBRA_LINHA);
+                    strOut.append("FOR EACH ROW");
+                    strOut.append(QUEBRA_LINHA);
+                    strOut.append("begin");
+                    strOut.append(QUEBRA_LINHA);
+                    strOut.append("    select seq_id_interface.nextval into :new.id from dual;");
+
+                    //buscando o header
+
+                    psDependHeaderItemTrigger.setString(1, rsTabInterface.getString("TABLE_NAME"));
+                    rsDependHeaderItemTrigger = psDependHeaderItemTrigger.executeQuery();
+                    if (rsDependHeaderItemTrigger.next() && rsDependHeaderItemTrigger.getString("TABLE_NAME") != null) {
+                        strOut.append(QUEBRA_LINHA + QUEBRA_LINHA);
+                        strOut.append("  begin").append(QUEBRA_LINHA);
+                        strOut.append("    select id").append(QUEBRA_LINHA);
+                        strOut.append("    into :new.id_ref").append(QUEBRA_LINHA);
+                        strOut.append("    from ").append(rsDependHeaderItemTrigger.getString("TABLE_NAME_HEADER")).append(QUEBRA_LINHA);
+                        strOut.append("    where id_importacao = :new.id_importacao").append(QUEBRA_LINHA);
+                        strOut.append("    and ").append(rsDependHeaderItemTrigger.getString("COLUMN_NAME")).append(" = :new.").append(rsDependHeaderItemTrigger.getString("COLUMN_NAME"));
+                        while (rsDependHeaderItemTrigger.next()) {
+                            strOut.append(QUEBRA_LINHA);
+                            strOut.append("    and ").append(rsDependHeaderItemTrigger.getString("COLUMN_NAME")).append(" = :new.").append(rsDependHeaderItemTrigger.getString("COLUMN_NAME"));
+                        }
+                        strOut.append(";").append(QUEBRA_LINHA);
+                        strOut.append("  exception").append(QUEBRA_LINHA);
+                        strOut.append("    when no_data_found then").append(QUEBRA_LINHA);
+                        strOut.append("      :new.id_ref := null;").append(QUEBRA_LINHA);
+                        strOut.append("    when others then").append(QUEBRA_LINHA);
+                        strOut.append("      raise_application_error(-20001,'Falha em busca de header: ' || sqlerrm(sqlcode()));").append(QUEBRA_LINHA);
+                        strOut.append("  end;").append(QUEBRA_LINHA);
+                    }
+
+                    strOut.append(QUEBRA_LINHA + "").append(QUEBRA_LINHA);
+                    strOut.append("end;");
+                    strOut.append(QUEBRA_LINHA);
+                    strOut.append("/");
+                    strOut.append(QUEBRA_LINHA + "").append(QUEBRA_LINHA);
+                    strOut.append(QUEBRA_LINHA + "").append(QUEBRA_LINHA);
+                    strOut.append("CREATE OR REPLACE");
+                    strOut.append(QUEBRA_LINHA);
+                    strOut.append("TRIGGER TIA_").append(rsTabInterface.getString("TABLE_NAME"));
+                    strOut.append(QUEBRA_LINHA);
+                    strOut.append("AFTER INSERT ON ").append(rsTabInterface.getString("TABLE_NAME"));
+                    strOut.append(QUEBRA_LINHA);
+                    strOut.append("REFERENCING OLD AS old NEW AS new");
+                    strOut.append(QUEBRA_LINHA);
+                    strOut.append("FOR EACH ROW");
+                    strOut.append(QUEBRA_LINHA);
+                    strOut.append("begin");
+                    strOut.append(QUEBRA_LINHA);
+                    strOut.append("    insert into REGISTROS_INTERFACES (ID, ID_IMPORTACAO, TABLE_NAME, ID_REF)");
+                    strOut.append(QUEBRA_LINHA);
+                    strOut.append("    values (:new.id, :new.id_importacao, '").append(rsTabInterface.getString("TABLE_NAME")).append("', :new.id_ref);");
+                    strOut.append(QUEBRA_LINHA);
+                    strOut.append("end;");
+                    strOut.append(QUEBRA_LINHA);
+                    strOut.append("/");
+                    strOut.append(QUEBRA_LINHA + "").append(QUEBRA_LINHA);
+                    strOut.append(QUEBRA_LINHA + "").append(QUEBRA_LINHA);
+                    strOut.append("CREATE OR REPLACE");
+                    strOut.append(QUEBRA_LINHA);
+                    strOut.append("TRIGGER TD_").append(rsTabInterface.getString("TABLE_NAME"));
+                    strOut.append(QUEBRA_LINHA);
+                    strOut.append("BEFORE DELETE ON ").append(rsTabInterface.getString("TABLE_NAME"));
+                    strOut.append(QUEBRA_LINHA);
+                    strOut.append("REFERENCING OLD AS old NEW AS new");
+                    strOut.append(QUEBRA_LINHA);
+                    strOut.append("FOR EACH ROW");
+                    strOut.append(QUEBRA_LINHA);
+                    strOut.append("begin");
+                    strOut.append(QUEBRA_LINHA);
+                    strOut.append("    delete from REGISTROS_INTERFACES where id = :old.id;");
+                    strOut.append(QUEBRA_LINHA);
+                    strOut.append("end;");
+                    strOut.append(QUEBRA_LINHA);
+                    strOut.append("/");
+                    strOut.append(QUEBRA_LINHA + "").append(QUEBRA_LINHA);
+                    strOut.append(QUEBRA_LINHA + "").append(QUEBRA_LINHA);
+                    strOut.append(QUEBRA_LINHA + "").append(QUEBRA_LINHA);
+                    strOut.append("-- //////");
+                    strOut.append(QUEBRA_LINHA);
+                    strOut.append("-- //////  Não esqueça de reprocessar todos os GRANTS para todos os sistemas");
+                    strOut.append(QUEBRA_LINHA);
+                    strOut.append("-- //////");
 
                     if (strOut != null && !strOut.toString().isEmpty()) {
                         fileScripts.saveArquivo(strOut);
 
-                        Estatisticas.nTotalTabelas++;
-                        SfwLogger.log("File " + fileName + " was succesfull generated.");
+                        Estatisticas.nTotalTabelasTemporarias++;
+                        SfwLogger.log("File " + fileNameScripts + " was succesfull generated.");
                     }
                 }
             }
@@ -496,6 +501,67 @@ public final class TabInterfaces {
             SfwLogger.log(ex.getLocalizedMessage());
             SfwLogger.debug(ex.getClass().toString(), ex.getStackTrace());
             ex.printStackTrace();
+        } finally{
+            if (psTabInterface != null) {
+                psTabInterface.close();
+                psTabInterface = null;
+            }
+
+            if (rsTabInterface != null) {
+                rsTabInterface.close();
+                rsTabInterface = null;
+            }
+
+            if (psColunasTabInterface != null) {
+                psColunasTabInterface.close();
+                psColunasTabInterface = null;
+            }
+
+            if (rsColunasTabInterface != null) {
+                rsColunasTabInterface.close();
+                rsColunasTabInterface = null;
+            }
+
+            if (psDependHeaderItem != null) {
+                psDependHeaderItem.close();
+                psDependHeaderItem = null;
+            }
+
+            if (psDependHeaderItemTrigger != null) {
+                psDependHeaderItemTrigger.close();
+                psDependHeaderItemTrigger = null;
+            }
+
+            if (rsDependHeaderItemTrigger != null) {
+                rsDependHeaderItemTrigger.close();
+                rsDependHeaderItemTrigger = null;
+            }
+
+            if (psCountPermissaoTabela != null) {
+                psCountPermissaoTabela.close();
+                psCountPermissaoTabela = null;
+            }
+
+            if (rsCountPermissaoTabela != null) {
+                rsCountPermissaoTabela.close();
+                rsCountPermissaoTabela = null;
+            }
+
+            if (psPermissaoTabela != null) {
+                psPermissaoTabela.close();
+                psPermissaoTabela = null;
+            }
+
+            if (rsPermissaoTabela != null) {
+                rsPermissaoTabela.close();
+                rsPermissaoTabela = null;
+            }
+
+            sbTabInterface = null;
+            sbColunasTabInterface = null;
+            sbDependHeaderItem = null;
+            sbDependHeaderItemTrigger = null;
+            sbCountPermissaoTabela = null;
         }
     }
 
@@ -505,8 +571,6 @@ public final class TabInterfaces {
 
     private int getOrdemTable(String nameTable) {
         int ordem;
-
-
         return 1;
     }
 

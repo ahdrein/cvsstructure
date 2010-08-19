@@ -25,6 +25,7 @@ public class Diretorio {
 
     private String tipoInterface;
     private ArrayList<String> dirScripts;
+    private ArrayList<String> opocoesExecucao;
     public static String path;
     private Interface interfaces;
 
@@ -38,48 +39,95 @@ public class Diretorio {
 
         getDirScriptsValida().add(scripts + "\\Scripts\\comum");
 
+        /*
         // Arquivos Inout
         dirScripts.add(scripts);
-        
-        dirScripts.add(scripts + "\\Arquivos\\");
-        dirScripts.add(scripts + "\\Arquivos\\comum");
-        dirScripts.add(scripts + "\\Arquivos\\comum\\INOUT");
-        dirScripts.add(scripts + "\\Arquivos\\comum\\INOUT\\Interfaces");
-        dirScripts.add(scripts + "\\Arquivos\\comum\\INOUT\\ArquivosExternos");
-        dirScripts.add(scripts + "\\Arquivos\\comum\\INOUT\\Tabelas");
-        dirScripts.add(scripts + "\\Arquivos\\comum\\INOUT\\Sistemas");
-        dirScripts.add(scripts + "\\Arquivos\\comum\\INOUT\\Synonyms");
-        dirScripts.add(scripts + "\\Arquivos\\comum\\INOUT\\View");
-        dirScripts.add(scripts + "\\Arquivos\\comum\\INOUT\\Sequence");
 
+        if(opocoesExecucao.contains("ArquivosExternos")){
+            dirScripts.add(scripts + "\\Arquivos\\");
+            dirScripts.add(scripts + "\\Arquivos\\comum");
+            dirScripts.add(scripts + "\\Arquivos\\comum\\INOUT");
+
+            if(opocoesExecucao.contains("Interfaces"))
+                dirScripts.add(scripts + "\\Arquivos\\comum\\INOUT\\Interfaces");
+
+            if(opocoesExecucao.contains("ArquivosExternos"))
+                dirScripts.add(scripts + "\\Arquivos\\comum\\INOUT\\ArquivosExternos");
+
+            if(opocoesExecucao.contains("TabelasTemporarias"))
+                dirScripts.add(scripts + "\\Arquivos\\comum\\INOUT\\Tabelas");
+
+            if(opocoesExecucao.contains("Sistemas"))
+                dirScripts.add(scripts + "\\Arquivos\\comum\\INOUT\\Sistemas");
+
+            if(opocoesExecucao.contains("Synonyms"))
+                dirScripts.add(scripts + "\\Arquivos\\comum\\INOUT\\Synonyms");
+
+            if(opocoesExecucao.contains("Views"))
+                dirScripts.add(scripts + "\\Arquivos\\comum\\INOUT\\View");
+
+            if(opocoesExecucao.contains("Sequences"))
+                dirScripts.add(scripts + "\\Arquivos\\comum\\INOUT\\Sequence");
+        }
         // Scripts Inout
         dirScripts.add(scripts + "\\Scripts\\");
         dirScripts.add(scripts + "\\Scripts\\comum");
         dirScripts.add(scripts + "\\Scripts\\comum\\INOUT");
+
+        if(opocoesExecucao.contains("Interfaces"))
         dirScripts.add(scripts + "\\Scripts\\comum\\INOUT\\Interfaces");
-        dirScripts.add(scripts + "\\Scripts\\comum\\INOUT\\ArquivosExternos");
-        dirScripts.add(scripts + "\\Scripts\\comum\\INOUT\\Tabelas");
-        dirScripts.add(scripts + "\\Scripts\\comum\\INOUT\\Sistemas");
-        dirScripts.add(scripts + "\\Scripts\\comum\\INOUT\\Synonyms");
-        dirScripts.add(scripts + "\\Scripts\\comum\\INOUT\\View");
-        dirScripts.add(scripts + "\\Scripts\\comum\\INOUT\\Sequence");
-        dirScripts.add(scripts + "\\Scripts\\comum\\INOUT\\Package");
-        dirScripts.add(scripts + "\\Scripts\\comum\\INOUT\\PackageBody");
-        dirScripts.add(scripts + "\\Scripts\\comum\\INOUT\\Procedure");
-        dirScripts.add(scripts + "\\Scripts\\comum\\INOUT\\Function");
+
+        if(opocoesExecucao.contains("ArquivosExternos"))
+            dirScripts.add(scripts + "\\Scripts\\comum\\INOUT\\ArquivosExternos");
+
+        if(opocoesExecucao.contains("TabelasTemporarias"))
+            dirScripts.add(scripts + "\\Scripts\\comum\\INOUT\\Tabelas");
+
+        if(opocoesExecucao.contains("Sistemas"))
+            dirScripts.add(scripts + "\\Scripts\\comum\\INOUT\\Sistemas");
+
+        if(opocoesExecucao.contains("Synonyms"))
+            dirScripts.add(scripts + "\\Scripts\\comum\\INOUT\\Synonyms");
+
+        if(opocoesExecucao.contains("Views"))
+            dirScripts.add(scripts + "\\Scripts\\comum\\INOUT\\View");
+
+        if(opocoesExecucao.contains("Sequences"))
+            dirScripts.add(scripts + "\\Scripts\\comum\\INOUT\\Sequence");
+
+        if(opocoesExecucao.contains("Objetos")){
+            dirScripts.add(scripts + "\\Scripts\\comum\\INOUT\\Package");
+            dirScripts.add(scripts + "\\Scripts\\comum\\INOUT\\PackageBody");
+            dirScripts.add(scripts + "\\Scripts\\comum\\INOUT\\Procedure");
+            dirScripts.add(scripts + "\\Scripts\\comum\\INOUT\\Function");
+        }
 
         // Scripts Integracao
         dirScripts.add(scripts + "\\Scripts\\comum\\INTEGRACAO");
-        dirScripts.add(scripts + "\\Scripts\\comum\\INTEGRACAO\\Function");
-        dirScripts.add(scripts + "\\Scripts\\comum\\INTEGRACAO\\Procedure");
-        dirScripts.add(scripts + "\\Scripts\\comum\\INTEGRACAO\\Package");
-        dirScripts.add(scripts + "\\Scripts\\comum\\INTEGRACAO\\PackageBody");
-        dirScripts.add(scripts + "\\Scripts\\comum\\INTEGRACAO\\Mapeamento");
-        dirScripts.add(scripts + "\\Scripts\\comum\\INTEGRACAO\\Mapeamento_SAP");
-        dirScripts.add(scripts + "\\Scripts\\comum\\INTEGRACAO\\Table");
-        dirScripts.add(scripts + "\\Scripts\\comum\\INTEGRACAO\\Synonyms");
-        dirScripts.add(scripts + "\\Scripts\\comum\\INTEGRACAO\\View");
-        dirScripts.add(scripts + "\\Scripts\\comum\\INTEGRACAO\\Sequence");
+        if(opocoesExecucao.contains("Objetos")){
+            dirScripts.add(scripts + "\\Scripts\\comum\\INTEGRACAO\\Function");
+            dirScripts.add(scripts + "\\Scripts\\comum\\INTEGRACAO\\Procedure");
+            dirScripts.add(scripts + "\\Scripts\\comum\\INTEGRACAO\\Package");
+            dirScripts.add(scripts + "\\Scripts\\comum\\INTEGRACAO\\PackageBody");
+        }
+
+        if(opocoesExecucao.contains("IntMapeamento"))
+            dirScripts.add(scripts + "\\Scripts\\comum\\INTEGRACAO\\Mapeamento");
+
+        if(opocoesExecucao.contains("SapMapeamento"))
+            dirScripts.add(scripts + "\\Scripts\\comum\\INTEGRACAO\\Mapeamento_SAP");
+
+        if(opocoesExecucao.contains("Objetos") || opocoesExecucao.contains("TabelasTemporarias"))
+            dirScripts.add(scripts + "\\Scripts\\comum\\INTEGRACAO\\Table");
+
+        if(opocoesExecucao.contains("Synonyms"))
+            dirScripts.add(scripts + "\\Scripts\\comum\\INTEGRACAO\\Synonyms");
+
+        if(opocoesExecucao.contains("Views"))
+            dirScripts.add(scripts + "\\Scripts\\comum\\INTEGRACAO\\View");
+
+        if(opocoesExecucao.contains("Sequences"))
+            dirScripts.add(scripts + "\\Scripts\\comum\\INTEGRACAO\\Sequence");
 
         for (int i = 0; i < dirScripts.size(); i++) {
             File file = new File(dirScripts.get(i).toString());
@@ -89,6 +137,7 @@ public class Diretorio {
                 SfwLogger.log("Erro ao criar diretorio! " + dirScripts.get(i));
             }
         }
+        */
     }
 
     /**************************************************************************
@@ -112,46 +161,79 @@ public class Diretorio {
 
         getDirScriptsValida().add(scripts);
 
+        /*
         dirScripts.add(scripts);
         dirScripts.add(arquivos);
 
         dirScripts.add(scripts + "\\INOUT\\");
         dirScripts.add(arquivos + "\\INOUT\\");
 
-        dirScripts.add(scripts + "\\INOUT\\Interface\\");
-        dirScripts.add(arquivos + "\\INOUT\\Interface\\");
+        if(opocoesExecucao.contains("Interface")){
+            dirScripts.add(scripts + "\\INOUT\\Interface\\");
+            dirScripts.add(arquivos + "\\INOUT\\Interface\\");
+        }
 
-        dirScripts.add(scripts + "\\INOUT\\ArquivosExternos\\");
-        dirScripts.add(arquivos + "\\INOUT\\ArquivosExternos\\");
+        if(opocoesExecucao.contains("ArquivosExternos")){
+            dirScripts.add(scripts + "\\INOUT\\ArquivosExternos\\");
+            dirScripts.add(arquivos + "\\INOUT\\ArquivosExternos\\");
+        }
 
-        dirScripts.add(scripts + "\\INOUT\\Tabelas\\");
-        dirScripts.add(arquivos + "\\INOUT\\Tabelas\\");
+        if(opocoesExecucao.contains("TabelasTemporarias")){
+            dirScripts.add(scripts + "\\INOUT\\Tabelas\\");
+            dirScripts.add(arquivos + "\\INOUT\\Tabelas\\");
+        }
 
-        dirScripts.add(scripts + "\\INOUT\\Synonyms\\");
-        dirScripts.add(arquivos + "\\INOUT\\Synonyms\\");
+        if(opocoesExecucao.contains("Synonyms")){
+            dirScripts.add(scripts + "\\INOUT\\Synonyms\\");
+            dirScripts.add(arquivos + "\\INOUT\\Synonyms\\");
+        }
 
-        dirScripts.add(scripts + "\\INOUT\\View\\");
-        dirScripts.add(arquivos + "\\INOUT\\View\\");
+        if(opocoesExecucao.contains("Views")){
+            dirScripts.add(scripts + "\\INOUT\\View\\");
+            dirScripts.add(arquivos + "\\INOUT\\View\\");
+        }
 
-        dirScripts.add(scripts + "\\INOUT\\Sequence\\");
-        dirScripts.add(arquivos + "\\INOUT\\Sequence\\");
+        if(opocoesExecucao.contains("Sequences")){
+            dirScripts.add(scripts + "\\INOUT\\Sequence\\");
+            dirScripts.add(arquivos + "\\INOUT\\Sequence\\");
+        }
 
-        dirScripts.add(scripts + "\\INOUT\\Package\\");
-        dirScripts.add(scripts + "\\INOUT\\PackageBody\\");
-        dirScripts.add(scripts + "\\INOUT\\Procedure\\");
-        dirScripts.add(scripts + "\\INOUT\\Function\\");
+        if(opocoesExecucao.contains("Objetos")){
+            dirScripts.add(scripts + "\\INOUT\\Package\\");
+            dirScripts.add(scripts + "\\INOUT\\PackageBody\\");
+            dirScripts.add(scripts + "\\INOUT\\Procedure\\");
+            dirScripts.add(scripts + "\\INOUT\\Function\\");
+        }
 
-        /*Integracao*/
+        //Integracao
         dirScripts.add(scripts + "\\INTEGRACAO");
-        dirScripts.add(scripts + "\\INTEGRACAO\\Function");
-        dirScripts.add(scripts + "\\INTEGRACAO\\Procedure");
-        dirScripts.add(scripts + "\\INTEGRACAO\\Package");
-        dirScripts.add(scripts + "\\INTEGRACAO\\PackageBody");
-        dirScripts.add(scripts + "\\INTEGRACAO\\Mapeamento");
-        dirScripts.add(scripts + "\\INTEGRACAO\\Mapeamento_SAP");
-        dirScripts.add(scripts + "\\INTEGRACAO\\Table");
-        dirScripts.add(scripts + "\\INTEGRACAO\\View");
-        dirScripts.add(scripts + "\\INTEGRACAO\\Sequence");
+
+        if(opocoesExecucao.contains("Objetos")){
+            dirScripts.add(scripts + "\\INTEGRACAO\\Function");
+            dirScripts.add(scripts + "\\INTEGRACAO\\Procedure");
+            dirScripts.add(scripts + "\\INTEGRACAO\\Package");
+            dirScripts.add(scripts + "\\INTEGRACAO\\PackageBody");
+        }
+
+        if(opocoesExecucao.contains("IntMapeamento")){
+            dirScripts.add(scripts + "\\INTEGRACAO\\Mapeamento");
+        }
+
+        if(opocoesExecucao.contains("SpaMapeamento")){
+            dirScripts.add(scripts + "\\INTEGRACAO\\Mapeamento_SAP");
+        }
+
+        if(opocoesExecucao.contains("TabelasTemporarias")){
+            dirScripts.add(scripts + "\\INTEGRACAO\\Table");
+        }
+
+        if(opocoesExecucao.contains("View")){
+            dirScripts.add(scripts + "\\INTEGRACAO\\View");
+        }
+
+        if(opocoesExecucao.contains("Sequence")){
+            dirScripts.add(scripts + "\\INTEGRACAO\\Sequence");
+        }
 
         for (int i = 0; i < dirScripts.size(); i++) {
             File file = new File(dirScripts.get(i).toString());
@@ -161,6 +243,7 @@ public class Diretorio {
                 SfwLogger.log("Erro ao criar diretorio! " + dirScripts.get(i));
             }
         }
+        */
     }
 
     /**************************************************************************
@@ -288,7 +371,7 @@ public class Diretorio {
                 //System.out.println(subdir.getName());
                 if (listaSubDir(subdir) == 0) {
                     if (subdir.delete()) {
-                        SfwLogger.debug("Diretório deletado: " + subdir.getName());
+                        //SfwLogger.debug("Diretório deletado: " + subdir.getName());
                     }
                 }
             } else {
@@ -308,6 +391,36 @@ public class Diretorio {
             return interfaces.getIdSistema() + "_out_" + interfaces.getIdInterface();
         }
         return "";
+    }
+
+    public static void verifyExistAndCreatDir(File fileScript){
+
+        if (!fileScript.exists()){
+            ArrayList<String> arrFileScriptDir = new ArrayList<String>();
+            StringBuilder aux = new StringBuilder();;
+
+            String[] fileScriptDir = fileScript.getAbsolutePath().split("\\\\");
+            for(String arr: fileScriptDir){
+                if(!aux.toString().isEmpty()){
+                    aux.append("\\");
+                }
+
+                aux.append(arr);
+                if(aux.toString().lastIndexOf(".sql") == -1 && aux.toString().lastIndexOf(".bat") == -1){
+                    arrFileScriptDir.add(aux.toString());
+                }
+
+            }
+
+            for (int i = 0; i < arrFileScriptDir.size(); i++) {
+                File file = new File(arrFileScriptDir.get(i).toString());
+                if (file.mkdir()) {
+                    SfwLogger.debug("Diretorio criado com sucesso! " + arrFileScriptDir.get(i));
+                } else {
+                    SfwLogger.debug("Erro ao criar diretorio! " + arrFileScriptDir.get(i));
+                }
+            }
+        }
     }
 
     /**
@@ -343,5 +456,19 @@ public class Diretorio {
      */
     public void setInterfaces(Interface interfaces) {
         this.interfaces = interfaces;
+    }
+
+    /**
+     * @return the opocoesExecucao
+     */
+    public ArrayList<String> getOpocoesExecucao() {
+        return opocoesExecucao;
+    }
+
+    /**
+     * @param opocoesExecucao the opocoesExecucao to set
+     */
+    public void setOpocoesExecucao(ArrayList<String> opocoesExecucao) {
+        this.opocoesExecucao = opocoesExecucao;
     }
 }

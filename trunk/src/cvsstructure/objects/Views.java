@@ -20,7 +20,7 @@ import cvsstructure.util.CvsStructureFile;
  *
  * @author andrein
  */
-public class Views extends Thread {
+public class Views implements Runnable {
 
     private String system;
     private PreparedStatement psView = null;
@@ -30,8 +30,9 @@ public class Views extends Thread {
     public Views() {
     }
 
-    public Views(String system) {
+    public Views(String system, Cliente cliente) {
         this.system = system;
+        this.cliente = cliente;
     }
 
     @Override
@@ -56,7 +57,7 @@ public class Views extends Thread {
             rsView = psView.executeQuery();
             while (rsView.next()) {
 
-                fileName = rsView.getString("VIEW_NAME").toLowerCase() + ".sql";
+                fileName = this.getNameSynonym( rsView.getString("VIEW_NAME").toLowerCase()) + ".sql" ;
                 if (system.equals("INOUT")) {
                     fileNameScripts = Diretorio.path + "\\" + Cliente.userNameSys + "\\Scripts\\comum\\INOUT\\View\\" + fileName;
                 } else {
@@ -112,5 +113,12 @@ public class Views extends Thread {
                 sqlex.printStackTrace();
             }
         }
+    }
+
+    /*
+     * Obtem o IDInterface
+     */
+    private String getNameSynonym(String nameSynonym) {
+        return nameSynonym.trim().replace("(", "").replace(")", ")").replace(".", "").replace(" ", "").replace("[", "").replace("]", "").replace("{", "").replace("}", "").replace(">", "").replace("<", "").replace("-", "_").replace("$", "S#").trim().toLowerCase();
     }
 }

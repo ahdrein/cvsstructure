@@ -9,6 +9,8 @@ import cvsstructure.database.ConnectionInout;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -83,7 +85,7 @@ public class ArquivosExternos {
     private PreparedStatement psExportarArquivosExternos = null;
 
     public PreparedStatement getExportarArquivosExternosByNomeArquivo() throws SQLException {
-        if(sbExportarArquivosExternos != null){
+        if(sbExportarArquivosExternos == null){
             sbExportarArquivosExternos = new StringBuilder();
             sbExportarArquivosExternos.append("select NOME_ARQUIVO,");
             sbExportarArquivosExternos.append("PATH_RELATIVO,");
@@ -93,7 +95,7 @@ public class ArquivosExternos {
             sbExportarArquivosExternos.append(" where arquivo_externo.nome_arquivo like '%'|| ? || '%'");
         }
 
-        if(psExportarArquivosExternos != null){
+        if(psExportarArquivosExternos == null){
             psExportarArquivosExternos = ConnectionInout.getConnection().prepareStatement(sbExportarArquivosExternos.toString());
         }
 
@@ -102,6 +104,36 @@ public class ArquivosExternos {
 
     public void dropTableTmpCvsStructure() throws SQLException{
         ConnectionInout.getConnection().prepareStatement("drop table TMP_CVS_STRUCTURE").executeQuery();
+    }
+
+
+    public void close(){
+        try {
+            if (instance.psGerarArquivosExternos != null) {
+                instance.psGerarArquivosExternos.close();
+                instance.psGerarArquivosExternos = null;
+            }
+
+            if (instance.rsArquivosExternos != null) {
+                instance.rsArquivosExternos.close();
+                instance.rsArquivosExternos = null;
+            }
+
+            if (instance.psPermissaoTabela != null) {
+                instance.psPermissaoTabela.close();
+                instance.psPermissaoTabela = null;
+            }
+
+            if (instance.rsPermissaoTabela != null) {
+                instance.rsPermissaoTabela.close();
+                instance.rsPermissaoTabela = null;
+            }
+
+            instance.sbArquivosExternos = null;
+            instance.sbExportarArquivosExternos = null;
+        } catch (SQLException ex) {
+            Logger.getLogger(ArquivosExternos.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
 }

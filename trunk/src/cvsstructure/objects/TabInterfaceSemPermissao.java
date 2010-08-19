@@ -13,7 +13,7 @@ import java.sql.ResultSet;
  * <b>Exportar Tabelas sem vinculo com alguma interface</b>
  * @author ahdrein
  */
-public class TabInterfaceSemPermissao extends Thread {
+public class TabInterfaceSemPermissao implements Runnable {
 
     private Object[] selectInterfaces;
 

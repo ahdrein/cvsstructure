@@ -7,20 +7,19 @@ import cvsstructure.util.Estatisticas;
 import cvsstructure.database.ConnectionInout;
 import cvsstructure.database.ConnectionIntegracao;
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import cvsstructure.log.SfwLogger;
 import cvsstructure.model.Cliente;
+import cvsstructure.util.CvsStructureFile;
 
 /**
  *
  * @author andrein
  */
-public class Sequence extends Thread{
+public class Sequence implements Runnable{
 
     private String system;
 
@@ -40,8 +39,8 @@ public class Sequence extends Thread{
         String fileNameScripts = "";
         String fileName = "";
 
-        File fileScripts;
-        FileWriter fwScripts;
+        CvsStructureFile fileScripts;
+
         StringBuilder strOutScripts;
         BufferedReader brScripts;
 
@@ -65,39 +64,35 @@ public class Sequence extends Thread{
                 }
 
                 try {
-                    fileScripts = new File(fileNameScripts);
+                    fileScripts = new CvsStructureFile(fileNameScripts);
                     if (!fileScripts.exists()) {
                         SfwLogger.log("Creating or appending to file " + fileNameScripts);
-                    }
 
-                    strOutScripts = new StringBuilder();
+                        strOutScripts = new StringBuilder();
 
-                    /******************************************
-                     * Gerando arquivos na pasta de Scripts
-                     ******************************************/
-                    if (chConexaoPorArquivos.equals("S")) {
-                        if (system.toUpperCase().equals("INOUT")) {
-                            strOutScripts.append("conn &&INOUT_USER/&&INOUT_PASS@&&TNS" + QUEBRA_LINHA + QUEBRA_LINHA);
-                        } else {
-                            strOutScripts.append("conn &&INTEGRACAO_USER/&&INTEGRACAO_PASS@&&TNS" + QUEBRA_LINHA + QUEBRA_LINHA);
+                        /******************************************
+                         * Gerando arquivos na pasta de Scripts
+                         ******************************************/
+                        if (chConexaoPorArquivos.equals("S")) {
+                            if (system.toUpperCase().equals("INOUT")) {
+                                strOutScripts.append("conn &&INOUT_USER/&&INOUT_PASS@&&TNS" + QUEBRA_LINHA + QUEBRA_LINHA);
+                            } else {
+                                strOutScripts.append("conn &&INTEGRACAO_USER/&&INTEGRACAO_PASS@&&TNS" + QUEBRA_LINHA + QUEBRA_LINHA);
+                            }
                         }
-                    }
-                    strOutScripts.append("-- Create sequence ").append(QUEBRA_LINHA);
-                    strOutScripts.append("create sequence ").append(rsSequences.getString("SEQUENCE_NAME")).append(QUEBRA_LINHA);
-                    strOutScripts.append("  minvalue 1").append(rsSequences.getString("MIN_VALUE")).append(QUEBRA_LINHA);
-                    strOutScripts.append("  maxvalue ").append(rsSequences.getString("MAX_VALUE")).append(QUEBRA_LINHA);
-                    strOutScripts.append("  start with ").append(rsSequences.getString("LAST_NUMBER")).append(QUEBRA_LINHA);
-                    strOutScripts.append("  increment by ").append(rsSequences.getString("INCREMENT_BY")).append(QUEBRA_LINHA);
-                    strOutScripts.append("  cache ").append(rsSequences.getString("CACHE_SIZE")).append(";").append(QUEBRA_LINHA);
+                        strOutScripts.append("-- Create sequence ").append(QUEBRA_LINHA);
+                        strOutScripts.append("create sequence ").append(rsSequences.getString("SEQUENCE_NAME")).append(QUEBRA_LINHA);
+                        strOutScripts.append("  minvalue 1").append(rsSequences.getString("MIN_VALUE")).append(QUEBRA_LINHA);
+                        strOutScripts.append("  maxvalue ").append(rsSequences.getString("MAX_VALUE")).append(QUEBRA_LINHA);
+                        strOutScripts.append("  start with ").append(rsSequences.getString("LAST_NUMBER")).append(QUEBRA_LINHA);
+                        strOutScripts.append("  increment by ").append(rsSequences.getString("INCREMENT_BY")).append(QUEBRA_LINHA);
+                        strOutScripts.append("  cache ").append(rsSequences.getString("CACHE_SIZE")).append(";").append(QUEBRA_LINHA);
 
-                    if (strOutScripts != null && !strOutScripts.toString().isEmpty()) {
-                        fileScripts.createNewFile();
-                        fwScripts = new FileWriter(fileScripts, false);
-                        fwScripts.write(strOutScripts.toString(), 0, strOutScripts.length());
-                        fwScripts.close();
-
-                        Estatisticas.nTotalSequences++;
-                        SfwLogger.log("File " + fileNameScripts + " was succesfull generated.");
+                        if (strOutScripts != null && !strOutScripts.toString().isEmpty()) {
+                            fileScripts.saveArquivo(strOutScripts);
+                            Estatisticas.nTotalSequences++;
+                            SfwLogger.log("File " + fileNameScripts + " was succesfull generated.");
+                        }
                     }
                 } catch (IOException ioex) {
                     SfwLogger.log("File " + fileNameScripts + " was error generated.");
